@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.angular/
+bin/
+obj/
+*.user
+.vs/
+.env
+.env.local
+appsettings.Development.local.json
+uploads/
