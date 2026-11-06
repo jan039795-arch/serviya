@@ -1,6 +1,8 @@
 <!--
 Sync Impact Report
-- Versión: (plantilla) → 1.0.0
+- Versión: 1.0.0 → 1.0.1 (PATCH: "Angular 20" pasa a "Angular estable vigente, hoy 22"; sin cambio
+  de principios)
+- Historial: (plantilla) → 1.0.0 creación inicial
 - Principios definidos (nuevos):
   I. Privacidad y datos sensibles primero
   II. Intermediario solo de contacto
@@ -81,7 +83,8 @@ experiencia digital.
 
 ### V. Simplicidad para un solo desarrollador
 
-- Arquitectura: monolito modular. Frontend Angular 20 (PWA + SSR para perfiles públicos), backend
+- Arquitectura: monolito modular. Frontend Angular estable vigente, hoy 22 (PWA + SSR para perfiles
+  públicos), backend
   ASP.NET Core 10 Web API con EF Core y SignalR, base de datos PostgreSQL.
 - Módulos del backend con límites claros: Cuentas, Prestadores, Documentos, Búsqueda, Pagos,
   Chat, Contrataciones, Calificaciones, Reportes y Administración.
@@ -133,4 +136,4 @@ revertir.
   ampliar guías; PATCH en aclaraciones y redacción.
 - Se revisa el cumplimiento al cerrar cada etapa y antes del lanzamiento del piloto.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-05
+**Version**: 1.0.1 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-05

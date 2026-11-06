@@ -6,25 +6,28 @@
 
 **Etapa 1 — Definición** (en curso).
 
-- Constitución v1.0.0 aprobada como base.
-- Especificación del MVP escrita y validada: `specs/001-serviya-mvp/spec.md` (8 historias de usuario,
-  FR-001 a FR-046, SC-001 a SC-010). **El usuario la está revisando.**
+- Constitución v1.0.1 (Angular estable vigente, hoy 22).
+- Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
+  FR-001 a FR-046, SC-001 a SC-010).
+- Plan técnico listo en `specs/001-serviya-mvp/`: `plan.md`, `research.md` (R1–R13),
+  `data-model.md`, `contracts/api.md`, `contracts/webhooks.md` y `quickstart.md`.
 - Skills, reglas y agentes de ECC copiados y adaptados en `.claude/`.
-- Todavía no hay código.
+- Todavía no hay código. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 
 ## Siguiente paso exacto
 
-1. Aplicar los cambios que pida el usuario tras revisar `specs/001-serviya-mvp/spec.md`.
-2. Opcional: `/speckit-clarify` para resolver dudas restantes.
-3. `/speckit-plan` con Angular 20+ + ASP.NET Core 10 + PostgreSQL → genera `plan.md`, `research.md`,
-   `data-model.md`, `contracts/` y `quickstart.md`.
-4. `/speckit-tasks`, y después la Etapa 2: prototipo móvil con datos ficticios.
+1. `/speckit-tasks` para generar `specs/001-serviya-mvp/tasks.md` a partir de la tabla "Etapas de
+   implementación" de `plan.md`.
+2. Etapa 2: prototipo móvil en `web/` (Angular 22 con `MockApiInterceptor` y `src/mocks/*.json`,
+   research R10). Solo necesita Node; no requiere Docker.
+3. Antes de la Etapa 3: el usuario instala Docker Desktop con WSL 2 y crea las cuentas de desarrollador
+   de Mercado Pago y Cloudflare.
 
 ## Etapas del proyecto
 
 | # | Etapa | Estado |
 |---|---|---|
-| 1 | Definición (constitución, especificación, plan) | En curso |
+| 1 | Definición (constitución, especificación, plan) | Plan listo; faltan las tareas |
 | 2 | Prototipo móvil con datos ficticios | Pendiente |
 | 3 | Cuentas y perfiles | Pendiente |
 | 4 | Documentos y panel del administrador | Pendiente |
@@ -54,6 +57,12 @@
 | 2026-11-05 | Usar Spec Kit como flujo; de ECC solo 12 skills, 18 reglas y 4 agentes, sin hooks ni plugin completo | Evitar dos flujos de planeación y la lentitud de los hooks |
 | 2026-11-05 | AwesomeAssertions en lugar de FluentAssertions | FluentAssertions 8+ requiere licencia comercial |
 | 2026-11-05 | Errores de la API como ProblemDetails; sin repositorio genérico sobre EF Core | Estándar de ASP.NET Core; EF Core ya es unidad de trabajo |
+| 2026-11-05 | Angular 22 (estable vigente) en lugar de 20 | Evitar una migración inmediata |
+| 2026-11-05 | Sesión con cookie HttpOnly + antiforgery (XSRF), verificación por correo; SMS fuera del MVP | Más seguro que un JWT en localStorage; funciona con SignalR y SSR |
+| 2026-11-05 | Zonas por municipio o alcaldía (polígonos INEGI) con PostGIS, sin geocodificación de pago | Costo cero; suficiente para una ciudad |
+| 2026-11-05 | Checkout Pro para pagos únicos; Suscripciones solo con tarjeta; el descuento al pasar al pase se cobra como pase de pago único | Una sola integración; Mercado Pago no descuenta el primer cobro de una suscripción |
+| 2026-11-05 | Tareas programadas con BackgroundService y advisory lock (sin Hangfire) | Principio V; requiere una instancia siempre encendida (~7 USD/mes) |
+| 2026-11-05 | Facturas de cuotas: solicitud en la app y CFDI emitido fuera del sistema en el MVP | Bajo volumen en el piloto |
 
 ## Pendientes abiertos
 
@@ -71,3 +80,4 @@
 | 2026-11-05 | Especificación `specs/001-serviya-mvp` y su lista de calidad | commit inicial |
 | 2026-11-05 | Piezas de ECC copiadas y adaptadas en `.claude/` | commit inicial |
 | 2026-11-05 | `CLAUDE.md` y esta memoria del proyecto | commit inicial |
+| 2026-11-05 | Plan técnico: `plan.md`, `research.md`, `data-model.md`, `contracts/` y `quickstart.md`; constitución v1.0.1 | ver `git log` |

@@ -31,7 +31,7 @@ Actualiza `docs/PROGRESO.md` **en el mismo commit que el cambio**:
 
 ## Stack
 
-- Frontend: Angular 20+ (standalone, signals, PWA, SSR para perfiles públicos).
+- Frontend: Angular 22 (standalone, signals, PWA, SSR para perfiles públicos).
 - Backend: ASP.NET Core 10 Web API, monolito modular, EF Core, ASP.NET Identity, SignalR.
 - Base de datos: PostgreSQL. Archivos: Cloudflare R2 (privado). Pagos: Mercado Pago (tarjeta, OXXO,
   SPEI).
