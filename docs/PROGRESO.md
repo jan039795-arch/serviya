@@ -13,6 +13,7 @@
   `data-model.md`, `contracts/api.md`, `contracts/webhooks.md` y `quickstart.md`.
 - Skills, reglas y agentes de ECC copiados y adaptados en `.claude/`.
 - Todavía no hay código. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
+- Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
@@ -81,3 +82,4 @@
 | 2026-11-05 | Piezas de ECC copiadas y adaptadas en `.claude/` | commit inicial |
 | 2026-11-05 | `CLAUDE.md` y esta memoria del proyecto | commit inicial |
 | 2026-11-05 | Plan técnico: `plan.md`, `research.md`, `data-model.md`, `contracts/` y `quickstart.md`; constitución v1.0.1 | ver `git log` |
+| 2026-11-05 | Repositorio subido a GitHub (`jan039795-arch/serviya`, privado) por el usuario | cde93cb |

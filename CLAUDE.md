@@ -38,6 +38,8 @@ Actualiza `docs/PROGRESO.md` **en el mismo commit que el cambio**:
 
 ## Flujo de trabajo
 
+- Repositorio: `https://github.com/jan039795-arch/serviya` (privado), rama `main`. Subir con
+  `git push` solo cuando el usuario lo pida.
 - Spec Kit: `/speckit-specify` → `/speckit-clarify` (opcional) → `/speckit-plan` → `/speckit-tasks`
   → `/speckit-implement`. El CLI `specify.exe` está bloqueado por Windows Application Control; los
   scripts de `.specify/scripts/powershell/` sí funcionan.
