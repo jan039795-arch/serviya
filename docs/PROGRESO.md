@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009) y la base del prototipo (T010–T018).
+**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) y las pantallas de US1 para el prestador (T019–T024).
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -22,18 +22,25 @@
   `MockApiInterceptor` con rutas por área cargadas de forma diferida, `ErrorApi` y avisos,
   `SesionService` y guards `canMatch`, armazón con navegación inferior y selector de rol del
   prototipo, componentes de UI, pipe `mxn` y subida con compresión, avance y reintento.
-  39 pruebas unitarias y 6 E2E (Pixel 7 e iPhone 14) pasan.
+- Pantallas de US1 (T019–T024): registro, verificación con código (en el prototipo, `123456`),
+  entrar con ruta de regreso validada y recuperación de contraseña; alta del prestador en 10 pasos
+  con Signal Forms, guardado por paso y regreso al último paso; consentimiento, documentos con
+  fecha de expedición, video y fotos, revisión con faltantes y estado del perfil con corrección de
+  documentos señalados. Los manejadores simulados de cuentas, catálogos y prestadores comparten su
+  estado en `core/mocks/estado/` (usuarios y perfiles en `localStorage`; nunca contraseñas).
+- 54 pruebas unitarias y 26 E2E (Pixel 7 e iPhone 14) pasan.
 - Sin backend todavía. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. Pantallas del prototipo en `tasks.md`, en orden: T019 (cuenta: registro, verificar código, entrar,
-   recuperar; ampliar `core/mocks/handlers/cuentas.ts`), T020–T024 (alta del prestador en 10 pasos y
-   su manejador), T025 (revisión del administrador), T026–T029 (búsqueda y perfil público), T030–T033
-   (contacto, pago simulado y pase) y el cierre T034–T037.
-2. Cada pantalla reemplaza su ruta `Pendiente` en `web/src/app/app.routes.ts` por una ruta perezosa
-   de `features/` y registra su manejador en `web/src/app/core/mocks/rutas.ts`.
+1. T025: revisión del administrador en `web/src/app/features/admin/revisiones/` (`cola.ts`,
+   `detalle-revision.ts`) y su manejador `web/src/app/core/mocks/handlers/admin.ts`. Debe leer los
+   perfiles enviados de `core/mocks/estado/perfiles.ts` además de `src/mocks/revisiones.json`, y sus
+   decisiones (aprobar, pedir corrección con motivo, rechazar) cambian ese mismo estado para que el
+   prestador las vea en `/alta/estado`.
+2. Después: búsqueda y perfil público (T026–T029), contacto y pase (T030–T033) y cierre del prototipo
+   (T034–T037). Cada pantalla reemplaza su ruta `Pendiente` en `web/src/app/app.routes.ts`.
 3. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
 4. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
    la cuenta de desarrollador de Mercado Pago.
@@ -88,6 +95,10 @@
 | 2026-11-08 | Guards como `canMatch` | La ruta restringida no carga su código sin permiso (regla de Angular del proyecto) |
 | 2026-11-08 | Presupuesto de Angular en tamaño sin comprimir: aviso 600 kB, error 1 MB | Angular mide sin gzip; el límite del plan es 300 KB gzip (hoy 89 KB) y se mide en T145 |
 | 2026-11-08 | Imágenes ficticias en SVG y servidas solo en desarrollo y prototipo | Sin herramientas extra; no llegan al paquete de producción |
+| 2026-11-08 | El correo por verificar se guarda en memoria y no en la URL (`/verificar` sin `?email=`) | Principio I: datos personales fuera de la URL |
+| 2026-11-08 | Un menor puede registrarse, pero no pagar ni enviar su perfil (aviso en el registro y bloqueo al enviar) | US1 escenario 7 y FR-004; el bloqueo real está en la API |
+| 2026-11-08 | El alta usa una ruta por paso (`/alta/1` a `/alta/10`) y `/alta/estado` | El botón Atrás del celular funciona y se puede retomar con un enlace |
+| 2026-11-08 | Se agregó `motivoEstado` a `PerfilPropio` | El prestador debe ver el motivo de rechazo o corrección del perfil (FR-011) |
 
 ## Pendientes abiertos
 
@@ -111,3 +122,4 @@
 | 2026-11-08 | `tasks.md` generado con `/speckit-tasks`: 151 tareas en 13 fases | ver `git log` |
 | 2026-11-08 | Fase 1: proyecto `web/` (T001–T009); lint, pruebas unitarias, compilación y E2E en celular pasan | ver `git log` |
 | 2026-11-08 | Base del prototipo (T010–T018): modelos, datos ficticios, simulación, errores, sesión, armazón, UI y subida | ver `git log` |
+| 2026-11-08 | Pantallas de cuenta y alta del prestador del prototipo (T019–T024) | ver `git log` |

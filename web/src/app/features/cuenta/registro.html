@@ -1,0 +1,91 @@
+<section class="contenedor">
+  <h1>Crea tu cuenta</h1>
+  <p>Es gratis. Solo pagas cuando quieres contactar a un prestador.</p>
+
+  @if (mensajeEnvio(); as mensaje) {
+    <p class="alerta alerta--error" role="alert">{{ mensaje }}</p>
+  }
+
+  <form novalidate (submit)="enviar($event)" data-testid="form-registro">
+    <fieldset class="opciones">
+      <legend>¿Para qué quieres tu cuenta?</legend>
+      <label class="opcion">
+        <input type="radio" value="Cliente" [formField]="f.rol" />
+        Busco a alguien para un trabajo
+      </label>
+      <label class="opcion">
+        <input type="radio" value="Prestador" [formField]="f.rol" />
+        Quiero ofrecer mis servicios
+      </label>
+    </fieldset>
+
+    <app-campo etiqueta="Nombre completo" [error]="error(f.nombreCompleto)">
+      <input appControl [formField]="f.nombreCompleto" autocomplete="name" data-testid="nombre" />
+    </app-campo>
+
+    <app-campo etiqueta="Correo electrónico" [error]="errorCorreo()">
+      <input
+        appControl
+        type="email"
+        [formField]="f.email"
+        autocomplete="email"
+        inputmode="email"
+        data-testid="email"
+      />
+    </app-campo>
+
+    <app-campo etiqueta="Contraseña" ayuda="Al menos 8 caracteres." [error]="error(f.password)">
+      <input
+        appControl
+        type="password"
+        [formField]="f.password"
+        autocomplete="new-password"
+        data-testid="password"
+      />
+    </app-campo>
+
+    <app-campo
+      etiqueta="Fecha de nacimiento"
+      ayuda="Necesitas 18 años o más para pagar o publicar un perfil."
+      [error]="error(f.fechaNacimiento)"
+    >
+      <input
+        appControl
+        type="date"
+        [max]="hoy"
+        [formField]="f.fechaNacimiento"
+        autocomplete="bday"
+        data-testid="fecha-nacimiento"
+      />
+    </app-campo>
+    @if (menorDeEdad()) {
+      <p class="alerta alerta--aviso" data-testid="aviso-menor">
+        Puedes crear tu cuenta, pero hasta que cumplas 18 años no podrás pagar contactos ni publicar
+        un perfil.
+      </p>
+    }
+
+    <label class="opcion">
+      <input type="checkbox" [formField]="f.acepta" data-testid="acepta" />
+      <span>
+        Acepto el <a routerLink="/legal/aviso-privacidad">aviso de privacidad</a> y los
+        <a routerLink="/legal/terminos">términos y condiciones</a>.
+      </span>
+    </label>
+    @if (error(f.acepta); as mensaje) {
+      <p class="texto-error">{{ mensaje }}</p>
+    }
+
+    <button
+      appBoton
+      anchoCompleto
+      type="submit"
+      [disabled]="f().submitting()"
+      data-testid="crear-cuenta"
+    >
+      {{ f().submitting() ? 'Creando cuenta…' : 'Crear cuenta' }}
+    </button>
+  </form>
+
+  <p class="pie-formulario">¿Ya tienes cuenta? <a routerLink="/entrar">Entra</a></p>
+</section>

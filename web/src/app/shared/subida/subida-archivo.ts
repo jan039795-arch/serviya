@@ -52,12 +52,20 @@ let siguienteId = 0;
 @Component({
   selector: 'app-subida-archivo',
   template: `
-    <label class="subida__etiqueta" [for]="idInput">{{ etiqueta() }}</label>
     @if (ayuda()) {
       <p class="subida__ayuda" [id]="idAyuda">{{ ayuda() }}</p>
     }
+    <!-- El input nativo queda oculto pero enfocable; la etiqueta hace de botón visible. -->
+    <label
+      class="boton boton--secundario subida__boton"
+      [class.subida__boton--ocupado]="ocupado()"
+      [for]="idInput"
+    >
+      {{ etiqueta() }}
+    </label>
     <input
       type="file"
+      class="solo-lectores"
       [id]="idInput"
       [accept]="acepta()"
       [attr.capture]="captura() ?? null"
@@ -97,16 +105,21 @@ let siguienteId = 0;
       gap: var(--espacio-2);
       margin-bottom: var(--espacio-4);
     }
-    .subida__etiqueta {
-      font-weight: 600;
+    .subida__boton {
+      justify-self: start;
+    }
+    .subida__boton--ocupado {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    :host:has(input:focus-visible) .subida__boton {
+      outline: 3px solid var(--color-foco);
+      outline-offset: 2px;
     }
     .subida__ayuda {
       margin: 0;
       color: var(--color-texto-suave);
       font-size: var(--texto-chico);
-    }
-    input[type='file'] {
-      min-height: var(--tactil-min);
     }
     .subida__vista {
       max-height: 160px;

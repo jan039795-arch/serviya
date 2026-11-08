@@ -141,6 +141,8 @@ export interface ElementoPortafolioPropio {
 export interface PerfilPropio {
   readonly id: string;
   readonly estado: EstadoPerfil;
+  /** Motivo del último cambio de estado (rechazo, corrección o suspensión), si lo hay. */
+  readonly motivoEstado?: string;
   readonly pasoAlta: number;
   readonly datosPersonales?: DatosPersonales;
   readonly oficios: readonly OficioDelPrestador[];

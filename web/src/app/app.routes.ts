@@ -14,10 +14,14 @@ export const routes: Routes = [
     children: [
       { path: '', component: Pendiente, data: { titulo: 'Busca un oficio' }, title: 'ServiYa' },
       {
-        path: 'entrar',
+        path: '',
+        loadChildren: () => import('./features/cuenta/cuenta.routes').then((m) => m.rutasCuenta),
+      },
+      {
+        path: 'legal/:documento',
         component: Pendiente,
-        data: { titulo: 'Entrar' },
-        title: 'Entrar · ServiYa',
+        data: { titulo: 'Textos legales' },
+        title: 'Legal · ServiYa',
       },
       {
         path: 'mensajes',
@@ -32,6 +36,14 @@ export const routes: Routes = [
         component: Pendiente,
         data: { titulo: 'Mi cuenta' },
         title: 'Mi cuenta · ServiYa',
+      },
+      {
+        path: 'alta',
+        canMatch: [conRol('Prestador')],
+        loadChildren: () =>
+          import('./features/alta-prestador/alta-prestador.routes').then(
+            (m) => m.rutasAltaPrestador,
+          ),
       },
       {
         path: 'admin',

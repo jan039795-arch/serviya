@@ -216,3 +216,88 @@ textarea {
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+/* Formularios y mensajes */
+fieldset.opciones {
+  margin: 0 0 var(--espacio-4);
+  padding: 0;
+  border: 0;
+}
+
+fieldset.opciones legend {
+  margin-bottom: var(--espacio-2);
+  font-weight: 600;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: var(--tactil-min);
+  margin-bottom: var(--espacio-2);
+}
+
+.opcion input[type='checkbox'],
+.opcion input[type='radio'] {
+  flex: none;
+  width: 1.375rem;
+  height: 1.375rem;
+  min-height: auto;
+  margin: 0;
+  accent-color: var(--color-primario);
+}
+
+.texto-error {
+  margin-top: calc(-1 * var(--espacio-1));
+  color: var(--color-error);
+  font-size: var(--texto-chico);
+  font-weight: 600;
+}
+
+.alerta {
+  margin: 0 0 var(--espacio-4);
+  padding: var(--espacio-3) var(--espacio-4);
+  border-left: 4px solid currentColor;
+  border-radius: var(--radio);
+}
+
+.alerta--error {
+  background: #fbeceb;
+  color: var(--color-error);
+}
+
+.alerta--aviso {
+  background: #fdf3e2;
+  color: var(--color-aviso);
+}
+
+.alerta--info {
+  background: #e8f0f8;
+  color: var(--color-primario-oscuro);
+}
+
+.alerta--exito {
+  background: #e3f1e6;
+  color: var(--color-exito);
+}
+
+.pie-formulario {
+  margin-top: var(--espacio-6);
+  text-align: center;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-6);
+}
+
+.acciones > * {
+  flex: 1 1 10rem;
+}
+
+.texto-suave {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-chico);
+}
