@@ -4,31 +4,34 @@
 
 ## Estado actual
 
-**Etapa 1 — Definición** (en curso).
+**Etapa 1 — Definición** (terminada). Sigue la **Etapa 2 — Prototipo**.
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
   FR-001 a FR-046, SC-001 a SC-010).
 - Plan técnico listo en `specs/001-serviya-mvp/`: `plan.md`, `research.md` (R1–R13),
   `data-model.md`, `contracts/api.md`, `contracts/webhooks.md` y `quickstart.md`.
+- Tareas listas: `specs/001-serviya-mvp/tasks.md` (T001–T151 en 13 fases; TDD en módulos críticos).
 - Skills, reglas y agentes de ECC copiados y adaptados en `.claude/`.
 - Todavía no hay código. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. `/speckit-tasks` para generar `specs/001-serviya-mvp/tasks.md` a partir de la tabla "Etapas de
-   implementación" de `plan.md`.
-2. Etapa 2: prototipo móvil en `web/` (Angular 22 con `MockApiInterceptor` y `src/mocks/*.json`,
-   research R10). Solo necesita Node; no requiere Docker.
-3. Antes de la Etapa 3: el usuario instala Docker Desktop con WSL 2 y crea las cuentas de desarrollador
-   de Mercado Pago y Cloudflare.
+1. Etapa 2, Fase 1 de `tasks.md`: T001–T009 (proyecto Angular 22 en `web/`, PWA, ESLint, Vitest,
+   Playwright, entornos con `mocks` por área, idioma es-MX, estilos base y comandos en `CLAUDE.md`).
+   Solo necesita Node; se puede usar `/speckit-implement`.
+2. Fase 2 (T010–T037): prototipo con datos ficticios de US1–US4. Termina cuando el usuario lo aprueba
+   en su celular.
+3. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
+   la cuenta de desarrollador de Mercado Pago. Cloudflare R2 se necesita hasta producción (en
+   desarrollo se usa MinIO).
 
 ## Etapas del proyecto
 
 | # | Etapa | Estado |
 |---|---|---|
-| 1 | Definición (constitución, especificación, plan) | Plan listo; faltan las tareas |
+| 1 | Definición (constitución, especificación, plan, tareas) | Terminada |
 | 2 | Prototipo móvil con datos ficticios | Pendiente |
 | 3 | Cuentas y perfiles | Pendiente |
 | 4 | Documentos y panel del administrador | Pendiente |
@@ -64,6 +67,11 @@
 | 2026-11-05 | Checkout Pro para pagos únicos; Suscripciones solo con tarjeta; el descuento al pasar al pase se cobra como pase de pago único | Una sola integración; Mercado Pago no descuenta el primer cobro de una suscripción |
 | 2026-11-05 | Tareas programadas con BackgroundService y advisory lock (sin Hangfire) | Principio V; requiere una instancia siempre encendida (~7 USD/mes) |
 | 2026-11-05 | Facturas de cuotas: solicitud en la app y CFDI emitido fuera del sistema en el MVP | Bajo volumen en el piloto |
+| 2026-11-08 | `ubicar` municipio por `POST` con `{ lat, lng }` en el cuerpo, no `GET ?lat&lng` (T067) | La ubicación es dato personal y no debe ir en la URL (principio I) |
+| 2026-11-08 | Interceptor XSRF propio en Angular (T069) | El soporte XSRF de `HttpClient` omite URLs absolutas y la API estará en `api.serviya.mx` |
+| 2026-11-08 | La búsqueda de prestadores vive en el módulo Prestadores; Busqueda solo da catálogos y municipios | Un módulo no consulta tablas de otro |
+| 2026-11-08 | Los accesos obtenidos con pase vencen en el `FinEn` del pase | Coherente con US4 escenario 6 |
+| 2026-11-08 | Prototipo con `mocks` por área en `environment` | Conectar la API real área por área sin tocar componentes |
 
 ## Pendientes abiertos
 
@@ -71,6 +79,7 @@
 - Ciudad o zona del piloto.
 - Oficios incluidos en el piloto.
 - Revisión de textos legales con un abogado y del régimen fiscal con un contador.
+- Cómo generar el PDF del comprobante de pago (research R14, tarea T108; opción a evaluar: QuestPDF Community).
 
 ## Bitácora
 
@@ -83,3 +92,4 @@
 | 2026-11-05 | `CLAUDE.md` y esta memoria del proyecto | commit inicial |
 | 2026-11-05 | Plan técnico: `plan.md`, `research.md`, `data-model.md`, `contracts/` y `quickstart.md`; constitución v1.0.1 | ver `git log` |
 | 2026-11-05 | Repositorio subido a GitHub (`jan039795-arch/serviya`, privado) por el usuario | cde93cb |
+| 2026-11-08 | `tasks.md` generado con `/speckit-tasks`: 151 tareas en 13 fases | ver `git log` |
