@@ -51,4 +51,16 @@ Actualiza `docs/PROGRESO.md` **en el mismo commit que el cambio**:
 
 ## Comandos
 
-Todavía no hay código. Agregar aquí los comandos de compilación, pruebas y ejecución cuando existan.
+Frontend (desde `web/`; requiere Node 24):
+
+```bash
+npm start                    # servidor de desarrollo en http://localhost:4200 (datos ficticios)
+npm run start:prototipo      # prototipo optimizado, todo simulado
+npx ng build                 # compilación de producción
+npx ng test --no-watch       # pruebas unitarias (Vitest)
+npx playwright test          # E2E en Pixel 7 e iPhone 14 (levanta npm start)
+npm run lint                 # ESLint
+npm run format               # Prettier
+```
+
+Backend: pendiente (Fase 3 de `tasks.md`).

@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-**Etapa 1 — Definición** (terminada). Sigue la **Etapa 2 — Prototipo**.
+**Etapa 2 — Prototipo** (en curso). Fase 1 de `tasks.md` terminada (T001–T009).
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -13,26 +13,27 @@
   `data-model.md`, `contracts/api.md`, `contracts/webhooks.md` y `quickstart.md`.
 - Tareas listas: `specs/001-serviya-mvp/tasks.md` (T001–T151 en 13 fases; TDD en módulos críticos).
 - Skills, reglas y agentes de ECC copiados y adaptados en `.claude/`.
-- Todavía no hay código. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
+- `web/`: Angular 22.2 con SSR, PWA, ESLint, Prettier, Vitest y Playwright 1.65 (Pixel 7 e iPhone 14);
+  entornos con `mocks` por área y configuración `prototipo`; idioma es-MX; estilos base con contraste AA.
+  Íconos de la PWA provisionales (los de Angular) hasta tener nombre y logotipo definitivos.
+- Sin backend todavía. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. Etapa 2, Fase 1 de `tasks.md`: T001–T009 (proyecto Angular 22 en `web/`, PWA, ESLint, Vitest,
-   Playwright, entornos con `mocks` por área, idioma es-MX, estilos base y comandos en `CLAUDE.md`).
-   Solo necesita Node; se puede usar `/speckit-implement`.
-2. Fase 2 (T010–T037): prototipo con datos ficticios de US1–US4. Termina cuando el usuario lo aprueba
-   en su celular.
+1. Fase 2 de `tasks.md`, en orden: T010 (`web/src/app/core/api/modelos.ts`), T011 (`web/src/mocks/*.json`),
+   T012 (`MockApiInterceptor`), T013 a T018 (errores, sesión y guards, armazón, UI compartida, pipe
+   `mxn`, subida de archivos); luego las pantallas T019 a T033 y el cierre T034 a T037.
+2. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
 3. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
-   la cuenta de desarrollador de Mercado Pago. Cloudflare R2 se necesita hasta producción (en
-   desarrollo se usa MinIO).
+   la cuenta de desarrollador de Mercado Pago.
 
 ## Etapas del proyecto
 
 | # | Etapa | Estado |
 |---|---|---|
 | 1 | Definición (constitución, especificación, plan, tareas) | Terminada |
-| 2 | Prototipo móvil con datos ficticios | Pendiente |
+| 2 | Prototipo móvil con datos ficticios | En curso (Fase 1 lista) |
 | 3 | Cuentas y perfiles | Pendiente |
 | 4 | Documentos y panel del administrador | Pendiente |
 | 5 | Búsqueda y perfil público | Pendiente |
@@ -72,6 +73,7 @@
 | 2026-11-08 | La búsqueda de prestadores vive en el módulo Prestadores; Busqueda solo da catálogos y municipios | Un módulo no consulta tablas de otro |
 | 2026-11-08 | Los accesos obtenidos con pase vencen en el `FinEn` del pase | Coherente con US4 escenario 6 |
 | 2026-11-08 | Prototipo con `mocks` por área en `environment` | Conectar la API real área por área sin tocar componentes |
+| 2026-11-08 | En el prototipo todas las rutas se renderizan en el navegador (`RenderMode.Client`) | El SSR del perfil público llega en T094; evita prerenderizar con datos ficticios |
 
 ## Pendientes abiertos
 
@@ -93,3 +95,4 @@
 | 2026-11-05 | Plan técnico: `plan.md`, `research.md`, `data-model.md`, `contracts/` y `quickstart.md`; constitución v1.0.1 | ver `git log` |
 | 2026-11-05 | Repositorio subido a GitHub (`jan039795-arch/serviya`, privado) por el usuario | cde93cb |
 | 2026-11-08 | `tasks.md` generado con `/speckit-tasks`: 151 tareas en 13 fases | ver `git log` |
+| 2026-11-08 | Fase 1: proyecto `web/` (T001–T009); lint, pruebas unitarias, compilación y E2E en celular pasan | ver `git log` |

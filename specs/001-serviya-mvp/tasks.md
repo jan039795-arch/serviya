@@ -45,15 +45,15 @@ del frontend y pruebas, y se puede probar de forma independiente.
 
 **Purpose**: proyecto Angular listo para construir el prototipo. Solo necesita Node 24.
 
-- [ ] T001 Crear el proyecto en `web/` con `npx @angular/cli@22 new web --routing --ssr --style=css --skip-git` (componentes standalone, archivos sin sufijo `.component`) y confirmar que `npm start` abre `http://localhost:4200`
-- [ ] T002 Agregar la PWA con `ng add @angular/pwa` y ajustar `web/public/manifest.webmanifest` (`name` "ServiYa", `lang` "es-MX", `display` "standalone", `theme_color`, íconos 192 y 512 px `maskable`) y `web/ngsw-config.json` (sin caché de `/api/**`)
-- [ ] T003 [P] Configurar ESLint (`ng add angular-eslint`) y Prettier (`web/.prettierrc`), con los scripts `lint` y `format` en `web/package.json`
-- [ ] T004 [P] Verificar el ejecutor de pruebas de Angular CLI 22 (Vitest) con `npx ng test --no-watch` sobre `web/src/app/app.spec.ts`
-- [ ] T005 [P] Instalar Playwright 1.65 como dependencia de desarrollo y crear `web/playwright.config.ts` con los proyectos `Pixel 7` e `iPhone 14`, `baseURL` `http://localhost:4200`, `webServer` con `npm start` y carpeta `web/e2e/`
-- [ ] T006 [P] Crear `web/src/environments/environment.ts` (`apiUrl: '/api/v1'`, `mocks: { cuentas: true, prestadores: true, busqueda: true, accesos: true, admin: true }`), `environment.prototipo.ts` (todo simulado con optimización) y `environment.prod.ts` (todo en `false`), con sus `fileReplacements` y la configuración `prototipo` en `web/angular.json`
-- [ ] T007 [P] Configurar el idioma: `registerLocaleData(localeEsMx)`, `LOCALE_ID` `'es-MX'` en `web/src/app/app.config.ts` y `<html lang="es-MX">` en `web/src/index.html`
-- [ ] T008 [P] Crear los estilos base mobile-first en `web/src/styles.css`: variables de color con contraste AA, texto base de 16 px, áreas táctiles de al menos 44 px, diseño desde 360 px de ancho y foco visible
-- [ ] T009 Agregar a la sección "Comandos" de `CLAUDE.md` los comandos del frontend (`npm start`, `npx ng test --no-watch`, `npx playwright test`, `npm run lint`)
+- [x] T001 Crear el proyecto en `web/` con `npx @angular/cli@22 new web --routing --ssr --style=css --skip-git` (componentes standalone, archivos sin sufijo `.component`) y confirmar que `npm start` abre `http://localhost:4200`
+- [x] T002 Agregar la PWA con `ng add @angular/pwa` y ajustar `web/public/manifest.webmanifest` (`name` "ServiYa", `lang` "es-MX", `display` "standalone", `theme_color`, íconos 192 y 512 px `maskable`) y `web/ngsw-config.json` (sin caché de `/api/**`)
+- [x] T003 [P] Configurar ESLint (`ng add angular-eslint`) y Prettier (`web/.prettierrc`), con los scripts `lint` y `format` en `web/package.json`
+- [x] T004 [P] Verificar el ejecutor de pruebas de Angular CLI 22 (Vitest) con `npx ng test --no-watch` sobre `web/src/app/app.spec.ts`
+- [x] T005 [P] Instalar Playwright 1.65 como dependencia de desarrollo y crear `web/playwright.config.ts` con los proyectos `Pixel 7` e `iPhone 14`, `baseURL` `http://localhost:4200`, `webServer` con `npm start` y carpeta `web/e2e/`
+- [x] T006 [P] Crear `web/src/environments/environment.ts` (`apiUrl: '/api/v1'`, `mocks: { cuentas: true, prestadores: true, busqueda: true, accesos: true, admin: true }`), `environment.prototipo.ts` (todo simulado con optimización) y `environment.prod.ts` (todo en `false`), con sus `fileReplacements` y la configuración `prototipo` en `web/angular.json`
+- [x] T007 [P] Configurar el idioma: `registerLocaleData(localeEsMx)`, `LOCALE_ID` `'es-MX'` en `web/src/app/app.config.ts` y `<html lang="es-MX">` en `web/src/index.html`
+- [x] T008 [P] Crear los estilos base mobile-first en `web/src/styles.css`: variables de color con contraste AA, texto base de 16 px, áreas táctiles de al menos 44 px, diseño desde 360 px de ancho y foco visible
+- [x] T009 Agregar a la sección "Comandos" de `CLAUDE.md` los comandos del frontend (`npm start`, `npx ng test --no-watch`, `npx playwright test`, `npm run lint`)
 
 ---
 

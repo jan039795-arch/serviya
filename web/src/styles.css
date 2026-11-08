@@ -1,0 +1,153 @@
+/*
+ * Estilos base de ServiYa: mobile-first desde 360 px (constitución, principio IV).
+ * Colores con contraste AA sobre su fondo; áreas táctiles de al menos 44 px.
+ */
+:root {
+  color-scheme: light;
+
+  /* Color (contraste verificado contra --color-fondo o --color-primario) */
+  --color-fondo: #ffffff;
+  --color-superficie: #f4f6f8;
+  --color-texto: #1a1f24; /* 16.6:1 sobre blanco */
+  --color-texto-suave: #4a5561; /* 7.6:1 sobre blanco */
+  --color-borde: #77838f; /* 3.9:1; los bordes de controles piden 3:1 */
+  --color-primario: #0b5fa5; /* 6.6:1 sobre blanco */
+  --color-primario-oscuro: #084a80;
+  --color-sobre-primario: #ffffff;
+  --color-exito: #1e6b34; /* 6.5:1 */
+  --color-aviso: #8a4b00; /* 6.8:1 */
+  --color-error: #b3261e; /* 6.5:1 */
+  --color-foco: #ffb000;
+
+  /* Tipografía: 16 px base para evitar el zoom automático de iOS en campos */
+  --fuente: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --texto-base: 1rem;
+  --texto-chico: 0.875rem;
+  --texto-grande: 1.25rem;
+  --texto-titulo: 1.5rem;
+  --interlineado: 1.5;
+
+  /* Espacio y forma */
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 0.75rem;
+  --espacio-4: 1rem;
+  --espacio-6: 1.5rem;
+  --espacio-8: 2rem;
+  --radio: 0.5rem;
+  --tactil-min: 44px;
+  --ancho-max: 40rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente);
+  font-size: var(--texto-base);
+  line-height: var(--interlineado);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  margin: 0 0 var(--espacio-3);
+}
+
+h1 {
+  font-size: var(--texto-titulo);
+}
+
+h2 {
+  font-size: var(--texto-grande);
+}
+
+p {
+  margin: 0 0 var(--espacio-4);
+}
+
+a {
+  color: var(--color-primario);
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button,
+[role='button'],
+input[type='checkbox'],
+input[type='radio'],
+select {
+  min-height: var(--tactil-min);
+}
+
+input:not([type='checkbox'], [type='radio']),
+select,
+textarea {
+  min-height: var(--tactil-min);
+  width: 100%;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-fondo);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  padding: var(--espacio-4);
+  padding-left: max(var(--espacio-4), env(safe-area-inset-left));
+  padding-right: max(var(--espacio-4), env(safe-area-inset-right));
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
