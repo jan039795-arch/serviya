@@ -24,7 +24,8 @@ contrato funcional que siguen el prototipo y la API.
 | `POST /cuentas/login` | P | `{ email, password }` → 200 `Sesion` | |
 | `POST /cuentas/logout` | U | → 204 | |
 | `POST /cuentas/recuperar` / `POST /cuentas/restablecer` | P | `{ email }` / `{ email, codigo, nuevaPassword }` | FR-001 |
-| `GET /cuentas/yo` | U | → `Sesion { id, nombreCompleto, email, roles[], estado, esMayorDeEdad }` | |
+| `GET /cuentas/yo` | U | → `Sesion { id, nombreCompleto, email, roles[], estado, esMayorDeEdad, aceptacionesPendientes[] }` | FR-044 |
+| `POST /cuentas/yo/consentimientos` | U | `{ aceptaciones: [{documento, version}] }` → 204 (cuando cambia la versión de un texto legal) | FR-044 |
 | `POST /cuentas/yo/roles/prestador` | U | Agrega el rol de prestador a un cliente → 204 | FR-002 |
 | `GET /cuentas/yo/datos` | U | Descarga los datos personales (JSON) | FR-045 |
 | `DELETE /cuentas/yo` | U | `{ password }` → 202 (eliminación y créditos a clientes afectados) | FR-043, FR-045 |
@@ -49,7 +50,7 @@ contrato funcional que siguen el prototipo y la API.
 |---|---|---|---|
 | `GET /catalogos/oficios` | P | → `Oficio[]` | |
 | `GET /catalogos/municipios` | P | → `Municipio[]` (sin polígono) | |
-| `GET /catalogos/municipios/ubicar?lat&lng` | P | → `Municipio` o 404 | R5 |
+| `POST /catalogos/municipios/ubicar` | P | `{ lat, lng }` → `Municipio` o 404 (en el cuerpo para que la ubicación no quede en URLs ni logs) | R5 |
 | `GET /prestadores?oficio&municipio&calificacionMin&insignia&tarifaMax&pagina` | P | → página de `TarjetaPrestador { id, nombrePublico, colonia, municipio, oficios[], tarifaDesde, promedios, totalResenas, insignias[], fotoPrincipalUrl }` | FR-018, FR-019 |
 | `GET /prestadores/{id}` | P | → `PerfilPublico` (**nunca** teléfono, correo, dirección ni documentos); 404 si no está aprobado | FR-017, US2 |
 | `GET /prestadores/{id}/resenas?pagina` | P | → página de `ResenaPublica` | FR-039 |
@@ -65,7 +66,7 @@ contrato funcional que siguen el prototipo y la API.
 | `GET /accesos/yo` | C | → `AccesoContacto[]` con estado y vencimiento | FR-024 |
 | `GET /accesos/{id}/contacto` | C | → `{ telefono, whatsapp? }` solo si está `Activo`; 403 si no | FR-020 |
 | `GET /pagos/yo` | C | → historial con comprobante | FR-031 |
-| `GET /pagos/{id}/comprobante` | C | → PDF | FR-031 |
+| `GET /pagos/{id}/comprobante` | C | → `Comprobante` (JSON); la web lo muestra como página imprimible o guardable en PDF desde el navegador | FR-031 |
 | `POST /pagos/{id}/factura` | C | `SolicitudFactura` → 201 | FR-031, R13 |
 | `POST /creditos/{id}/cambiar-por-reembolso` | C | → 202 | FR-026 |
 
@@ -79,6 +80,7 @@ El regreso de Checkout Pro llega a `https://serviya.mx/pago/resultado?pagoId=…
 | `GET /conversaciones` | U | → lista con último mensaje y no leídos | FR-032 |
 | `GET /conversaciones/{id}/mensajes?antesDe` | U (parte) | → página de `Mensaje` | |
 | `POST /conversaciones/{id}/mensajes` | U (parte) | `{ texto?, archivoId? }` → 201 (también por SignalR) | FR-032, FR-033 |
+| `POST /archivos/url-subida` | U | `{ destino: "Chat"\|"Calificacion", tipoContenido, tamanoBytes }` → `{ archivoId, urlSubida, expiraEn }` | R3, R8 |
 | `POST /notificaciones/push` | U | `PushSubscription` → 201 | R8 |
 | `POST /conversaciones/{id}/contrataciones` | C | `{ descripcion, fechaServicio, precioAcordadoCentavos }` → 201 | FR-035 |
 | `POST /contrataciones/{id}/confirmar` · `/rechazar` · `/terminar` · `/cancelar` | parte según estado | → 204 | FR-035 |

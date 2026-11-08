@@ -4,31 +4,37 @@
 
 ## Estado actual
 
-**Etapa 1 — Definición** (en curso).
+**Etapa 1 — Definición** (terminada). Lo siguiente es la Etapa 2 (prototipo).
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
   FR-001 a FR-046, SC-001 a SC-010).
 - Plan técnico listo en `specs/001-serviya-mvp/`: `plan.md`, `research.md` (R1–R13),
   `data-model.md`, `contracts/api.md`, `contracts/webhooks.md` y `quickstart.md`.
+- Tareas listas: `specs/001-serviya-mvp/tasks.md` con 242 tareas (T001–T242) en 12 fases. Fase 1
+  Setup (T001–T017), Fase 2 Prototipo (T018–T056), Fase 3 Fundamentos del backend (T057–T095), luego
+  una fase por historia (US1–US8) y el cierre.
 - Skills, reglas y agentes de ECC copiados y adaptados en `.claude/`.
 - Todavía no hay código. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. `/speckit-tasks` para generar `specs/001-serviya-mvp/tasks.md` a partir de la tabla "Etapas de
-   implementación" de `plan.md`.
-2. Etapa 2: prototipo móvil en `web/` (Angular 22 con `MockApiInterceptor` y `src/mocks/*.json`,
-   research R10). Solo necesita Node; no requiere Docker.
-3. Antes de la Etapa 3: el usuario instala Docker Desktop con WSL 2 y crea las cuentas de desarrollador
-   de Mercado Pago y Cloudflare.
+1. (Opcional) El usuario revisa `tasks.md`, en especial las decisiones del 2026-11-08 de la tabla de
+   abajo.
+2. `/speckit-implement` empezando por la Fase 1 en este orden: T001 → T003 (proyecto Angular 22 en
+   `web/`) → T004–T010 (PWA, ESLint, idioma, entornos, proxy, Vitest y Playwright). T011–T017 (`api/`,
+   `docker-compose.yml` y CI) pueden ir después; no bloquean el prototipo.
+3. Fase 2 (T018–T056): prototipo con datos ficticios. Solo necesita Node; no requiere Docker. Termina
+   cuando el usuario lo valida en su celular (T056).
+4. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2 (o se apoya en la CI de GitHub para
+   las pruebas de integración) y crea las cuentas de desarrollador de Mercado Pago y Cloudflare.
 
 ## Etapas del proyecto
 
 | # | Etapa | Estado |
 |---|---|---|
-| 1 | Definición (constitución, especificación, plan) | Plan listo; faltan las tareas |
+| 1 | Definición (constitución, especificación, plan, tareas) | Terminada |
 | 2 | Prototipo móvil con datos ficticios | Pendiente |
 | 3 | Cuentas y perfiles | Pendiente |
 | 4 | Documentos y panel del administrador | Pendiente |
@@ -64,6 +70,18 @@
 | 2026-11-05 | Checkout Pro para pagos únicos; Suscripciones solo con tarjeta; el descuento al pasar al pase se cobra como pase de pago único | Una sola integración; Mercado Pago no descuenta el primer cobro de una suscripción |
 | 2026-11-05 | Tareas programadas con BackgroundService y advisory lock (sin Hangfire) | Principio V; requiere una instancia siempre encendida (~7 USD/mes) |
 | 2026-11-05 | Facturas de cuotas: solicitud en la app y CFDI emitido fuera del sistema en el MVP | Bajo volumen en el piloto |
+| 2026-11-08 | Alta del prestador en 10 pasos: datos personales, oficios, tarifas, cobertura, disponibilidad, descripción, consentimiento, documentos, video y portafolio, revisar y enviar | El plan decía "10 pasos" sin enumerarlos; el consentimiento va justo antes de los documentos (US8) |
+| 2026-11-08 | Interfaces y DTOs entre módulos en `ServiYa.Comun/Contratos/<Modulo>/` | Evita referencias circulares entre proyectos de módulos |
+| 2026-11-08 | La consulta de búsqueda vive en `ServiYa.Prestadores`; `ServiYa.Busqueda` solo tiene catálogos y la ubicación | Un módulo no consulta tablas de otro |
+| 2026-11-08 | Entidad `ArchivoSubido` (esquema `archivos`) y `POST /archivos/url-subida` para fotos de chat y reseñas | Verificar que un `archivoId` sea del usuario; el contrato no tenía cómo subir fotos fuera del alta |
+| 2026-11-08 | `ubicar` pasa a `POST` con `{ lat, lng }` en el cuerpo | Constitución I: datos personales nunca en URLs ni logs |
+| 2026-11-08 | Comprobante en JSON y página imprimible en la web, no PDF en la API | Principio V: sin librería de PDF |
+| 2026-11-08 | `POST /cuentas/yo/consentimientos` y `aceptacionesPendientes` en la sesión | Registrar la aceptación cuando cambia la versión de un texto legal (FR-044) |
+| 2026-11-08 | `PuntoBase` = ubicación del navegador redondeada a 2 decimales (≈1 km) o centroide del municipio | No hay catálogo de colonias ni geocodificación de pago |
+| 2026-11-08 | Con pase activo, un acceso individual que vence se extiende hasta el fin del pase sin consumir contactos | US3 escenario 6 ("salvo que tenga un pase activo") |
+| 2026-11-08 | Al suspender o eliminar a un prestador, sus accesos activos pasan a `Vencido` y cada cliente recibe un crédito | FR-043 |
+| 2026-11-08 | Nombres de tablas y columnas en snake_case con `EFCore.NamingConventions` | Los índices de data-model.md ya usan snake_case |
+| 2026-11-08 | XSRF con interceptor propio en Angular y proxy de desarrollo | El soporte nativo de Angular no envía el encabezado a otro origen (`api.serviya.mx`) |
 
 ## Pendientes abiertos
 
@@ -83,3 +101,4 @@
 | 2026-11-05 | `CLAUDE.md` y esta memoria del proyecto | commit inicial |
 | 2026-11-05 | Plan técnico: `plan.md`, `research.md`, `data-model.md`, `contracts/` y `quickstart.md`; constitución v1.0.1 | ver `git log` |
 | 2026-11-05 | Repositorio subido a GitHub (`jan039795-arch/serviya`, privado) por el usuario | cde93cb |
+| 2026-11-08 | `tasks.md` con 242 tareas en 12 fases; ajustes en `contracts/api.md` y `data-model.md` (ver decisiones del 2026-11-08) | ver `git log` |

@@ -55,6 +55,7 @@ módulo no hace consultas a las tablas de otro, solo usa sus servicios o referen
 | Disponibilidad | jsonb | Días y franjas horarias |
 | Estado | enum | Ver transiciones abajo (FR-009) |
 | PasoAlta | int | Último paso guardado (alta interrumpible) |
+| EnviadoRevisionEn | timestamptz? | Orden de la cola de revisión |
 | Insignias | text[] | `IdentidadVerificada`, `AntecedentesPresentados` |
 | PromedioCalidad, PromedioPrecio, PromedioPuntualidad, PromedioTrato | numeric(3,2) | Recalculados al publicar reseñas |
 | TotalResenas | int | |
@@ -122,6 +123,17 @@ un documento vigente por tipo. La carta en `Aprobado` otorga la insignia, y al v
 `OtorgarRolAdmin`, `Reembolsar`), `EntidadTipo`, `EntidadId`, `Detalle` (jsonb, **sin datos
 personales**), `Ip`, `CreadoEn`. Tabla de solo inserción: el usuario de base de datos de la app no
 tiene permiso de `UPDATE` ni `DELETE` sobre ella.
+
+---
+
+## Archivos (`archivos`)
+
+### ArchivoSubido (R3)
+
+`Id`, `UsuarioId`, `Destino` (`Documento`, `Portafolio`, `Chat`, `Calificacion`), `Bucket`, `ClaveObjeto`
+(GUID), `TipoContenido`, `TamanoBytesDeclarado`, `ExpiraEn` (10 min), `ConsumidoEn?`. Lo crea la emisión de la
+URL de subida; al usar el `archivoId` la API verifica que sea del usuario, no esté vencido ni consumido, exista
+en el bucket, no supere el tamaño declarado y su firma coincida con el tipo. Lo administra `ServiYa.Comun`.
 
 ---
 
