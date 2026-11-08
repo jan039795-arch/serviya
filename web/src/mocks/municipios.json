@@ -1,0 +1,38 @@
+[
+  {
+    "id": "b0000000-0000-7000-8000-000000000001",
+    "claveInegi": "99001",
+    "nombre": "Valle Alto",
+    "estado": "Estado de Prueba"
+  },
+  {
+    "id": "b0000000-0000-7000-8000-000000000002",
+    "claveInegi": "99002",
+    "nombre": "San Miguel del Río",
+    "estado": "Estado de Prueba"
+  },
+  {
+    "id": "b0000000-0000-7000-8000-000000000003",
+    "claveInegi": "99003",
+    "nombre": "Santa Lucía",
+    "estado": "Estado de Prueba"
+  },
+  {
+    "id": "b0000000-0000-7000-8000-000000000004",
+    "claveInegi": "99004",
+    "nombre": "Lomas del Sol",
+    "estado": "Estado de Prueba"
+  },
+  {
+    "id": "b0000000-0000-7000-8000-000000000005",
+    "claveInegi": "99005",
+    "nombre": "Puerto Nuevo",
+    "estado": "Estado de Prueba"
+  },
+  {
+    "id": "b0000000-0000-7000-8000-000000000006",
+    "claveInegi": "99006",
+    "nombre": "Real de Minas",
+    "estado": "Estado de Prueba"
+  }
+]

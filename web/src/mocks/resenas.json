@@ -1,0 +1,477 @@
+[
+  {
+    "id": "d0000000-0000-7000-8000-000000000001",
+    "prestadorId": "c0000000-0000-7000-8000-000000000001",
+    "autor": "Ana G.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-10T18:00:00Z",
+    "comentario": "Muy puntual y dejó todo limpio.",
+    "respuesta": "¡Gracias por su confianza!"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000002",
+    "prestadorId": "c0000000-0000-7000-8000-000000000001",
+    "autor": "Luis M.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-11T18:00:00Z",
+    "comentario": "Buen precio y explicó todo."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000003",
+    "prestadorId": "c0000000-0000-7000-8000-000000000001",
+    "autor": "Carmen R.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-12T18:00:00Z",
+    "comentario": "Lo recomiendo, resolvió rápido."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000004",
+    "prestadorId": "c0000000-0000-7000-8000-000000000002",
+    "autor": "Luis M.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-11T18:00:00Z",
+    "comentario": "Buen precio y explicó todo."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000005",
+    "prestadorId": "c0000000-0000-7000-8000-000000000002",
+    "autor": "Carmen R.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-12T18:00:00Z",
+    "comentario": "Lo recomiendo, resolvió rápido."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000006",
+    "prestadorId": "c0000000-0000-7000-8000-000000000002",
+    "autor": "Diego P.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-13T18:00:00Z",
+    "comentario": "Llegó un poco tarde pero el trabajo quedó bien."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000007",
+    "prestadorId": "c0000000-0000-7000-8000-000000000003",
+    "autor": "Carmen R.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-12T18:00:00Z",
+    "comentario": "Lo recomiendo, resolvió rápido."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000008",
+    "prestadorId": "c0000000-0000-7000-8000-000000000003",
+    "autor": "Diego P.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-13T18:00:00Z",
+    "comentario": "Llegó un poco tarde pero el trabajo quedó bien."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000009",
+    "prestadorId": "c0000000-0000-7000-8000-000000000003",
+    "autor": "Elena S.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-14T18:00:00Z",
+    "comentario": "Excelente trato."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000010",
+    "prestadorId": "c0000000-0000-7000-8000-000000000004",
+    "autor": "Diego P.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-13T18:00:00Z",
+    "comentario": "Llegó un poco tarde pero el trabajo quedó bien.",
+    "respuesta": "¡Gracias por su confianza!"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000011",
+    "prestadorId": "c0000000-0000-7000-8000-000000000004",
+    "autor": "Elena S.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-14T18:00:00Z",
+    "comentario": "Excelente trato."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000012",
+    "prestadorId": "c0000000-0000-7000-8000-000000000004",
+    "autor": "Raúl T.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-15T18:00:00Z"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000013",
+    "prestadorId": "c0000000-0000-7000-8000-000000000005",
+    "autor": "Elena S.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-14T18:00:00Z",
+    "comentario": "Excelente trato."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000014",
+    "prestadorId": "c0000000-0000-7000-8000-000000000006",
+    "autor": "Raúl T.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-15T18:00:00Z"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000015",
+    "prestadorId": "c0000000-0000-7000-8000-000000000006",
+    "autor": "Ana G.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-16T18:00:00Z",
+    "comentario": "Muy puntual y dejó todo limpio."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000016",
+    "prestadorId": "c0000000-0000-7000-8000-000000000006",
+    "autor": "Luis M.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-17T18:00:00Z",
+    "comentario": "Buen precio y explicó todo."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000017",
+    "prestadorId": "c0000000-0000-7000-8000-000000000007",
+    "autor": "Ana G.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 4,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-16T18:00:00Z",
+    "comentario": "Muy puntual y dejó todo limpio.",
+    "respuesta": "¡Gracias por su confianza!"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000018",
+    "prestadorId": "c0000000-0000-7000-8000-000000000007",
+    "autor": "Luis M.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 3,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-17T18:00:00Z",
+    "comentario": "Buen precio y explicó todo."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000019",
+    "prestadorId": "c0000000-0000-7000-8000-000000000007",
+    "autor": "Carmen R.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 4,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-18T18:00:00Z",
+    "comentario": "Lo recomiendo, resolvió rápido."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000020",
+    "prestadorId": "c0000000-0000-7000-8000-000000000008",
+    "autor": "Luis M.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-17T18:00:00Z",
+    "comentario": "Buen precio y explicó todo."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000021",
+    "prestadorId": "c0000000-0000-7000-8000-000000000008",
+    "autor": "Carmen R.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-18T18:00:00Z",
+    "comentario": "Lo recomiendo, resolvió rápido."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000022",
+    "prestadorId": "c0000000-0000-7000-8000-000000000008",
+    "autor": "Diego P.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-19T18:00:00Z",
+    "comentario": "Llegó un poco tarde pero el trabajo quedó bien."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000023",
+    "prestadorId": "c0000000-0000-7000-8000-000000000009",
+    "autor": "Carmen R.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 4,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-18T18:00:00Z",
+    "comentario": "Lo recomiendo, resolvió rápido."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000024",
+    "prestadorId": "c0000000-0000-7000-8000-000000000009",
+    "autor": "Diego P.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 3,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-19T18:00:00Z",
+    "comentario": "Llegó un poco tarde pero el trabajo quedó bien."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000025",
+    "prestadorId": "c0000000-0000-7000-8000-000000000009",
+    "autor": "Elena S.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 4,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-20T18:00:00Z",
+    "comentario": "Excelente trato."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000026",
+    "prestadorId": "c0000000-0000-7000-8000-000000000010",
+    "autor": "Diego P.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-19T18:00:00Z",
+    "comentario": "Llegó un poco tarde pero el trabajo quedó bien.",
+    "respuesta": "¡Gracias por su confianza!"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000027",
+    "prestadorId": "c0000000-0000-7000-8000-000000000010",
+    "autor": "Elena S.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-20T18:00:00Z",
+    "comentario": "Excelente trato."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000028",
+    "prestadorId": "c0000000-0000-7000-8000-000000000010",
+    "autor": "Raúl T.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-21T18:00:00Z"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000029",
+    "prestadorId": "c0000000-0000-7000-8000-000000000011",
+    "autor": "Elena S.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-20T18:00:00Z",
+    "comentario": "Excelente trato."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000030",
+    "prestadorId": "c0000000-0000-7000-8000-000000000011",
+    "autor": "Raúl T.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 4,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-21T18:00:00Z"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000031",
+    "prestadorId": "c0000000-0000-7000-8000-000000000011",
+    "autor": "Ana G.",
+    "calificaciones": {
+      "calidad": 5,
+      "precioJusto": 5,
+      "puntualidad": 5,
+      "trato": 5
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-22T18:00:00Z",
+    "comentario": "Muy puntual y dejó todo limpio."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000032",
+    "prestadorId": "c0000000-0000-7000-8000-000000000012",
+    "autor": "Raúl T.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 4,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-21T18:00:00Z"
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000033",
+    "prestadorId": "c0000000-0000-7000-8000-000000000012",
+    "autor": "Ana G.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 3,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-22T18:00:00Z",
+    "comentario": "Muy puntual y dejó todo limpio."
+  },
+  {
+    "id": "d0000000-0000-7000-8000-000000000034",
+    "prestadorId": "c0000000-0000-7000-8000-000000000012",
+    "autor": "Luis M.",
+    "calificaciones": {
+      "calidad": 4,
+      "precioJusto": 4,
+      "puntualidad": 4,
+      "trato": 4
+    },
+    "fotosUrls": [],
+    "publicadaEn": "2026-10-23T18:00:00Z",
+    "comentario": "Buen precio y explicó todo."
+  }
+]

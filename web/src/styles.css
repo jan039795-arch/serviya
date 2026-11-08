@@ -151,3 +151,68 @@ textarea {
     scroll-behavior: auto !important;
   }
 }
+
+/* Botones (directiva `appBoton`, shared/ui/boton.ts) */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  min-height: var(--tactil-min);
+  padding: var(--espacio-2) var(--espacio-4);
+  border: 2px solid var(--color-primario);
+  border-radius: var(--radio);
+  background: var(--color-primario);
+  color: var(--color-sobre-primario);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.boton:hover {
+  background: var(--color-primario-oscuro);
+  border-color: var(--color-primario-oscuro);
+}
+
+.boton--secundario {
+  background: var(--color-fondo);
+  color: var(--color-primario);
+}
+
+.boton--secundario:hover {
+  background: #e8f0f8;
+  color: var(--color-primario-oscuro);
+}
+
+.boton--texto {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-primario);
+  text-decoration: underline;
+}
+
+.boton--texto:hover {
+  border-color: transparent;
+  background: #e8f0f8;
+}
+
+.boton--peligro {
+  border-color: var(--color-error);
+  background: var(--color-error);
+}
+
+.boton--peligro:hover {
+  border-color: #8c1d18;
+  background: #8c1d18;
+}
+
+.boton--ancho {
+  width: 100%;
+}
+
+.boton:disabled,
+.boton[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

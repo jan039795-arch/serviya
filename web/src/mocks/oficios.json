@@ -1,0 +1,74 @@
+[
+  {
+    "id": "a0000000-0000-7000-8000-000000000001",
+    "nombre": "Albañil",
+    "slug": "albanil",
+    "icono": "ladrillo"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000002",
+    "nombre": "Fontanero",
+    "slug": "fontanero",
+    "icono": "llave"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000003",
+    "nombre": "Electricista",
+    "slug": "electricista",
+    "icono": "rayo"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000004",
+    "nombre": "Carpintero",
+    "slug": "carpintero",
+    "icono": "serrucho"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000005",
+    "nombre": "Pintor",
+    "slug": "pintor",
+    "icono": "brocha"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000006",
+    "nombre": "Jardinero",
+    "slug": "jardinero",
+    "icono": "planta"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000007",
+    "nombre": "Chofer",
+    "slug": "chofer",
+    "icono": "auto"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000008",
+    "nombre": "Maestro particular",
+    "slug": "maestro-particular",
+    "icono": "libro"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000009",
+    "nombre": "Limpieza del hogar",
+    "slug": "limpieza-del-hogar",
+    "icono": "escoba"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000010",
+    "nombre": "Cuidado de niños",
+    "slug": "cuidado-de-ninos",
+    "icono": "nino"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000011",
+    "nombre": "Cuidado de adultos mayores",
+    "slug": "cuidado-de-adultos-mayores",
+    "icono": "manos"
+  },
+  {
+    "id": "a0000000-0000-7000-8000-000000000012",
+    "nombre": "Cerrajero",
+    "slug": "cerrajero",
+    "icono": "llave-puerta"
+  }
+]

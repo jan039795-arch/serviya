@@ -1,0 +1,97 @@
+[
+  {
+    "prestadorId": "c0000000-0000-7000-8000-000000000013",
+    "nombrePublico": "Héctor N.",
+    "enviadoEn": "2026-11-07T16:30:00Z",
+    "datosPersonales": {
+      "nombreCompleto": "Héctor Ficticio Núñez",
+      "fechaNacimiento": "1990-04-12",
+      "telefono": "+52 55 0000 0013",
+      "direccion": "Calle Inventada 123, El Mirador",
+      "coloniaBase": "El Mirador"
+    },
+    "documentos": [
+      {
+        "id": "f0000000-0000-7000-8000-000000000001",
+        "tipo": "IneFrente",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-ine-frente.svg"
+      },
+      {
+        "id": "f0000000-0000-7000-8000-000000000002",
+        "tipo": "IneReverso",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-ine-reverso.svg"
+      },
+      {
+        "id": "f0000000-0000-7000-8000-000000000003",
+        "tipo": "Selfie",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-selfie.svg"
+      },
+      {
+        "id": "f0000000-0000-7000-8000-000000000004",
+        "tipo": "ComprobanteDomicilio",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-domicilio.svg",
+        "fechaExpedicion": "2026-10-01"
+      },
+      {
+        "id": "f0000000-0000-7000-8000-000000000005",
+        "tipo": "CartaAntecedentes",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-antecedentes.svg",
+        "fechaExpedicion": "2026-09-15"
+      }
+    ],
+    "portafolio": [
+      {
+        "id": "90000000-0000-7000-8000-000000000001",
+        "tipo": "Foto",
+        "descripcion": "Recámara pintada",
+        "estadoModeracion": "Pendiente",
+        "url": "mocks/archivos/trabajo-ficticio-2.svg"
+      }
+    ]
+  },
+  {
+    "prestadorId": "c0000000-0000-7000-8000-000000000015",
+    "nombrePublico": "Gabriela O.",
+    "enviadoEn": "2026-11-08T09:10:00Z",
+    "datosPersonales": {
+      "nombreCompleto": "Gabriela Ficticia Ortiz",
+      "fechaNacimiento": "1995-08-30",
+      "telefono": "+52 55 0000 0015",
+      "direccion": "Avenida Imaginaria 45, Jardines",
+      "coloniaBase": "Jardines"
+    },
+    "documentos": [
+      {
+        "id": "f0000000-0000-7000-8000-000000000006",
+        "tipo": "IneFrente",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-ine-frente.svg"
+      },
+      {
+        "id": "f0000000-0000-7000-8000-000000000007",
+        "tipo": "IneReverso",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-ine-reverso.svg"
+      },
+      {
+        "id": "f0000000-0000-7000-8000-000000000008",
+        "tipo": "Selfie",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-selfie.svg"
+      },
+      {
+        "id": "f0000000-0000-7000-8000-000000000009",
+        "tipo": "ComprobanteDomicilio",
+        "estado": "Cargado",
+        "archivo": "mocks/archivos/documento-ficticio-domicilio.svg",
+        "fechaExpedicion": "2026-10-20"
+      }
+    ],
+    "portafolio": []
+  }
+]

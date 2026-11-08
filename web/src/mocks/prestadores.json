@@ -1,0 +1,997 @@
+[
+  {
+    "id": "c0000000-0000-7000-8000-000000000001",
+    "estado": "Aprobado",
+    "nombrePublico": "Juan P.",
+    "colonia": "Centro",
+    "municipioId": "b0000000-0000-7000-8000-000000000001",
+    "descripcion": "Reparo fugas, instalo tinacos y calentadores. Trabajo limpio y con garantía.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000002",
+        "aniosExperiencia": 12,
+        "tarifaMinCentavos": 35000,
+        "tarifaMaxCentavos": 60000,
+        "unidadTarifa": "Servicio"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000001",
+      "b0000000-0000-7000-8000-000000000002"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 6,
+        "desde": "09:00",
+        "hasta": "14:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada",
+      "AntecedentesPresentados"
+    ],
+    "promedios": {
+      "calidad": 4.8,
+      "precioJusto": 4.6,
+      "puntualidad": 4.7,
+      "trato": 4.9
+    },
+    "totalResenas": 23,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-2.svg",
+        "descripcion": "Trabajo terminado"
+      },
+      {
+        "url": "mocks/archivos/trabajo-ficticio-3.svg",
+        "descripcion": "Antes y después"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0001"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000002",
+    "estado": "Aprobado",
+    "nombrePublico": "María L.",
+    "colonia": "Las Flores",
+    "municipioId": "b0000000-0000-7000-8000-000000000001",
+    "descripcion": "Instalaciones eléctricas residenciales, contactos, apagadores y revisión de cortos.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000003",
+        "aniosExperiencia": 8,
+        "tarifaMinCentavos": 40000,
+        "tarifaMaxCentavos": 80000,
+        "unidadTarifa": "Servicio"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000001",
+      "b0000000-0000-7000-8000-000000000003"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 4.6,
+      "precioJusto": 4.4,
+      "puntualidad": 4.5,
+      "trato": 4.8
+    },
+    "totalResenas": 15,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-3.svg",
+        "descripcion": "Trabajo terminado"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0002"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000003",
+    "estado": "Aprobado",
+    "nombrePublico": "Roberto G.",
+    "colonia": "El Mirador",
+    "municipioId": "b0000000-0000-7000-8000-000000000002",
+    "descripcion": "Construcción, remodelación y aplanados. También pinto interiores y exteriores.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000001",
+        "aniosExperiencia": 20,
+        "tarifaMinCentavos": 70000,
+        "tarifaMaxCentavos": 90000,
+        "unidadTarifa": "Dia"
+      },
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000005",
+        "aniosExperiencia": 10,
+        "tarifaMinCentavos": 60000,
+        "tarifaMaxCentavos": 80000,
+        "unidadTarifa": "Dia"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000002",
+      "b0000000-0000-7000-8000-000000000004"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 6,
+        "desde": "09:00",
+        "hasta": "14:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada",
+      "AntecedentesPresentados"
+    ],
+    "promedios": {
+      "calidad": 4.7,
+      "precioJusto": 4.8,
+      "puntualidad": 4.3,
+      "trato": 4.6
+    },
+    "totalResenas": 31,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-4.svg",
+        "descripcion": "Trabajo terminado"
+      },
+      {
+        "url": "mocks/archivos/trabajo-ficticio-5.svg",
+        "descripcion": "Antes y después"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0003"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000004",
+    "estado": "Aprobado",
+    "nombrePublico": "Lucía H.",
+    "colonia": "Jardines",
+    "municipioId": "b0000000-0000-7000-8000-000000000003",
+    "descripcion": "Limpieza profunda de casas y departamentos. Llevo mis propios productos.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000009",
+        "aniosExperiencia": 6,
+        "tarifaMinCentavos": 45000,
+        "tarifaMaxCentavos": 60000,
+        "unidadTarifa": "Dia"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000003",
+      "b0000000-0000-7000-8000-000000000001"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 4.9,
+      "precioJusto": 4.7,
+      "puntualidad": 4.9,
+      "trato": 5.0
+    },
+    "totalResenas": 9,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-5.svg",
+        "descripcion": "Trabajo terminado"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0004"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000005",
+    "estado": "Aprobado",
+    "nombrePublico": "Pedro S.",
+    "colonia": "San José",
+    "municipioId": "b0000000-0000-7000-8000-000000000002",
+    "descripcion": "Destapo drenajes y cambio chapas. Atiendo urgencias en la zona.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000002",
+        "aniosExperiencia": 4,
+        "tarifaMinCentavos": 30000,
+        "tarifaMaxCentavos": 50000,
+        "unidadTarifa": "Servicio"
+      },
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000012",
+        "aniosExperiencia": 4,
+        "tarifaMinCentavos": 25000,
+        "tarifaMaxCentavos": 45000,
+        "unidadTarifa": "Servicio"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000002"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 6,
+        "desde": "09:00",
+        "hasta": "14:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 5.0,
+      "precioJusto": 5.0,
+      "puntualidad": 5.0,
+      "trato": 5.0
+    },
+    "totalResenas": 1,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-6.svg",
+        "descripcion": "Trabajo terminado"
+      },
+      {
+        "url": "mocks/archivos/trabajo-ficticio-1.svg",
+        "descripcion": "Antes y después"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0005"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000006",
+    "estado": "Aprobado",
+    "nombrePublico": "Ana M.",
+    "colonia": "Los Pinos",
+    "municipioId": "b0000000-0000-7000-8000-000000000004",
+    "descripcion": "Clases de matemáticas y física para secundaria y preparatoria.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000008",
+        "aniosExperiencia": 9,
+        "tarifaMinCentavos": 20000,
+        "tarifaMaxCentavos": 30000,
+        "unidadTarifa": "Hora"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000004",
+      "b0000000-0000-7000-8000-000000000005"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada",
+      "AntecedentesPresentados"
+    ],
+    "promedios": {
+      "calidad": 4.9,
+      "precioJusto": 4.8,
+      "puntualidad": 4.9,
+      "trato": 4.9
+    },
+    "totalResenas": 18,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-1.svg",
+        "descripcion": "Trabajo terminado"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0006"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000007",
+    "estado": "Aprobado",
+    "nombrePublico": "Carlos R.",
+    "colonia": "La Loma",
+    "municipioId": "b0000000-0000-7000-8000-000000000005",
+    "descripcion": "Muebles a la medida, clósets y reparación de puertas.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000004",
+        "aniosExperiencia": 15,
+        "tarifaMinCentavos": 50000,
+        "tarifaMaxCentavos": 120000,
+        "unidadTarifa": "Servicio"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000005",
+      "b0000000-0000-7000-8000-000000000006"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 6,
+        "desde": "09:00",
+        "hasta": "14:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 4.5,
+      "precioJusto": 4.2,
+      "puntualidad": 4.0,
+      "trato": 4.6
+    },
+    "totalResenas": 12,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-2.svg",
+        "descripcion": "Trabajo terminado"
+      },
+      {
+        "url": "mocks/archivos/trabajo-ficticio-3.svg",
+        "descripcion": "Antes y después"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0007"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000008",
+    "estado": "Aprobado",
+    "nombrePublico": "Rosa V.",
+    "colonia": "Centro",
+    "municipioId": "b0000000-0000-7000-8000-000000000001",
+    "descripcion": "Acompañamiento y cuidado de adultos mayores en casa, con experiencia en enfermería básica.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000011",
+        "aniosExperiencia": 11,
+        "tarifaMinCentavos": 8000,
+        "tarifaMaxCentavos": 12000,
+        "unidadTarifa": "Hora"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000001",
+      "b0000000-0000-7000-8000-000000000002",
+      "b0000000-0000-7000-8000-000000000003"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada",
+      "AntecedentesPresentados"
+    ],
+    "promedios": {
+      "calidad": 4.9,
+      "precioJusto": 4.7,
+      "puntualidad": 4.8,
+      "trato": 5.0
+    },
+    "totalResenas": 14,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-3.svg",
+        "descripcion": "Trabajo terminado"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0008"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000009",
+    "estado": "Aprobado",
+    "nombrePublico": "Miguel A.",
+    "colonia": "Arboledas",
+    "municipioId": "b0000000-0000-7000-8000-000000000006",
+    "descripcion": "Mantenimiento de jardines, poda de árboles y pasto.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000006",
+        "aniosExperiencia": 7,
+        "tarifaMinCentavos": 35000,
+        "tarifaMaxCentavos": 50000,
+        "unidadTarifa": "Dia"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000006"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 6,
+        "desde": "09:00",
+        "hasta": "14:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 4.4,
+      "precioJusto": 4.6,
+      "puntualidad": 4.2,
+      "trato": 4.5
+    },
+    "totalResenas": 7,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-4.svg",
+        "descripcion": "Trabajo terminado"
+      },
+      {
+        "url": "mocks/archivos/trabajo-ficticio-5.svg",
+        "descripcion": "Antes y después"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0009"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000010",
+    "estado": "Aprobado",
+    "nombrePublico": "Sofía T.",
+    "colonia": "Las Flores",
+    "municipioId": "b0000000-0000-7000-8000-000000000003",
+    "descripcion": "Cuido niños por horas, apoyo con tareas y actividades.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000010",
+        "aniosExperiencia": 5,
+        "tarifaMinCentavos": 7000,
+        "tarifaMaxCentavos": 10000,
+        "unidadTarifa": "Hora"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000003",
+      "b0000000-0000-7000-8000-000000000004"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 4.8,
+      "precioJusto": 4.7,
+      "puntualidad": 4.9,
+      "trato": 4.9
+    },
+    "totalResenas": 11,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-5.svg",
+        "descripcion": "Trabajo terminado"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0010"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000011",
+    "estado": "Aprobado",
+    "nombrePublico": "Jorge E.",
+    "colonia": "Industrial",
+    "municipioId": "b0000000-0000-7000-8000-000000000002",
+    "descripcion": "Electricidad y fontanería en una sola visita. Presupuesto sin costo.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000003",
+        "aniosExperiencia": 18,
+        "tarifaMinCentavos": 45000,
+        "tarifaMaxCentavos": 90000,
+        "unidadTarifa": "Servicio"
+      },
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000002",
+        "aniosExperiencia": 10,
+        "tarifaMinCentavos": 40000,
+        "tarifaMaxCentavos": 70000,
+        "unidadTarifa": "Servicio"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000001",
+      "b0000000-0000-7000-8000-000000000002",
+      "b0000000-0000-7000-8000-000000000004"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 6,
+        "desde": "09:00",
+        "hasta": "14:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 4.6,
+      "precioJusto": 4.5,
+      "puntualidad": 4.6,
+      "trato": 4.4
+    },
+    "totalResenas": 27,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-6.svg",
+        "descripcion": "Trabajo terminado"
+      },
+      {
+        "url": "mocks/archivos/trabajo-ficticio-1.svg",
+        "descripcion": "Antes y después"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0011"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000012",
+    "estado": "Aprobado",
+    "nombrePublico": "Fernando D.",
+    "colonia": "Real",
+    "municipioId": "b0000000-0000-7000-8000-000000000005",
+    "descripcion": "Traslados locales y foráneos, viajes al aeropuerto.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000007",
+        "aniosExperiencia": 13,
+        "tarifaMinCentavos": 60000,
+        "tarifaMaxCentavos": 90000,
+        "unidadTarifa": "Dia"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000005",
+      "b0000000-0000-7000-8000-000000000006",
+      "b0000000-0000-7000-8000-000000000001"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 4.3,
+      "precioJusto": 4.5,
+      "puntualidad": 4.1,
+      "trato": 4.6
+    },
+    "totalResenas": 6,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-1.svg",
+        "descripcion": "Trabajo terminado"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0012"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000013",
+    "estado": "EnRevision",
+    "nombrePublico": "Héctor N.",
+    "colonia": "El Mirador",
+    "municipioId": "b0000000-0000-7000-8000-000000000002",
+    "descripcion": "Pintura de interiores.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000005",
+        "aniosExperiencia": 3,
+        "tarifaMinCentavos": 50000,
+        "tarifaMaxCentavos": 70000,
+        "unidadTarifa": "Dia"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000002"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 6,
+        "desde": "09:00",
+        "hasta": "14:00"
+      }
+    ],
+    "insignias": [],
+    "promedios": {
+      "calidad": 0,
+      "precioJusto": 0,
+      "puntualidad": 0,
+      "trato": 0
+    },
+    "totalResenas": 0,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-2.svg",
+        "descripcion": "Trabajo terminado"
+      },
+      {
+        "url": "mocks/archivos/trabajo-ficticio-3.svg",
+        "descripcion": "Antes y después"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0013"
+  },
+  {
+    "id": "c0000000-0000-7000-8000-000000000014",
+    "estado": "Suspendido",
+    "nombrePublico": "Iván C.",
+    "colonia": "Centro",
+    "municipioId": "b0000000-0000-7000-8000-000000000001",
+    "descripcion": "Fontanería general.",
+    "oficios": [
+      {
+        "oficioId": "a0000000-0000-7000-8000-000000000002",
+        "aniosExperiencia": 9,
+        "tarifaMinCentavos": 30000,
+        "tarifaMaxCentavos": 50000,
+        "unidadTarifa": "Servicio"
+      }
+    ],
+    "cobertura": [
+      "b0000000-0000-7000-8000-000000000001"
+    ],
+    "disponibilidad": [
+      {
+        "dia": 1,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 2,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 3,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 4,
+        "desde": "08:00",
+        "hasta": "18:00"
+      },
+      {
+        "dia": 5,
+        "desde": "08:00",
+        "hasta": "18:00"
+      }
+    ],
+    "insignias": [
+      "IdentidadVerificada"
+    ],
+    "promedios": {
+      "calidad": 3.1,
+      "precioJusto": 3.4,
+      "puntualidad": 2.9,
+      "trato": 3.0
+    },
+    "totalResenas": 8,
+    "fotos": [
+      {
+        "url": "mocks/archivos/trabajo-ficticio-3.svg",
+        "descripcion": "Trabajo terminado"
+      }
+    ],
+    "telefonoFicticio": "+52 55 0000 0014"
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "cliente": {
+    "id": "e0000000-0000-7000-8000-000000000001",
+    "nombreCompleto": "Cliente Ficticio Uno",
+    "email": "cliente@ejemplo.test",
+    "roles": [
+      "Cliente"
+    ],
+    "estado": "Activo",
+    "esMayorDeEdad": true
+  },
+  "prestador": {
+    "id": "e0000000-0000-7000-8000-000000000002",
+    "nombreCompleto": "Prestador Ficticio Dos",
+    "email": "prestador@ejemplo.test",
+    "roles": [
+      "Cliente",
+      "Prestador"
+    ],
+    "estado": "Activo",
+    "esMayorDeEdad": true
+  },
+  "admin": {
+    "id": "e0000000-0000-7000-8000-000000000003",
+    "nombreCompleto": "Administración Ficticia",
+    "email": "admin@ejemplo.test",
+    "roles": [
+      "Cliente",
+      "Admin"
+    ],
+    "estado": "Activo",
+    "esMayorDeEdad": true
+  }
+}

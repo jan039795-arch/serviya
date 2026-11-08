@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-**Etapa 2 — Prototipo** (en curso). Fase 1 de `tasks.md` terminada (T001–T009).
+**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009) y la base del prototipo (T010–T018).
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -16,16 +16,26 @@
 - `web/`: Angular 22.2 con SSR, PWA, ESLint, Prettier, Vitest y Playwright 1.65 (Pixel 7 e iPhone 14);
   entornos con `mocks` por área y configuración `prototipo`; idioma es-MX; estilos base con contraste AA.
   Íconos de la PWA provisionales (los de Angular) hasta tener nombre y logotipo definitivos.
+- Base del prototipo: tipos de los contratos (`core/api/modelos.ts`), datos ficticios en `src/mocks/`
+  (12 oficios, 6 municipios inventados, 14 prestadores, 34 reseñas, 3 sesiones, 2 revisiones e
+  imágenes SVG "DOCUMENTO FICTICIO" que solo se sirven en desarrollo y prototipo),
+  `MockApiInterceptor` con rutas por área cargadas de forma diferida, `ErrorApi` y avisos,
+  `SesionService` y guards `canMatch`, armazón con navegación inferior y selector de rol del
+  prototipo, componentes de UI, pipe `mxn` y subida con compresión, avance y reintento.
+  39 pruebas unitarias y 6 E2E (Pixel 7 e iPhone 14) pasan.
 - Sin backend todavía. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. Fase 2 de `tasks.md`, en orden: T010 (`web/src/app/core/api/modelos.ts`), T011 (`web/src/mocks/*.json`),
-   T012 (`MockApiInterceptor`), T013 a T018 (errores, sesión y guards, armazón, UI compartida, pipe
-   `mxn`, subida de archivos); luego las pantallas T019 a T033 y el cierre T034 a T037.
-2. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
-3. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
+1. Pantallas del prototipo en `tasks.md`, en orden: T019 (cuenta: registro, verificar código, entrar,
+   recuperar; ampliar `core/mocks/handlers/cuentas.ts`), T020–T024 (alta del prestador en 10 pasos y
+   su manejador), T025 (revisión del administrador), T026–T029 (búsqueda y perfil público), T030–T033
+   (contacto, pago simulado y pase) y el cierre T034–T037.
+2. Cada pantalla reemplaza su ruta `Pendiente` en `web/src/app/app.routes.ts` por una ruta perezosa
+   de `features/` y registra su manejador en `web/src/app/core/mocks/rutas.ts`.
+3. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
+4. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
    la cuenta de desarrollador de Mercado Pago.
 
 ## Etapas del proyecto
@@ -33,7 +43,7 @@
 | # | Etapa | Estado |
 |---|---|---|
 | 1 | Definición (constitución, especificación, plan, tareas) | Terminada |
-| 2 | Prototipo móvil con datos ficticios | En curso (Fase 1 lista) |
+| 2 | Prototipo móvil con datos ficticios | En curso (base lista; faltan pantallas) |
 | 3 | Cuentas y perfiles | Pendiente |
 | 4 | Documentos y panel del administrador | Pendiente |
 | 5 | Búsqueda y perfil público | Pendiente |
@@ -74,6 +84,10 @@
 | 2026-11-08 | Los accesos obtenidos con pase vencen en el `FinEn` del pase | Coherente con US4 escenario 6 |
 | 2026-11-08 | Prototipo con `mocks` por área en `environment` | Conectar la API real área por área sin tocar componentes |
 | 2026-11-08 | En el prototipo todas las rutas se renderizan en el navegador (`RenderMode.Client`) | El SSR del perfil público llega en T094; evita prerenderizar con datos ficticios |
+| 2026-11-08 | Subidas con `XMLHttpRequest` en `Subidor`, no con `HttpClient` | `withFetch()` no da avance de subida, y la URL firmada de R2 no debe recibir la cookie ni el XSRF de los interceptores |
+| 2026-11-08 | Guards como `canMatch` | La ruta restringida no carga su código sin permiso (regla de Angular del proyecto) |
+| 2026-11-08 | Presupuesto de Angular en tamaño sin comprimir: aviso 600 kB, error 1 MB | Angular mide sin gzip; el límite del plan es 300 KB gzip (hoy 89 KB) y se mide en T145 |
+| 2026-11-08 | Imágenes ficticias en SVG y servidas solo en desarrollo y prototipo | Sin herramientas extra; no llegan al paquete de producción |
 
 ## Pendientes abiertos
 
@@ -96,3 +110,4 @@
 | 2026-11-05 | Repositorio subido a GitHub (`jan039795-arch/serviya`, privado) por el usuario | cde93cb |
 | 2026-11-08 | `tasks.md` generado con `/speckit-tasks`: 151 tareas en 13 fases | ver `git log` |
 | 2026-11-08 | Fase 1: proyecto `web/` (T001–T009); lint, pruebas unitarias, compilación y E2E en celular pasan | ver `git log` |
+| 2026-11-08 | Base del prototipo (T010–T018): modelos, datos ficticios, simulación, errores, sesión, armazón, UI y subida | ver `git log` |
