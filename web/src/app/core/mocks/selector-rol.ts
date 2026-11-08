@@ -10,7 +10,7 @@ import { PerfilPrototipo, PrototipoService } from './prototipo';
 @Component({
   selector: 'app-selector-rol',
   template: `
-    <label class="selector" data-testid="selector-rol">
+    <label class="selector" data-testid="selector-rol" [attr.data-perfil]="perfil()">
       <span>Prototipo · ver como</span>
       <select [value]="perfil()" (change)="cambiar($event)" [disabled]="cambiando()">
         <option value="visitante">Visitante</option>

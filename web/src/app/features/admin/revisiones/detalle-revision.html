@@ -1,0 +1,133 @@
+<div class="contenedor">
+  <p><a routerLink="/admin/revisiones">← Volver a la cola</a></p>
+
+  @if (perfil.isLoading() && !perfil.hasValue()) {
+    <app-cargando texto="Cargando el perfil…" />
+  } @else if (perfil.error()) {
+    <p class="alerta alerta--error" role="alert">No pudimos cargar el perfil.</p>
+    <button appBoton type="button" (click)="recargar()">Reintentar</button>
+  } @else if (perfil.value(); as datos) {
+    <h1 data-testid="titulo-revision">{{ datos.nombrePublico }}</h1>
+    @if (!editable()) {
+      <p class="alerta alerta--info">Este perfil ya no está en revisión ({{ datos.estado }}).</p>
+    }
+    @if (error(); as mensaje) {
+      <p class="alerta alerta--error" role="alert">{{ mensaje }}</p>
+    }
+
+    <section aria-labelledby="titulo-datos">
+      <h2 id="titulo-datos">Datos personales</h2>
+      <p class="texto-suave">Privados: solo para verificar la identidad. No los compartas.</p>
+      @if (datos.datosPersonales; as personales) {
+        <dl class="datos">
+          <dt>Nombre</dt>
+          <dd>{{ personales.nombreCompleto }}</dd>
+          <dt>Nacimiento</dt>
+          <dd>
+            {{ personales.fechaNacimiento }}
+            @if (edad() !== null) {
+              ({{ edad() }} años)
+            }
+          </dd>
+          <dt>Teléfono</dt>
+          <dd>{{ personales.telefono }}</dd>
+          <dt>Dirección</dt>
+          <dd>{{ personales.direccion }}</dd>
+          <dt>Colonia</dt>
+          <dd>{{ personales.coloniaBase }}</dd>
+        </dl>
+      }
+      @if (edad() !== null && edad()! < 18) {
+        <p class="alerta alerta--error">Es menor de edad: no se puede aprobar.</p>
+      }
+    </section>
+
+    <section aria-labelledby="titulo-oficios">
+      <h2 id="titulo-oficios">Oficios y zona</h2>
+      <ul>
+        @for (oficio of datos.oficios; track oficio.oficioId) {
+          <li>
+            {{ nombresOficios().get(oficio.oficioId) ?? 'Oficio' }} ·
+            {{ oficio.aniosExperiencia }} años · {{ oficio.tarifaMinCentavos | mxn }} a
+            {{ oficio.tarifaMaxCentavos | mxn }}
+          </li>
+        } @empty {
+          <li>Sin oficios capturados.</li>
+        }
+      </ul>
+      <p><strong>Cobertura:</strong> {{ nombresCobertura() || 'Sin capturar' }}</p>
+      @if (datos.disponibilidad.length > 0) {
+        <p>
+          <strong>Horario:</strong>
+          @for (franja of datos.disponibilidad; track franja.dia; let ultimo = $last) {
+            {{ nombreDia(franja.dia) }} {{ franja.desde }}–{{ franja.hasta
+            }}{{ ultimo ? '' : ', ' }}
+          }
+        </p>
+      }
+      @if (datos.descripcion) {
+        <p><strong>Descripción:</strong> {{ datos.descripcion }}</p>
+      }
+    </section>
+
+    <section aria-labelledby="titulo-documentos">
+      <h2 id="titulo-documentos">Documentos</h2>
+      @for (documento of datos.documentos; track documento.id) {
+        <app-documento-revision
+          [documento]="documento"
+          [editable]="editable()"
+          (cambio)="recargar()"
+        />
+      } @empty {
+        <p>No subió documentos.</p>
+      }
+    </section>
+
+    <section aria-labelledby="titulo-portafolio">
+      <h2 id="titulo-portafolio">Video y fotos</h2>
+      <p class="texto-suave">Rechaza las que muestren teléfonos, correos o datos de contacto.</p>
+      <ul class="portafolio">
+        @for (elemento of datos.portafolio; track elemento.id) {
+          <li>
+            @if (elemento.url) {
+              <img [src]="elemento.url" [alt]="elemento.descripcion || 'Foto de trabajo'" />
+            } @else {
+              <p>{{ elemento.tipo === 'Video' ? 'Video de presentación' : 'Foto' }}</p>
+            }
+            <p>{{ elemento.descripcion || 'Sin descripción' }} · {{ elemento.estadoModeracion }}</p>
+            @if (editable() && elemento.estadoModeracion === 'Pendiente') {
+              <app-decision-con-motivo
+                [opciones]="opcionesPortafolio"
+                [contexto]="elemento.descripcion || 'foto'"
+                [ocupado]="decidiendo()"
+                (decidir)="decidirPortafolio(elemento, $event)"
+              />
+            }
+          </li>
+        } @empty {
+          <li>Sin fotos ni video.</li>
+        }
+      </ul>
+    </section>
+
+    @if (editable()) {
+      <section
+        class="decision-final"
+        aria-labelledby="titulo-decision"
+        data-testid="decision-perfil"
+      >
+        <h2 id="titulo-decision">Decisión sobre el perfil</h2>
+        <p class="texto-suave">
+          Para aprobar, todos los documentos obligatorios deben estar aprobados. Para pedir
+          correcciones, marca antes qué documento debe corregirse.
+        </p>
+        <app-decision-con-motivo
+          [opciones]="opcionesPerfil()"
+          contexto="perfil completo"
+          [ocupado]="decidiendo()"
+          (decidir)="decidirPerfil($event)"
+        />
+      </section>
+    }
+  }
+</div>

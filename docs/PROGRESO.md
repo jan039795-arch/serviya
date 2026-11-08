@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) y las pantallas de US1 para el prestador (T019–T024).
+**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) y todas las pantallas de US1 (T019–T025).
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -28,19 +28,25 @@
   fecha de expedición, video y fotos, revisión con faltantes y estado del perfil con corrección de
   documentos señalados. Los manejadores simulados de cuentas, catálogos y prestadores comparten su
   estado en `core/mocks/estado/` (usuarios y perfiles en `localStorage`; nunca contraseñas).
-- 54 pruebas unitarias y 26 E2E (Pixel 7 e iPhone 14) pasan.
+- Revisión del administrador (T025): cola por fecha de envío con aviso de "Corrección reenviada",
+  detalle con datos privados, visor de documentos que registra `VerDocumento` en una bitácora
+  simulada, decisiones por documento y por foto con motivo obligatorio, y decisión del perfil
+  (aprobar solo con los obligatorios aprobados, pedir correcciones o rechazar). La cola se siembra
+  con `revisiones.json` y comparte estado con el alta, así que el flujo completo de US1 se prueba
+  de punta a punta en E2E.
+- 55 pruebas unitarias y 32 E2E (Pixel 7 e iPhone 14) pasan.
 - Sin backend todavía. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. T025: revisión del administrador en `web/src/app/features/admin/revisiones/` (`cola.ts`,
-   `detalle-revision.ts`) y su manejador `web/src/app/core/mocks/handlers/admin.ts`. Debe leer los
-   perfiles enviados de `core/mocks/estado/perfiles.ts` además de `src/mocks/revisiones.json`, y sus
-   decisiones (aprobar, pedir corrección con motivo, rechazar) cambian ese mismo estado para que el
-   prestador las vea en `/alta/estado`.
-2. Después: búsqueda y perfil público (T026–T029), contacto y pase (T030–T033) y cierre del prototipo
-   (T034–T037). Cada pantalla reemplaza su ruta `Pendiente` en `web/src/app/app.routes.ts`.
+1. US2 en el prototipo (T026–T029): `web/src/app/features/busqueda/` (`inicio.ts`, `resultados.ts`,
+   `perfil-publico.ts`) y el manejador `web/src/app/core/mocks/handlers/busqueda.ts` (ampliar o
+   reemplazar `handlers/catalogos.ts`). La búsqueda debe incluir los 12 aprobados de
+   `src/mocks/prestadores.json` y también los perfiles aprobados en el prototipo
+   (`core/mocks/estado/perfiles.ts`), sin exponer nunca teléfono, correo, dirección ni documentos.
+   Reemplazar la ruta `Pendiente` de `''` en `web/src/app/app.routes.ts`.
+2. Después: contacto y pase (T030–T033) y cierre del prototipo (T034–T037).
 3. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
 4. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
    la cuenta de desarrollador de Mercado Pago.
@@ -99,6 +105,8 @@
 | 2026-11-08 | Un menor puede registrarse, pero no pagar ni enviar su perfil (aviso en el registro y bloqueo al enviar) | US1 escenario 7 y FR-004; el bloqueo real está en la API |
 | 2026-11-08 | El alta usa una ruta por paso (`/alta/1` a `/alta/10`) y `/alta/estado` | El botón Atrás del celular funciona y se puede retomar con un enlace |
 | 2026-11-08 | Se agregó `motivoEstado` a `PerfilPropio` | El prestador debe ver el motivo de rechazo o corrección del perfil (FR-011) |
+| 2026-11-08 | `POST /admin/prestadores/{id}/decision` acepta `RequiereCorreccion` (contrato actualizado) | El contrato no tenía cómo devolver el perfil al prestador tras marcar documentos para corregir (US1, escenario 4) |
+| 2026-11-08 | El documento solo se muestra al pulsar "Ver documento", nunca al abrir el perfil | Cada vista queda en la bitácora (FR-016); abrir el perfil no debe generar consultas innecesarias |
 
 ## Pendientes abiertos
 
@@ -123,3 +131,4 @@
 | 2026-11-08 | Fase 1: proyecto `web/` (T001–T009); lint, pruebas unitarias, compilación y E2E en celular pasan | ver `git log` |
 | 2026-11-08 | Base del prototipo (T010–T018): modelos, datos ficticios, simulación, errores, sesión, armazón, UI y subida | ver `git log` |
 | 2026-11-08 | Pantallas de cuenta y alta del prestador del prototipo (T019–T024) | ver `git log` |
+| 2026-11-08 | Revisión del administrador en el prototipo (T025) y contrato de decisión del perfil | ver `git log` |

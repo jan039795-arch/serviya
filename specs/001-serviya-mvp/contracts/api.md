@@ -102,11 +102,11 @@ El regreso de Checkout Pro llega a `https://serviya.mx/pago/resultado?pagoId=…
 
 | Método y ruta | Cuerpo / respuesta | Requisito |
 |---|---|---|
-| `GET /admin/revisiones?estado=EnRevision` | Cola de perfiles por fecha de envío | FR-010 |
-| `GET /admin/prestadores/{id}` | Perfil completo con documentos (sin URLs) | FR-010 |
+| `GET /admin/revisiones?estado=EnRevision` | → `RevisionPendiente[] { prestadorId, nombrePublico, enviadoEn, esReenvio, documentosPorRevisar }`, del envío más antiguo al más nuevo | FR-010 |
+| `GET /admin/prestadores/{id}` | → `PerfilRevision`: perfil completo con datos privados y documentos (sin URLs) | FR-010 |
 | `POST /admin/documentos/{id}/ver` | → `{ url, expiraEn }` (5 min); **registra `VerDocumento`** | FR-016 |
 | `POST /admin/documentos/{id}/decision` | `{ decision: "Aprobar"\|"RequiereCorreccion"\|"Rechazar", motivo? }` (motivo obligatorio salvo al aprobar) | FR-010, FR-011 |
-| `POST /admin/prestadores/{id}/decision` | `{ decision: "Aprobar"\|"Rechazar", motivo? }`; 422 si falta aprobar documentos | FR-009, FR-010 |
+| `POST /admin/prestadores/{id}/decision` | `{ decision: "Aprobar"\|"RequiereCorreccion"\|"Rechazar", motivo? }`; `Aprobar` → 422 si falta aprobar documentos obligatorios; `RequiereCorreccion` → 422 si ningún documento está marcado para corregir; motivo obligatorio al rechazar | FR-009, FR-010 |
 | `POST /admin/portafolio/{id}/decision` | `{ decision, motivo? }` | FR-012 |
 | `GET /admin/reportes?estado` · `POST /admin/reportes/{id}/resolver` | `{ resolucion, ocultarContenido? }` | FR-041 |
 | `POST /admin/usuarios/{id}/suspender` · `/reactivar` | `{ motivo }` | FR-041, FR-043 |

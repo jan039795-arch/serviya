@@ -7,8 +7,9 @@ import {
   TipoDocumento,
 } from '../../api/modelos';
 import { diasDesde, esMayorDeEdad } from '../../../shared/fechas/edad';
+import { nombrePublico } from '../../../shared/nombre-publico';
 import { PREFIJO_SUBIDA_SIMULADA } from '../../../shared/subida/subidor';
-import { asegurarPerfil, guardarPerfil } from '../estado/perfiles';
+import { asegurarPerfil, guardarPerfil, marcarEnviado } from '../estado/perfiles';
 import { nuevoId, usuarioActual, UsuarioSimulado } from '../estado/usuarios';
 import {
   creado,
@@ -108,10 +109,14 @@ function guardarPaso(usuario: UsuarioSimulado, perfil: PerfilPropio, cuerpo: unk
     return problema(400, 'Revisa los datos marcados.', { errors: errores });
   }
   const { paso, ...resto } = cambios;
+  const nombre = resto.datosPersonales
+    ? { nombrePublico: nombrePublico(resto.datosPersonales.nombreCompleto) }
+    : {};
   return ok(
     guardarPerfil(usuario.id, {
       ...perfil,
       ...resto,
+      ...nombre,
       pasoAlta: Math.max(perfil.pasoAlta, paso),
     }),
   );
@@ -258,6 +263,7 @@ function enviarRevision(usuario: UsuarioSimulado, perfil: PerfilPropio): Respues
     });
   }
   guardarPerfil(usuario.id, { ...perfil, estado: 'EnRevision', motivoEstado: undefined });
+  marcarEnviado(usuario.id, perfil.estado === 'RequiereCorreccion');
   return sinContenido();
 }
 

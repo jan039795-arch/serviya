@@ -48,9 +48,7 @@ export const routes: Routes = [
       {
         path: 'admin',
         canMatch: [conRol('Admin')],
-        component: Pendiente,
-        data: { titulo: 'Administración' },
-        title: 'Administración · ServiYa',
+        loadChildren: () => import('./features/admin/admin.routes').then((m) => m.rutasAdmin),
       },
       { path: 'sin-permiso', component: SinPermiso, title: 'Sin permiso · ServiYa' },
       { path: '**', component: NoEncontrada, title: 'Página no encontrada · ServiYa' },

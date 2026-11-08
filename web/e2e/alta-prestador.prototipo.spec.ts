@@ -1,10 +1,9 @@
 import { expect, Page, test } from '@playwright/test';
 import { haceDias, PNG_FICTICIO } from './apoyo/archivos';
+import { verComo } from './apoyo/prototipo';
 
 async function entrarComoPrestador(page: Page): Promise<void> {
-  await page.goto('/');
-  await page.getByTestId('selector-rol').getByRole('combobox').selectOption('prestador');
-  await expect(page.getByTestId('selector-rol').getByRole('combobox')).toHaveValue('prestador');
+  await verComo(page, 'prestador');
 }
 
 async function continuar(page: Page, siguiente: string): Promise<void> {
@@ -109,8 +108,7 @@ test('un menor de edad no puede enviar su perfil a revisión', async ({ page }) 
 });
 
 test('un cliente sin rol de prestador no entra al alta', async ({ page }) => {
-  await page.goto('/');
-  await page.getByTestId('selector-rol').getByRole('combobox').selectOption('cliente');
+  await verComo(page, 'cliente');
   await page.goto('/alta');
   await expect(page.getByTestId('sin-permiso')).toBeVisible();
 });

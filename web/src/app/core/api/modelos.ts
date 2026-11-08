@@ -304,3 +304,44 @@ export interface ContactoDesbloqueado {
   readonly telefono: string;
   readonly whatsapp?: string;
 }
+
+// ---------- Administración: revisión de perfiles ----------
+
+export type DecisionDocumento = 'Aprobar' | 'RequiereCorreccion' | 'Rechazar';
+export type DecisionPerfil = 'Aprobar' | 'RequiereCorreccion' | 'Rechazar';
+export type DecisionModeracion = 'Aprobar' | 'Rechazar';
+
+/** Elemento de `GET /admin/revisiones`: perfiles en revisión, del más antiguo al más nuevo. */
+export interface RevisionPendiente {
+  readonly prestadorId: string;
+  readonly nombrePublico: string;
+  readonly enviadoEn: string;
+  readonly esReenvio: boolean;
+  readonly documentosPorRevisar: number;
+}
+
+export interface DocumentoRevision extends DocumentoPropio {
+  readonly tipoContenido: string;
+}
+
+/** `GET /admin/prestadores/{id}`: perfil completo con documentos, pero sin URLs de archivos. */
+export interface PerfilRevision {
+  readonly prestadorId: string;
+  readonly nombrePublico: string;
+  readonly estado: EstadoPerfil;
+  readonly enviadoEn?: string;
+  readonly datosPersonales?: DatosPersonales;
+  readonly oficios: readonly OficioDelPrestador[];
+  readonly cobertura: readonly string[];
+  readonly disponibilidad: readonly FranjaDisponibilidad[];
+  readonly descripcion: string;
+  readonly documentos: readonly DocumentoRevision[];
+  readonly portafolio: readonly ElementoPortafolioPropio[];
+  readonly insignias: readonly Insignia[];
+}
+
+/** URL firmada de 5 minutos para ver un documento (FR-016). */
+export interface UrlDocumento {
+  readonly url: string;
+  readonly expiraEn: string;
+}

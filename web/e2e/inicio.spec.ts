@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { verComo } from './apoyo/prototipo';
 
 test('la página de inicio carga en español con la navegación principal', async ({ page }) => {
   await page.goto('/');
@@ -19,11 +20,11 @@ test('el selector del prototipo cambia el rol y protege la administración', asy
   await page.goto('/admin');
   await expect(page).toHaveURL(/\/entrar/);
 
-  await page.getByTestId('selector-rol').getByRole('combobox').selectOption('cliente');
+  await verComo(page, 'cliente');
   await page.goto('/admin');
   await expect(page.getByTestId('sin-permiso')).toBeVisible();
 
-  await page.getByTestId('selector-rol').getByRole('combobox').selectOption('admin');
+  await verComo(page, 'admin');
   await page.goto('/admin');
-  await expect(page.getByRole('heading', { name: 'Administración' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Perfiles por revisar' })).toBeVisible();
 });
