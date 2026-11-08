@@ -301,3 +301,36 @@ fieldset.opciones legend {
   color: var(--color-texto-suave);
   font-size: var(--texto-chico);
 }
+
+/* Opciones de pago (features/contacto) */
+.aviso-pago {
+  margin-bottom: var(--espacio-4);
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 2px solid var(--color-aviso);
+  border-radius: var(--radio);
+  background: #fdf3e2;
+}
+
+.opcion-pago {
+  display: block;
+  margin-bottom: var(--espacio-4);
+  padding: var(--espacio-4);
+  border: 1px solid #d5dbe1;
+  border-radius: var(--radio);
+}
+
+.opcion-pago--destacada {
+  border: 2px solid var(--color-primario);
+}
+
+.opcion-pago h2 {
+  margin-bottom: var(--espacio-1);
+}
+
+.opcion-pago ul {
+  padding-left: var(--espacio-6);
+}
+
+.precio {
+  font-size: var(--texto-grande);
+}

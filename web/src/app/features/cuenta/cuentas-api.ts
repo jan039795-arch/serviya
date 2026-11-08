@@ -18,6 +18,8 @@ export class CuentasApi {
   readonly correoPorVerificar = signal('');
   /** Rol elegido al registrarse, para saber a dónde llevar al usuario tras verificar. */
   readonly rolRegistrado = signal<'Cliente' | 'Prestador'>('Cliente');
+  /** Ruta a la que se regresa tras verificar el correo (por ejemplo, la página de contactar). */
+  readonly volverTrasVerificar = signal<string | null>(null);
 
   async registrar(solicitud: SolicitudRegistro): Promise<void> {
     await firstValueFrom(this.http.post<void>(this.url('/cuentas/registro'), solicitud));

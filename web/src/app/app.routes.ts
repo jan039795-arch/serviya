@@ -18,10 +18,9 @@ export const routes: Routes = [
           import('./features/busqueda/busqueda.routes').then((m) => m.rutasBusqueda),
       },
       {
-        path: 'contactar/:prestadorId',
-        component: Pendiente,
-        data: { titulo: 'Contactar' },
-        title: 'Contactar · ServiYa',
+        path: '',
+        loadChildren: () =>
+          import('./features/contacto/contacto.routes').then((m) => m.rutasContacto),
       },
       {
         path: '',

@@ -37,6 +37,8 @@ export class Registro implements OnInit {
 
   /** `?rol=prestador` llega desde "Quiero ofrecer mis servicios". */
   readonly rol = input<string>();
+  /** `?volver=` que llega desde "Entrar"; se valida al usarlo. */
+  readonly volver = input<string>();
 
   protected readonly modelo = signal<DatosRegistro>({
     email: '',
@@ -86,6 +88,7 @@ export class Registro implements OnInit {
     if (this.rol() === 'prestador') {
       this.modelo.update((m) => ({ ...m, rol: 'Prestador' }));
     }
+    this.cuentas.volverTrasVerificar.set(this.volver() ?? null);
   }
 
   protected async enviar(evento: Event): Promise<void> {

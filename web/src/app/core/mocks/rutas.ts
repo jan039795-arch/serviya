@@ -1,3 +1,4 @@
+import { rutasAccesos } from './handlers/accesos';
 import { rutasAdmin } from './handlers/admin';
 import { rutasBusqueda } from './handlers/busqueda';
 import { rutasCatalogos } from './handlers/catalogos';
@@ -8,12 +9,12 @@ import { RutaSimulada } from './simulacion';
 /**
  * Todas las rutas simuladas del prototipo. Este módulo se carga de forma diferida desde
  * `MockApiInterceptor`, así que los datos ficticios no entran al paquete inicial.
- * Cada pantalla agrega aquí su manejador (T032 y T033).
  */
 export const rutasSimuladas: readonly RutaSimulada[] = [
   ...rutasCuentas,
   ...rutasCatalogos,
   ...rutasPrestadores,
   ...rutasBusqueda,
+  ...rutasAccesos,
   ...rutasAdmin,
 ];

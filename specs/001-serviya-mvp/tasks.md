@@ -96,10 +96,10 @@ los perfiles Pixel 7 e iPhone 14.
 
 ### Pantallas de US3 y US4 (pago de acceso y pase)
 
-- [ ] T030 [P] [US3] Crear `web/src/app/features/contacto/opciones.ts`: sin sesión manda a registro con regreso; muestra $39 MXN (chat y teléfono por 30 días, crédito si no responde en 48 h), $129 MXN del pase, créditos disponibles, el aviso "Pagas por acceso y contacto, no por el trabajo. No garantiza la contratación." con su versión, la advertencia de que OXXO y SPEI pueden tardar en acreditarse y el caso de acceso vigente ("Ya tienes acceso; no se cobra de nuevo")
-- [ ] T031 [P] [US3] Crear `web/src/app/features/contacto/checkout-simulado.ts` (elige tarjeta aprobada, OXXO pendiente o rechazo), `resultado-pago.ts` (aprobado, pendiente con instrucciones, expirado) y `mis-accesos.ts` (estado y vencimiento; teléfono visible solo si el acceso está `Activo`)
-- [ ] T032 [US3] Crear el manejador `web/src/app/core/mocks/handlers/accesos.ts`: `GET /accesos/opciones`, `POST /accesos`, `GET /accesos/yo`, `GET /accesos/{id}/contacto` (403 si no está activo) y `GET /pagos/{id}`
-- [ ] T033 [P] [US4] Crear `web/src/app/features/contacto/pase.ts`: compra como pago único o con renovación automática (solo tarjeta), contactos disponibles, oferta con descuento (por ejemplo, $90 MXN tras un contacto de $39) y "Cancelar renovación" en un clic con el aviso de que conserva el acceso hasta el fin del periodo; ampliar `handlers/accesos.ts` con `POST /pases` y `POST /pases/{id}/cancelar-renovacion`
+- [x] T030 [P] [US3] Crear `web/src/app/features/contacto/opciones.ts`: sin sesión manda a registro con regreso; muestra $39 MXN (chat y teléfono por 30 días, crédito si no responde en 48 h), $129 MXN del pase, créditos disponibles, el aviso "Pagas por acceso y contacto, no por el trabajo. No garantiza la contratación." con su versión, la advertencia de que OXXO y SPEI pueden tardar en acreditarse y el caso de acceso vigente ("Ya tienes acceso; no se cobra de nuevo")
+- [x] T031 [P] [US3] Crear `web/src/app/features/contacto/checkout-simulado.ts` (elige tarjeta aprobada, OXXO pendiente o rechazo), `resultado-pago.ts` (aprobado, pendiente con instrucciones, expirado) y `mis-accesos.ts` (estado y vencimiento; teléfono visible solo si el acceso está `Activo`)
+- [x] T032 [US3] Crear el manejador `web/src/app/core/mocks/handlers/accesos.ts`: `GET /accesos/opciones`, `POST /accesos`, `GET /accesos/yo`, `GET /accesos/{id}/contacto` (403 si no está activo) y `GET /pagos/{id}`
+- [x] T033 [P] [US4] Crear `web/src/app/features/contacto/pase.ts`: compra como pago único o con renovación automática (solo tarjeta), contactos disponibles, oferta con descuento (por ejemplo, $90 MXN tras un contacto de $39) y "Cancelar renovación" en un clic con el aviso de que conserva el acceso hasta el fin del periodo; ampliar `handlers/accesos.ts` con `POST /pases` y `POST /pases/{id}/cancelar-renovacion`
 
 ### Cierre del prototipo
 

@@ -58,10 +58,11 @@ contrato funcional que siguen el prototipo y la API.
 
 | Método y ruta | Acceso | Cuerpo / respuesta | Requisito |
 |---|---|---|---|
-| `GET /accesos/opciones?prestadorId` | C | → `{ accesoVigente?, pase?: {contactosDisponibles, finEn}, creditosDisponibles, ofertaPase?: {montoCentavos, descuentoCentavos}, aviso: {version, texto}, precios }` | FR-022, FR-025, FR-027 |
+| `GET /accesos/opciones?prestadorId` (`prestadorId` opcional: sin él solo trae pase, oferta, créditos, aviso y precios) | C | → `{ accesoVigente?, pase?: {contactosDisponibles, finEn}, creditosDisponibles, ofertaPase?: {montoCentavos, descuentoCentavos}, aviso: {version, texto}, precios }` | FR-022, FR-025, FR-027 |
 | `POST /accesos` | C | `{ prestadorId, via: "Individual"\|"Pase"\|"Credito", avisoVersion }` → 201 `{ acceso, checkoutUrl? }` (`checkoutUrl` solo si se paga) | FR-020, FR-025, FR-029 |
 | `POST /pases` | C | `{ renovacionAutomatica, avisoVersion }` → 201 `{ pase, checkoutUrl }` | FR-021, FR-027 |
 | `POST /pases/{id}/cancelar-renovacion` | C | → 204 (una sola acción) | FR-028 |
+| `GET /pases/yo` | C | → `PaseMensual` vigente o pendiente; 404 si no tiene | FR-021, FR-028 |
 | `GET /accesos/yo` | C | → `AccesoContacto[]` con estado y vencimiento | FR-024 |
 | `GET /accesos/{id}/contacto` | C | → `{ telefono, whatsapp? }` solo si está `Activo`; 403 si no | FR-020 |
 | `GET /pagos/yo` | C | → historial con comprobante | FR-031 |

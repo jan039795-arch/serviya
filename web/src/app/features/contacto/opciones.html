@@ -1,0 +1,130 @@
+<section class="contenedor">
+  @if (noDisponible()) {
+    <h1>Este perfil no está disponible</h1>
+    <a appBoton routerLink="/">Buscar otro prestador</a>
+  } @else if (opciones.error()) {
+    <p class="alerta alerta--error" role="alert">No pudimos cargar las opciones.</p>
+    <button appBoton type="button" (click)="opciones.reload()">Reintentar</button>
+  } @else if (opciones.hasValue()) {
+    @let datos = opciones.value();
+    <p><a [routerLink]="['/prestador', prestadorId()]">← Volver al perfil</a></p>
+    <h1>Contactar a {{ nombre() }}</h1>
+
+    @if (error(); as mensaje) {
+      <p class="alerta alerta--error" role="alert" data-testid="error-contacto">{{ mensaje }}</p>
+    }
+
+    @if (datos.accesoVigente; as acceso) {
+      @if (acceso.estado === 'Activo') {
+        <p class="alerta alerta--exito" data-testid="acceso-vigente">
+          Ya tienes acceso a {{ nombre() }} hasta el {{ vigenteHasta() }}. No se te cobra de nuevo.
+        </p>
+      } @else {
+        <p class="alerta alerta--aviso" data-testid="acceso-vigente">
+          Tienes un pago pendiente para {{ nombre() }}. Se activará en cuanto se acredite.
+        </p>
+      }
+      <a appBoton anchoCompleto routerLink="/mis-contactos">Ver mis contactos</a>
+    } @else if (menorDeEdad()) {
+      <p class="alerta alerta--aviso" data-testid="menor-de-edad">
+        Para pagar contactos necesitas tener 18 años o más.
+      </p>
+    } @else {
+      <div class="aviso-pago" role="note" data-testid="aviso-pago">
+        <strong>Importante:</strong> {{ datos.aviso.texto }}
+      </div>
+
+      @if (datos.pase; as pase) {
+        <article class="opcion-pago opcion-pago--destacada">
+          <h2>Usar tu pase</h2>
+          <p>
+            Te quedan {{ pase.contactosDisponibles }} contactos, hasta el {{ paseHasta() }}. No
+            pagas nada más.
+          </p>
+          @if (pase.contactosDisponibles > 0) {
+            <button
+              appBoton
+              anchoCompleto
+              type="button"
+              (click)="usar('Pase')"
+              [disabled]="ocupado()"
+              data-testid="usar-pase"
+            >
+              Contactar con mi pase
+            </button>
+          } @else {
+            <p class="alerta alerta--aviso" data-testid="pase-agotado">
+              Ya usaste los 30 contactos de tu pase. Puedes pagar un contacto individual.
+            </p>
+          }
+        </article>
+      }
+
+      @if (datos.creditosDisponibles > 0) {
+        <article class="opcion-pago opcion-pago--destacada">
+          <h2>Usar un crédito</h2>
+          <p>
+            @if (datos.creditosDisponibles === 1) {
+              Tienes 1 crédito por un contacto que no te respondió.
+            } @else {
+              Tienes {{ datos.creditosDisponibles }} créditos por contactos que no te respondieron.
+            }
+          </p>
+          <button
+            appBoton
+            anchoCompleto
+            type="button"
+            (click)="usar('Credito')"
+            [disabled]="ocupado()"
+            data-testid="usar-credito"
+          >
+            Usar un crédito (gratis)
+          </button>
+        </article>
+      }
+
+      <article class="opcion-pago" data-testid="opcion-individual">
+        <h2>Contacto individual</h2>
+        <p class="precio">
+          <strong>{{ datos.precios.contactoCentavos | mxn }}</strong>
+        </p>
+        <ul>
+          <li>Chat y teléfono de {{ nombre() }} durante 30 días.</li>
+          <li>
+            Si no te responde en 48 horas desde tu primer mensaje, recibes un crédito para otro
+            contacto. Si prefieres, puedes pedir la devolución de tu dinero.
+          </li>
+        </ul>
+        <button
+          appBoton
+          anchoCompleto
+          [variante]="datos.pase ? 'secundario' : 'primario'"
+          type="button"
+          (click)="pagarContacto()"
+          [disabled]="ocupado()"
+          data-testid="pagar-contacto"
+        >
+          Pagar {{ datos.precios.contactoCentavos | mxn }}
+        </button>
+      </article>
+
+      @if (!datos.pase) {
+        <app-compra-pase
+          [precioCentavos]="datos.precios.paseCentavos"
+          [oferta]="datos.ofertaPase"
+          [destacado]="!!datos.ofertaPase"
+          [ocupado]="ocupado()"
+          (comprar)="comprarPase($event)"
+        />
+      }
+
+      <p class="texto-suave metodos">
+        Puedes pagar con tarjeta, OXXO o transferencia SPEI. Con tarjeta se activa al instante; con
+        OXXO o SPEI se activa cuando el pago se acredita, lo que puede tardar hasta 2 o 3 días
+        hábiles.
+      </p>
+    }
+  } @else {
+    <app-cargando texto="Cargando opciones…" />
+  }
+</section>

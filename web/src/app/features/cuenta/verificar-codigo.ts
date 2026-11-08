@@ -10,6 +10,7 @@ import {
 } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { ENTORNO, hayAreasSimuladas } from '../../core/entorno';
+import { rutaDeRegresoSegura } from '../../core/sesion/sesion';
 import { mensajeDeError, mensajeGeneral } from '../../shared/formularios/errores';
 import { Avisos } from '../../shared/ui/avisos';
 import { Boton } from '../../shared/ui/boton';
@@ -98,7 +99,8 @@ export class VerificarCodigo {
         const sesion = await this.cuentas.verificarCorreo(correo.trim(), codigo);
         const esPrestador = sesion?.roles.includes('Prestador') ?? false;
         this.avisos.mostrar('exito', '¡Listo! Tu correo quedó verificado.');
-        await this.router.navigateByUrl(esPrestador ? '/alta' : '/');
+        const volver = rutaDeRegresoSegura(this.cuentas.volverTrasVerificar());
+        await this.router.navigateByUrl(esPrestador ? '/alta' : volver);
       } catch (error: unknown) {
         this.errorEnvio.set(error);
       }

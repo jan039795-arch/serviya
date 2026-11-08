@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) todas las pantallas de US1 (T019–T025) y las de US2 (T026–T029).
+**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) las pantallas de US1 (T019–T025), US2 (T026–T029), US3 y US4 (T030–T033). Falta el cierre del prototipo (T034–T037).
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -41,20 +41,31 @@
   (`core/mocks/estado/directorio.ts`) une `prestadores.json` con los perfiles aprobados en el
   prototipo y arma los DTO públicos campo por campo; una prueba unitaria revisa que nunca salgan
   datos privados. Orden con promedio bayesiano más un pequeño bono de cercanía.
-- 65 pruebas unitarias y 44 E2E (Pixel 7 e iPhone 14) pasan.
+- Contacto y pase (T030–T033): opciones de contacto con el aviso de no garantía, contacto de $39,
+  pase de $129 con oferta de descuento al segundo contacto, uso de pase y de crédito; checkout
+  simulado (tarjeta aprobada, OXXO pendiente, rechazo); resultado del pago con consulta cada 3 s;
+  "Mis contactos" con teléfono y WhatsApp solo con acceso activo, acreditación y vencimiento
+  simulados; pase con cancelación de la renovación en un clic. Un visitante que pulsa "Contactar"
+  se registra y regresa a las opciones. Las reglas (vencimientos, sin doble cobro, oferta, límite
+  de 10 contactos por día) están en `core/mocks/estado/reglas-acceso.ts` con pruebas unitarias.
+- 77 pruebas unitarias y 58 E2E (Pixel 7 e iPhone 14) pasan.
 - Sin backend todavía. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. US3 y US4 en el prototipo (T030–T033): `web/src/app/features/contacto/` (`opciones.ts`,
-   `checkout-simulado.ts`, `resultado-pago.ts`, `mis-accesos.ts`, `pase.ts`) y el manejador
-   `web/src/app/core/mocks/handlers/accesos.ts`. Reemplazar la ruta `Pendiente` de
-   `contactar/:prestadorId` en `web/src/app/app.routes.ts` (el botón "Contactar" del perfil ya
-   apunta ahí). El teléfono sale de `PrestadorDirectorio.telefono` solo con acceso `Activo`.
-2. Después: cierre del prototipo (T034–T037).
-3. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
-4. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
+1. Cierre del prototipo (T034–T037):
+   - T034: `web/src/app/features/cuenta/mi-cuenta.ts` (mis contactos `/mis-contactos`, mi pase
+     `/pase`, estado del alta `/alta` o "Quiero ofrecer mis servicios" con
+     `CuentasApi.agregarRolPrestador`, administración si es admin, privacidad pendiente y cerrar
+     sesión). Reemplaza la ruta `Pendiente` de `cuenta`. "Mensajes" sigue pendiente hasta US5.
+   - T035: `web/e2e/prototipo.spec.ts` con los puntos 1 a 4 de la Etapa 2 de `quickstart.md` (ya
+     cubiertos por los E2E `*.prototipo.spec.ts`; reunirlos o enlazarlos).
+   - T036: documentar en `quickstart.md` cómo probar en el celular con `npm run start:prototipo` y
+     `chrome://inspect` (reenvío de puerto) e instalar la PWA.
+   - T037: `typescript-reviewer`, revisión de accesibilidad y prueba del usuario en su celular.
+2. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
+3. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
    la cuenta de desarrollador de Mercado Pago.
 
 ## Etapas del proyecto
@@ -116,6 +127,10 @@
 | 2026-11-08 | `ubicar` ya es `POST` en el contrato; `GET /prestadores` acepta `tamano`, `oficio` como slug y `tarifaMax` en centavos | Principio I; URLs de búsqueda legibles y compartibles |
 | 2026-11-08 | En plantillas y `computed` se lee un `resource` con `hasValue()` o `valorDe()` | `value()` lanza un error si la petición falló y congelaba la pantalla (se vio con un perfil 404) |
 | 2026-11-08 | La cercanía suma un bono pequeño (0.15) al promedio bayesiano en el prototipo | FR-019 pide considerar cercanía; el peso definitivo se ajusta en T091 con datos del piloto |
+| 2026-11-08 | Se agregó `GET /pases/yo` y `prestadorId` es opcional en `GET /accesos/opciones` (contrato actualizado) | La pantalla del pase necesita su estado y el aviso vigente sin un prestador |
+| 2026-11-08 | La app solo redirige a pagar a la ruta interna del checkout simulado o a `https` de `mercadopago.com(.mx)` | Evita que una respuesta alterada mande al usuario a otro sitio |
+| 2026-11-08 | El teléfono se pide al pulsar "Ver teléfono" y no se guarda en el navegador | Menos exposición del dato; la API lo entrega solo con acceso activo (FR-020) |
+| 2026-11-08 | La oferta del pase descuenta lo pagado en contactos individuales de los últimos 30 días, sin bajar de $0 | FR-027; con 4 contactos pagados el pase saldría gratis, a revisar con el usuario antes del piloto |
 
 ## Pendientes abiertos
 
@@ -123,6 +138,7 @@
 - Ciudad o zona del piloto.
 - Oficios incluidos en el piloto.
 - Revisión de textos legales con un abogado y del régimen fiscal con un contador.
+- Oferta del pase cuando lo pagado en contactos supera $129 (hoy queda en $0): ¿tope mínimo?
 - Cómo generar el PDF del comprobante de pago (research R14, tarea T108; opción a evaluar: QuestPDF Community).
 
 ## Bitácora
@@ -142,3 +158,4 @@
 | 2026-11-08 | Pantallas de cuenta y alta del prestador del prototipo (T019–T024) | ver `git log` |
 | 2026-11-08 | Revisión del administrador en el prototipo (T025) y contrato de decisión del perfil | ver `git log` |
 | 2026-11-08 | Búsqueda y perfil público del prototipo (T026–T029) | ver `git log` |
+| 2026-11-08 | Contacto pagado, checkout simulado, mis contactos y pase en el prototipo (T030–T033) | ver `git log` |

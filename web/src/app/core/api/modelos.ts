@@ -345,3 +345,14 @@ export interface UrlDocumento {
   readonly url: string;
   readonly expiraEn: string;
 }
+
+/** Cuerpo de `POST /pases`. */
+export interface SolicitudPase {
+  readonly renovacionAutomatica: boolean;
+  readonly avisoVersion: string;
+}
+
+export interface RespuestaPase {
+  readonly pase: PaseMensual;
+  readonly checkoutUrl: string;
+}
