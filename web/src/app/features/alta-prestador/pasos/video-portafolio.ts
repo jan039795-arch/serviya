@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ElementoPortafolioPropio } from '../../../core/api/modelos';
 import { mensajeGeneral } from '../../../shared/formularios/errores';
+import { textoDe } from '../../../shared/formularios/eventos';
 import {
   ArchivoSubido,
   SolicitarSubida,
@@ -78,7 +79,7 @@ const ESTADO_MODERACION: Readonly<Record<ElementoPortafolioPropio['estadoModerac
         <span>Descripción de la siguiente foto (opcional)</span>
         <input
           [value]="descripcion()"
-          (input)="descripcion.set($any($event.target).value)"
+          (input)="descripcion.set(textoDe($event))"
           [attr.maxlength]="largoDescripcion"
           data-testid="descripcion-foto"
         />
@@ -133,6 +134,7 @@ export class PasoVideoPortafolio {
   private readonly api = inject(AltaApi);
 
   protected readonly maximoFotos = MAXIMO_FOTOS;
+  protected readonly textoDe = textoDe;
   protected readonly largoDescripcion = LARGO_DESCRIPCION;
   protected readonly estadoModeracion = ESTADO_MODERACION;
   protected readonly descripcion = signal('');

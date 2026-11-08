@@ -12,7 +12,8 @@
     "format": "prettier --write \"src/**/*.{ts,html,css}\" \"e2e/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,css}\" \"e2e/**/*.ts\"",
     "e2e": "playwright test",
-    "start:prototipo": "ng serve --configuration prototipo"
+    "start:prototipo": "ng serve --configuration prototipo",
+    "serve:prototipo": "ng build --configuration prototipo && node dist/web/server/server.mjs"
   },
   "private": true,
   "packageManager": "npm@11.19.1",

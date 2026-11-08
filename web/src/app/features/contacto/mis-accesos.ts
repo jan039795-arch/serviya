@@ -1,7 +1,7 @@
 import { Component, inject, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AccesoContacto, ContactoDesbloqueado, EstadoAcceso } from '../../core/api/modelos';
-import { ENTORNO, hayAreasSimuladas } from '../../core/entorno';
+import { ACCIONES_PROTOTIPO } from '../../core/prototipo/acciones';
 import { mensajeGeneral } from '../../shared/formularios/errores';
 import { Boton } from '../../shared/ui/boton';
 import { Cargando } from '../../shared/ui/cargando';
@@ -146,7 +146,9 @@ const formatoFecha = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' });
 })
 export class MisAccesos {
   private readonly api = inject(ContactoApi);
-  protected readonly prototipo = hayAreasSimuladas(inject(ENTORNO));
+  /** Solo existe en el prototipo; en producción es `null` y los botones de simulación no aparecen. */
+  private readonly acciones = inject(ACCIONES_PROTOTIPO, { optional: true });
+  protected readonly prototipo = !!this.acciones;
 
   protected readonly textoEstado = TEXTO_ESTADO;
   protected readonly accesos = resource({ loader: () => this.api.misAccesos() });
@@ -172,15 +174,23 @@ export class MisAccesos {
   }
 
   protected async simularAcreditacion(acceso: AccesoContacto): Promise<void> {
-    await this.api.acreditarAcceso(acceso.id);
-    this.accesos.reload();
+    await this.simular(() => this.acciones?.acreditarAcceso(acceso.id));
   }
 
   protected async simularVencimiento(acceso: AccesoContacto): Promise<void> {
-    await this.api.vencerAcceso(acceso.id);
+    await this.simular(() => this.acciones?.vencerAcceso(acceso.id));
     this.contactos.update((actuales) =>
       Object.fromEntries(Object.entries(actuales).filter(([id]) => id !== acceso.id)),
     );
-    this.accesos.reload();
+  }
+
+  private async simular(accion: () => Promise<void> | undefined): Promise<void> {
+    this.error.set(null);
+    try {
+      await accion();
+      this.accesos.reload();
+    } catch (error: unknown) {
+      this.error.set(mensajeGeneral(error));
+    }
   }
 }

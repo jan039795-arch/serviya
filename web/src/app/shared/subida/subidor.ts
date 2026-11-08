@@ -1,9 +1,6 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-
-/** Prefijo de las URL de subida que devuelve el prototipo en lugar de una URL firmada de R2. */
-export const PREFIJO_SUBIDA_SIMULADA = 'simulado:';
-const PASO_SIMULADO_MS = 120;
+import { inject, Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { ACCIONES_PROTOTIPO, PREFIJO_SUBIDA_SIMULADA } from '../../core/prototipo/acciones';
 
 /**
  * Sube un archivo con `PUT` directo a la URL firmada de R2 (research R3) y emite el avance de
@@ -15,10 +12,19 @@ const PASO_SIMULADO_MS = 120;
  */
 @Injectable({ providedIn: 'root' })
 export class Subidor {
+  /** Solo en el prototipo; en producción es `null` y una URL simulada se rechaza. */
+  private readonly prototipo = inject(ACCIONES_PROTOTIPO, { optional: true });
+
   subir(url: string, archivo: Blob, tipoContenido: string): Observable<number> {
-    return url.startsWith(PREFIJO_SUBIDA_SIMULADA)
-      ? this.simular()
-      : this.subirReal(url, archivo, tipoContenido);
+    if (url.startsWith(PREFIJO_SUBIDA_SIMULADA) && this.prototipo) {
+      return this.prototipo.simularSubida();
+    }
+    // Los documentos (INE, selfie, comprobante) solo viajan cifrados. El dominio exacto de R2 se
+    // valida al conectar la API real (T085), cuando exista en la configuración.
+    if (!esUrlSegura(url)) {
+      return throwError(() => new Error('No pudimos preparar la subida. Inténtalo de nuevo.'));
+    }
+    return this.subirReal(url, archivo, tipoContenido);
   }
 
   private subirReal(url: string, archivo: Blob, tipoContenido: string): Observable<number> {
@@ -49,19 +55,12 @@ export class Subidor {
       };
     });
   }
+}
 
-  private simular(): Observable<number> {
-    return new Observable<number>((suscriptor) => {
-      let avance = 0;
-      const intervalo = setInterval(() => {
-        avance = Math.min(avance + 20, 100);
-        suscriptor.next(avance);
-        if (avance === 100) {
-          clearInterval(intervalo);
-          suscriptor.complete();
-        }
-      }, PASO_SIMULADO_MS);
-      return () => clearInterval(intervalo);
-    });
+export function esUrlSegura(valor: string): boolean {
+  try {
+    return new URL(valor).protocol === 'https:';
+  } catch {
+    return false;
   }
 }

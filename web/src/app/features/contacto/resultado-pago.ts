@@ -78,8 +78,8 @@ export class ResultadoPago implements OnInit {
   private readonly api = inject(ContactoApi);
   private readonly destroyRef = inject(DestroyRef);
 
-  /** `?pagoId=` que agrega la pasarela al regresar. */
-  readonly pagoId = input.required<string>();
+  /** `?pagoId=` que agrega la pasarela al regresar; puede faltar si alguien abre la URL a mano. */
+  readonly pagoId = input<string>();
 
   protected readonly pago = signal<Pago | null>(null);
   protected readonly error = signal<string | null>(null);
@@ -87,29 +87,40 @@ export class ResultadoPago implements OnInit {
   protected readonly seAgotoLaEspera = computed(() => this.intentos() >= INTENTOS_MAXIMOS);
   protected readonly esPase = computed(() => this.pago()?.concepto === 'PaseMensual');
   private temporizador: ReturnType<typeof setTimeout> | null = null;
+  /** Evita programar otra consulta si la respuesta llega después de salir de la pantalla. */
+  private destruido = false;
 
   ngOnInit(): void {
-    this.destroyRef.onDestroy(() => this.detener());
+    this.destroyRef.onDestroy(() => {
+      this.destruido = true;
+      if (this.temporizador) {
+        clearTimeout(this.temporizador);
+      }
+    });
     void this.consultar();
   }
 
   protected async consultar(): Promise<void> {
+    const pagoId = this.pagoId();
+    if (!pagoId) {
+      this.error.set('No encontramos el pago. Revisa tus contactos o tu historial.');
+      return;
+    }
     this.error.set(null);
     try {
-      const pago = await this.api.pago(this.pagoId());
+      const pago = await this.api.pago(pagoId);
+      if (this.destruido) {
+        return;
+      }
       this.pago.set(pago);
       this.intentos.update((n) => n + 1);
       if (pago.estado === 'Creado' && !this.seAgotoLaEspera()) {
         this.temporizador = setTimeout(() => void this.consultar(), INTERVALO_MS);
       }
     } catch (error: unknown) {
-      this.error.set(mensajeGeneral(error));
-    }
-  }
-
-  private detener(): void {
-    if (this.temporizador) {
-      clearTimeout(this.temporizador);
+      if (!this.destruido) {
+        this.error.set(mensajeGeneral(error));
+      }
     }
   }
 }

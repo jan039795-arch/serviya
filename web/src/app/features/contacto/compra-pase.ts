@@ -1,4 +1,5 @@
 import { booleanAttribute, Component, computed, input, output, signal } from '@angular/core';
+import { marcadoDe } from '../../shared/formularios/eventos';
 import { MxnPipe } from '../../shared/pipes/mxn';
 import { Boton } from '../../shared/ui/boton';
 
@@ -40,7 +41,7 @@ export interface OfertaPase {
         <input
           type="checkbox"
           [checked]="renovar()"
-          (change)="renovar.set($any($event.target).checked)"
+          (change)="renovar.set(marcadoDe($event))"
           data-testid="renovacion"
         />
         <span>
@@ -86,6 +87,7 @@ export class CompraPase {
   readonly comprar = output<boolean>();
 
   protected readonly renovar = signal(false);
+  protected readonly marcadoDe = marcadoDe;
   protected readonly montoFinal = computed(
     () => this.oferta()?.montoCentavos ?? this.precioCentavos(),
   );

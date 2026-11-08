@@ -24,7 +24,7 @@ Variables de entorno (en `dotnet user-secrets` para desarrollo; nunca en el repo
 ```bash
 cd web
 npm install
-npm start          # con environment.useMocks = true
+npm start          # todas las áreas simuladas (environment.mocks)
 ```
 
 Abrir `http://localhost:4200` en el emulador de celular del navegador (Pixel 7 y iPhone 14) y
@@ -35,6 +35,44 @@ comprobar:
 3. Pulsar "Contactar" → registro → opciones de $39 y $129 con el aviso de no garantía (US3, US4).
 4. Ver la cola del administrador con documentos ficticios y aprobar o rechazar con motivo (US1).
 5. Instalar la app en la pantalla de inicio (PWA) desde Chrome en Android.
+
+Los puntos 1 a 4 están automatizados en `web/e2e/*.prototipo.spec.ts` (ver `web/e2e/prototipo.spec.ts`).
+
+### Cómo usar el prototipo
+
+- La barra amarilla "Prototipo · ver como" cambia entre visitante, cliente, prestador y
+  administración sin registrarse. "Reiniciar datos" borra todo lo capturado en ese navegador.
+- El código de verificación de correo y de recuperación es siempre `123456`. No se guardan
+  contraseñas: cualquier contraseña de 8 caracteres o más funciona.
+- La pasarela de pago es simulada: "Pagar con tarjeta" se aprueba al instante, "OXXO" queda
+  pendiente y en "Mis contactos" hay un botón para simular que se acreditó.
+- Todo lo que se captura queda solo en el navegador (`localStorage`). Nunca uses documentos
+  reales: las subidas no salen del navegador y el visor muestra imágenes "DOCUMENTO FICTICIO".
+
+### Probar en el celular e instalar la app (Android)
+
+Instalar una PWA exige HTTPS o `localhost`. Con el reenvío de puertos de Chrome, el celular abre el
+prototipo como `localhost`:
+
+1. En `web/`, compilar y servir el prototipo como en producción (puerto 4000):
+
+   ```bash
+   npm run serve:prototipo
+   ```
+
+2. En el celular Android, activar las opciones de desarrollador y la depuración por USB, y
+   conectarlo a la computadora con un cable.
+3. En Chrome de la computadora, abrir `chrome://inspect/#devices`, pulsar "Port forwarding…",
+   agregar `4000` → `localhost:4000` y marcar "Enable port forwarding".
+4. En Chrome del celular, abrir `http://localhost:4000`. Esperar unos segundos y usar el menú ⋮ →
+   "Instalar app" (o "Agregar a la pantalla principal").
+
+Verificado en la computadora (2026-11-08): el servidor entrega el manifiesto y registra el service
+worker. Falta la prueba en un celular real (T037).
+
+**iPhone**: Safari solo instala apps desde HTTPS, así que hace falta un túnel HTTPS hacia el puerto
+4000 y agregar su dominio a `security.allowedHosts` en `web/angular.json`. Sin instalarla, el
+prototipo se puede revisar en el emulador de iPhone 14 del navegador.
 
 ## Etapas 3 a 9: sistema completo
 

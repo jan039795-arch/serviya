@@ -28,3 +28,21 @@ export function borrarLocal(clave: string): void {
     // Igual que arriba: no hay nada que borrar.
   }
 }
+
+/** Borra todos los datos del prototipo (sesión, perfiles, pagos…) de este navegador. */
+export function borrarTodoLocal(): void {
+  try {
+    const almacen = globalThis.localStorage;
+    if (!almacen) {
+      return;
+    }
+    const claves = Array.from({ length: almacen.length }, (_, i) => almacen.key(i)).filter(
+      (clave): clave is string => !!clave && clave.startsWith(PREFIJO),
+    );
+    for (const clave of claves) {
+      almacen.removeItem(clave);
+    }
+  } catch {
+    // Sin almacenamiento disponible: no hay nada que borrar.
+  }
+}

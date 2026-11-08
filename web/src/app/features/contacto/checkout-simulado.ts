@@ -4,7 +4,8 @@ import { mensajeGeneral } from '../../shared/formularios/errores';
 import { MxnPipe } from '../../shared/pipes/mxn';
 import { Boton } from '../../shared/ui/boton';
 import { Cargando } from '../../shared/ui/cargando';
-import { ContactoApi, ResultadoSimulado } from './contacto-api';
+import { ACCIONES_PROTOTIPO, ResultadoSimulado } from '../../core/prototipo/acciones';
+import { ContactoApi } from './contacto-api';
 
 const CONCEPTOS: Readonly<Record<string, string>> = {
   ContactoIndividual: 'Contacto individual',
@@ -82,6 +83,7 @@ const CONCEPTOS: Readonly<Record<string, string>> = {
 })
 export class CheckoutSimulado {
   private readonly api = inject(ContactoApi);
+  private readonly acciones = inject(ACCIONES_PROTOTIPO);
   private readonly router = inject(Router);
 
   /** `?pagoId=` (el mismo dato que Mercado Pago recibe como `external_reference`). */
@@ -99,7 +101,7 @@ export class CheckoutSimulado {
     this.ocupado.set(true);
     this.error.set(null);
     try {
-      await this.api.simularPago(this.pagoId(), resultado);
+      await this.acciones.simularPago(this.pagoId(), resultado);
       await this.router.navigate(['/pago/resultado'], { queryParams: { pagoId: this.pagoId() } });
     } catch (error: unknown) {
       this.error.set(mensajeGeneral(error));

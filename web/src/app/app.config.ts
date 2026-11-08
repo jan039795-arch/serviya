@@ -12,7 +12,7 @@ import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from 
 import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
 import { erroresInterceptor } from './core/http/errores.interceptor';
-import { mockApiInterceptor } from './core/mocks/mock-api.interceptor';
+import { interceptoresPrototipo, proveedoresPrototipo } from './core/prototipo/prototipo';
 
 registerLocaleData(localeEsMx);
 
@@ -25,7 +25,11 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
     // El de errores va primero para que también traduzca los errores simulados.
-    provideHttpClient(withFetch(), withInterceptors([erroresInterceptor, mockApiInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([erroresInterceptor, ...interceptoresPrototipo]),
+    ),
+    ...proveedoresPrototipo(),
     provideClientHydration(),
     { provide: LOCALE_ID, useValue: 'es-MX' },
     provideServiceWorker('ngsw-worker.js', {

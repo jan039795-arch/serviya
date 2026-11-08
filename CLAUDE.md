@@ -56,6 +56,7 @@ Frontend (desde `web/`; requiere Node 24):
 ```bash
 npm start                    # servidor de desarrollo en http://localhost:4200 (datos ficticios)
 npm run start:prototipo      # prototipo optimizado, todo simulado
+npm run serve:prototipo      # compila el prototipo y lo sirve como en producción (puerto 4000, PWA)
 npx ng build                 # compilación de producción
 npx ng test --no-watch       # pruebas unitarias (Vitest)
 npx playwright test          # E2E en Pixel 7 e iPhone 14 (levanta npm start)

@@ -4,7 +4,7 @@
 
 ## Estado actual
 
-**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) las pantallas de US1 (T019–T025), US2 (T026–T029), US3 y US4 (T030–T033). Falta el cierre del prototipo (T034–T037).
+**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) las pantallas de US1 a US4 (T019–T033), Mi cuenta (T034), el recorrido E2E (T035), la guía para probar en el celular (T036) y la revisión de código (T037). **Falta solo que el usuario pruebe el prototipo en su celular y lo apruebe (T037).**
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -48,32 +48,33 @@
   simulados; pase con cancelación de la renovación en un clic. Un visitante que pulsa "Contactar"
   se registra y regresa a las opciones. Las reglas (vencimientos, sin doble cobro, oferta, límite
   de 10 contactos por día) están en `core/mocks/estado/reglas-acceso.ts` con pruebas unitarias.
-- 77 pruebas unitarias y 58 E2E (Pixel 7 e iPhone 14) pasan.
+- Cierre (T034–T037): Mi cuenta; `npm run serve:prototipo` y guía de prueba en Android en
+  `quickstart.md`; botón "Reiniciar datos". `typescript-reviewer`: 0 CRITICAL, 3 HIGH, 8 MEDIUM,
+  6 LOW. Corregidos H1 (la simulación ya no entra al paquete de producción: `core/prototipo/
+  prototipo.ts` se reemplaza por `prototipo.prod.ts`; verificado con búsqueda en `dist/`), H3
+  (sondeo del resultado de pago tras salir), M3, M4, M5, M6, M7, M8, L1 y L5. Quedan para conectar
+  la API real: H2 (validar respuestas, en T068) y M2 (dominio de R2 en las subidas, en T085).
+  También se corrigió `security.allowedHosts`: el servidor SSR rechazaba hasta `localhost`.
+- 80 pruebas unitarias y 70 E2E (Pixel 7 e iPhone 14) pasan, estables en corridas repetidas.
 - Sin backend todavía. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
-1. Cierre del prototipo (T034–T037):
-   - T034: `web/src/app/features/cuenta/mi-cuenta.ts` (mis contactos `/mis-contactos`, mi pase
-     `/pase`, estado del alta `/alta` o "Quiero ofrecer mis servicios" con
-     `CuentasApi.agregarRolPrestador`, administración si es admin, privacidad pendiente y cerrar
-     sesión). Reemplaza la ruta `Pendiente` de `cuenta`. "Mensajes" sigue pendiente hasta US5.
-   - T035: `web/e2e/prototipo.spec.ts` con los puntos 1 a 4 de la Etapa 2 de `quickstart.md` (ya
-     cubiertos por los E2E `*.prototipo.spec.ts`; reunirlos o enlazarlos).
-   - T036: documentar en `quickstart.md` cómo probar en el celular con `npm run start:prototipo` y
-     `chrome://inspect` (reenvío de puerto) e instalar la PWA.
-   - T037: `typescript-reviewer`, revisión de accesibilidad y prueba del usuario en su celular.
-2. El prototipo termina cuando el usuario lo aprueba en su celular (T037).
-3. Antes de la Fase 3: el usuario instala Docker Desktop con WSL 2. Antes de la Fase 7 (pagos): crea
-   la cuenta de desarrollador de Mercado Pago.
+1. **El usuario prueba el prototipo en su celular** siguiendo "Probar en el celular e instalar la
+   app" de `specs/001-serviya-mvp/quickstart.md` (`npm run serve:prototipo` + `chrome://inspect`)
+   y anota en esta bitácora los ajustes que pida. Con su aprobación se marca T037 y termina la
+   Etapa 2.
+2. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
+3. Etapa 3 (Fase 3 de `tasks.md`, T038–T043): requiere Docker Desktop con WSL 2 instalado por el
+   usuario. Empieza por `api/ServiYa.sln` y `docker-compose.yml`.
 
 ## Etapas del proyecto
 
 | # | Etapa | Estado |
 |---|---|---|
 | 1 | Definición (constitución, especificación, plan, tareas) | Terminada |
-| 2 | Prototipo móvil con datos ficticios | En curso (base lista; faltan pantallas) |
+| 2 | Prototipo móvil con datos ficticios | Lista; falta la aprobación del usuario en su celular |
 | 3 | Cuentas y perfiles | Pendiente |
 | 4 | Documentos y panel del administrador | Pendiente |
 | 5 | Búsqueda y perfil público | Pendiente |
@@ -131,6 +132,10 @@
 | 2026-11-08 | La app solo redirige a pagar a la ruta interna del checkout simulado o a `https` de `mercadopago.com(.mx)` | Evita que una respuesta alterada mande al usuario a otro sitio |
 | 2026-11-08 | El teléfono se pide al pulsar "Ver teléfono" y no se guarda en el navegador | Menos exposición del dato; la API lo entrega solo con acceso activo (FR-020) |
 | 2026-11-08 | La oferta del pase descuenta lo pagado en contactos individuales de los últimos 30 días, sin bajar de $0 | FR-027; con 4 contactos pagados el pase saldría gratis, a revisar con el usuario antes del piloto |
+| 2026-11-08 | Las piezas del prototipo se registran en `core/prototipo/prototipo.ts`, que producción reemplaza por un archivo vacío (`fileReplacements`) | Un `if` en tiempo de ejecución dejaba los datos ficticios y `/dev/*` en el paquete y el service worker los precargaba |
+| 2026-11-08 | Acciones de prueba (simular pago, acreditar, vencer, sesión) detrás del token `ACCIONES_PROTOTIPO` | Las pantallas las usan solo si existen; en producción el token no se provee |
+| 2026-11-08 | `security.allowedHosts`: `localhost`, `127.0.0.1`, `serviya.mx` y `*.serviya.mx` | El servidor SSR de Angular rechaza cualquier otro host; sin esto no abría ni en local |
+| 2026-11-08 | Playwright local con 4 procesos y `test.slow()` en los flujos largos de pago | Con 6 procesos WebKit agotaba el tiempo de forma intermitente |
 
 ## Pendientes abiertos
 
@@ -159,3 +164,4 @@
 | 2026-11-08 | Revisión del administrador en el prototipo (T025) y contrato de decisión del perfil | ver `git log` |
 | 2026-11-08 | Búsqueda y perfil público del prototipo (T026–T029) | ver `git log` |
 | 2026-11-08 | Contacto pagado, checkout simulado, mis contactos y pase en el prototipo (T030–T033) | ver `git log` |
+| 2026-11-08 | Cierre del prototipo (T034–T036), revisión con `typescript-reviewer` y correcciones (T037, falta la prueba en celular) | ver `git log` |

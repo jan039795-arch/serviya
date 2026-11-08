@@ -103,9 +103,9 @@ los perfiles Pixel 7 e iPhone 14.
 
 ### Cierre del prototipo
 
-- [ ] T034 Crear `web/src/app/features/cuenta/mi-cuenta.ts`: mis contactos, mi pase, "Quiero ofrecer mis servicios" (agrega el rol de prestador), privacidad (pendiente) y cerrar sesión
-- [ ] T035 [P] Escribir `web/e2e/prototipo.spec.ts` en Pixel 7 e iPhone 14 con los puntos 1 a 4 de la Etapa 2 de quickstart.md: alta interrumpida y retomada, búsqueda sin teléfono ni correo en el DOM, "Contactar" → registro → opciones con el aviso, y aprobación con motivo en la cola del administrador
-- [ ] T036 Documentar en `specs/001-serviya-mvp/quickstart.md` cómo probar en un celular Android: `npx ng serve --configuration prototipo` con reenvío de puerto desde `chrome://inspect` (así el sitio es `localhost` y se puede instalar como PWA sin HTTPS), e instalar la app en la pantalla de inicio
+- [x] T034 Crear `web/src/app/features/cuenta/mi-cuenta.ts`: mis contactos, mi pase, "Quiero ofrecer mis servicios" (agrega el rol de prestador), privacidad (pendiente) y cerrar sesión
+- [x] T035 [P] Escribir `web/e2e/prototipo.spec.ts` en Pixel 7 e iPhone 14 (los puntos 1 a 4 quedaron en `web/e2e/*.prototipo.spec.ts` y este archivo los enlaza y cubre Mi cuenta) con los puntos 1 a 4 de la Etapa 2 de quickstart.md: alta interrumpida y retomada, búsqueda sin teléfono ni correo en el DOM, "Contactar" → registro → opciones con el aviso, y aprobación con motivo en la cola del administrador
+- [x] T036 Documentar en `specs/001-serviya-mvp/quickstart.md` cómo probar en un celular Android: `npm run serve:prototipo` (compila y sirve en el puerto 4000) con reenvío de puerto desde `chrome://inspect` (así el sitio es `localhost` y se puede instalar como PWA sin HTTPS), e instalar la app en la pantalla de inicio
 - [ ] T037 Ejecutar `typescript-reviewer` sobre `web/`, revisar contraste, etiquetas y áreas táctiles de 44 px, y registrar en `docs/PROGRESO.md` los ajustes que pida el usuario tras probar el prototipo
 
 **Checkpoint**: el usuario aprueba el prototipo en su celular. Sin esta aprobación no se empieza el backend.
@@ -169,7 +169,7 @@ Testcontainers).
 
 ### Conexión base del frontend
 
-- [ ] T068 Agregar `openapi-typescript` como dependencia de desarrollo con el script `generar:api` que escribe `web/src/app/core/api/esquema.d.ts` desde `/openapi/v1.json`, y convertir `web/src/app/core/api/modelos.ts` en alias de esos tipos
+- [ ] T068 Agregar `openapi-typescript` como dependencia de desarrollo con el script `generar:api` que escribe `web/src/app/core/api/esquema.d.ts` desde `/openapi/v1.json`, y convertir `web/src/app/core/api/modelos.ts` en alias de esos tipos; agregar en cada `*-api.ts` guardas de formato (`esSesion`, `esPago`, `esOpcionesAcceso`, …) que lancen `ErrorApi` si la respuesta no coincide (hallazgo H2 de la revisión de la Etapa 2)
 - [ ] T069 Configurar `provideHttpClient(withFetch(), withInterceptors([...]))` en `web/src/app/app.config.ts` con un interceptor propio `web/src/app/core/http/xsrf.interceptor.ts` que agrega `X-XSRF-TOKEN` y `withCredentials` también a URLs absolutas de la API (el soporte XSRF de Angular omite URLs absolutas y en producción la API está en `api.serviya.mx`), la llamada a `GET /cuentas/xsrf` con `provideAppInitializer` y el proxy de desarrollo `web/proxy.conf.json` para `/api` y `/hubs`
 - [ ] T070 Conectar las pantallas de `web/src/app/features/cuenta/` a la API real (`mocks.cuentas: false`) y escribir `web/e2e/cuentas.spec.ts` (registro, código leído de `GET /dev/correos`, verificación, entrar y salir)
 
@@ -205,7 +205,7 @@ reenviarla y aprobar; el perfil queda `Aprobado` y la bitácora tiene `VerDocume
 - [ ] T082 [US1] Crear `api/src/Modulos/ServiYa.Administracion/Endpoints/RevisionesEndpoints.cs`: `GET /admin/revisiones?estado=EnRevision`, `GET /admin/prestadores/{id}` (documentos sin URLs), `POST /admin/documentos/{id}/ver` (URL de 5 min y bitácora `VerDocumento`), `POST /admin/documentos/{id}/decision`, `POST /admin/prestadores/{id}/decision` (`Aprobar`, `RequiereCorreccion` o `Rechazar`; 422 si faltan documentos aprobados) y `POST /admin/portafolio/{id}/decision` (al aprobar copia el objeto de `serviya-privado` a `serviya-publico`); cada acción en la bitácora sin datos personales en `Detalle`
 - [ ] T083 [US1] Crear `INotificador` en `api/src/ServiYa.Comun/Notificaciones/INotificador.cs` con el canal de correo (push se agrega en US5) y avisar al prestador de cada cambio de estado con su motivo (FR-011): en revisión, requiere corrección, aprobado y rechazado
 - [ ] T084 [US1] Crear la tarea `api/src/Modulos/ServiYa.Documentos/Tareas/AntecedentesPorVencer.cs` (FR-013): aviso por correo 30 días antes de `VenceEn` y, al vencer, documento en `Vencido` y retiro de la insignia `AntecedentesPresentados`, con prueba usando `FakeTimeProvider`
-- [ ] T085 [US1] Conectar `web/src/app/features/alta-prestador/` y `web/src/app/features/admin/revisiones/` a la API real (`mocks.prestadores` y `mocks.admin` en `false`): subida directa con `PUT` a `urlSubida` con reintento (R3) y visor de documentos que carga la URL firmada sin guardarla ni ofrecer descarga
+- [ ] T085 [US1] Conectar `web/src/app/features/alta-prestador/` y `web/src/app/features/admin/revisiones/` a la API real (`mocks.prestadores` y `mocks.admin` en `false`): subida directa con `PUT` a `urlSubida` con reintento (R3) y visor de documentos que carga la URL firmada sin guardarla ni ofrecer descarga; `Subidor` valida que `urlSubida` sea `https` del dominio de R2 configurado (hallazgo M2)
 - [ ] T086 [US1] Crear las imágenes ficticias en `web/e2e/fixtures/documentos-ficticios/` y escribir `web/e2e/alta-prestador.spec.ts`: registro de prestador, 10 pasos con interrupción y regreso, envío, corrección de la INE pedida por el administrador, reenvío y aprobación
 - [ ] T087 [US1] Cierre de las Etapas 3 y 4: ejecutar `security-reviewer`, `csharp-reviewer` y `database-reviewer` sobre Cuentas, Prestadores, Documentos y Administración, y confirmar al menos 80% de cobertura en Documentos y permisos con `dotnet test --collect:"XPlat Code Coverage"`
 

@@ -13,8 +13,6 @@ import {
 } from '../../core/api/modelos';
 import { ENTORNO } from '../../core/entorno';
 
-export type ResultadoSimulado = 'aprobado' | 'pendiente' | 'rechazado' | 'acreditar';
-
 /** Acceso al contacto, pagos y pase (contracts/api.md, sección Acceso al contacto y pagos). */
 @Injectable({ providedIn: 'root' })
 export class ContactoApi {
@@ -71,35 +69,6 @@ export class ContactoApi {
     return firstValueFrom(
       this.http.post<void>(
         `${this.apiUrl}/pases/${encodeURIComponent(paseId)}/cancelar-renovacion`,
-        null,
-      ),
-    );
-  }
-
-  /** Solo prototipo: hace lo que en producción hace el webhook de Mercado Pago. */
-  simularPago(pagoId: string, resultado: ResultadoSimulado): Promise<void> {
-    return firstValueFrom(
-      this.http.post<void>(`${this.apiUrl}/dev/pagos/${encodeURIComponent(pagoId)}/simular`, {
-        resultado,
-      }),
-    );
-  }
-
-  /** Solo prototipo: simula que se acreditó el pago en OXXO o SPEI de un acceso pendiente. */
-  acreditarAcceso(accesoId: string): Promise<void> {
-    return firstValueFrom(
-      this.http.post<void>(
-        `${this.apiUrl}/dev/accesos/${encodeURIComponent(accesoId)}/acreditar`,
-        null,
-      ),
-    );
-  }
-
-  /** Solo prototipo: adelanta el vencimiento de un acceso para ver la solo lectura. */
-  vencerAcceso(accesoId: string): Promise<void> {
-    return firstValueFrom(
-      this.http.post<void>(
-        `${this.apiUrl}/dev/accesos/${encodeURIComponent(accesoId)}/vencer`,
         null,
       ),
     );

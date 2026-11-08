@@ -1,4 +1,5 @@
 import { booleanAttribute, Component, computed, input, output, signal } from '@angular/core';
+import { textoDe } from '../../../shared/formularios/eventos';
 import { Boton, VarianteBoton } from '../../../shared/ui/boton';
 
 export interface OpcionDecision<T extends string> {
@@ -30,7 +31,7 @@ let siguienteId = 0;
           [id]="idMotivo"
           rows="3"
           [value]="motivo()"
-          (input)="motivo.set($any($event.target).value)"
+          (input)="motivo.set(textoDe($event))"
           [attr.aria-invalid]="faltaMotivo() ? 'true' : null"
           [attr.aria-describedby]="faltaMotivo() ? idMotivo + '-error' : null"
           data-testid="motivo"
@@ -99,6 +100,7 @@ export class DecisionConMotivo<T extends string> {
   readonly ocupado = input(false, { transform: booleanAttribute });
   readonly decidir = output<DecisionTomada<T>>();
 
+  protected readonly textoDe = textoDe;
   protected readonly idMotivo = `motivo-${++siguienteId}`;
   protected readonly pendiente = signal<OpcionDecision<T> | null>(null);
   protected readonly motivo = signal('');

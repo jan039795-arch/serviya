@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { RegionAvisos } from '../../shared/ui/avisos';
 import { ENTORNO, hayAreasSimuladas } from '../entorno';
-import { SelectorRol } from '../mocks/selector-rol';
+import { BarraPrototipo } from '../prototipo/prototipo';
 import { SesionService } from '../sesion/sesion';
 
 interface EnlaceNavegacion {
@@ -15,7 +15,7 @@ interface EnlaceNavegacion {
 /** Armazón de la app: barra superior, contenido y navegación inferior para el pulgar. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, RegionAvisos, SelectorRol],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, RegionAvisos, BarraPrototipo],
   template: `
     <a class="saltar" href="#contenido">Saltar al contenido</a>
     @if (prototipo) {

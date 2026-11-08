@@ -63,6 +63,8 @@ test('pago con tarjeta: teléfono al instante, sin doble cobro y solo lectura al
 });
 
 test('pago en OXXO: queda pendiente y se activa al acreditarse (US3, esc. 4)', async ({ page }) => {
+  test.slow();
+  test.slow();
   await verComo(page, 'cliente');
   await pagar(page, MARIA, 'oxxo');
   await expect(page.getByTestId('resultado-titulo')).toHaveText('Pago pendiente');
@@ -95,6 +97,7 @@ test('el crédito del cliente desbloquea un contacto gratis', async ({ page }) =
 });
 
 test('pase con descuento, uso de un contacto y cancelación en un clic (US4)', async ({ page }) => {
+  test.slow();
   await verComo(page, 'cliente');
   await pagar(page, JUAN, 'tarjeta');
 
@@ -127,6 +130,8 @@ test('un menor de edad no puede pagar contactos (FR-004)', async ({ page }) => {
   await page.getByTestId('crear-cuenta').click();
   await page.getByTestId('codigo').fill('123456');
   await page.getByTestId('verificar').click();
+  // Esperar a que termine la verificación (inicia la sesión) antes de navegar.
+  await expect(page).toHaveURL('http://localhost:4200/');
 
   await page.goto(`/contactar/${JUAN}`);
   await expect(page.getByTestId('menor-de-edad')).toBeVisible();

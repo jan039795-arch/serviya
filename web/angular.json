@@ -33,7 +33,12 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": []
+              "allowedHosts": [
+                "localhost",
+                "127.0.0.1",
+                "serviya.mx",
+                "*.serviya.mx"
+              ]
             },
             "ssr": {
               "entry": "src/server.ts"
@@ -59,6 +64,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/app/core/prototipo/prototipo.ts",
+                  "with": "src/app/core/prototipo/prototipo.prod.ts"
                 }
               ]
             },

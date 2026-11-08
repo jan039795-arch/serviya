@@ -109,7 +109,8 @@ function leerErrores(valor: unknown): Record<string, readonly string[]> | undefi
   if (typeof valor !== 'object' || valor === null) {
     return undefined;
   }
-  const errores: Record<string, readonly string[]> = {};
+  // Sin prototipo: una clave como `__proto__` que venga del servidor no altera el objeto.
+  const errores: Record<string, readonly string[]> = Object.create(null);
   for (const [campo, mensajes] of Object.entries(valor)) {
     if (Array.isArray(mensajes)) {
       errores[campo] = mensajes.filter((m): m is string => typeof m === 'string');

@@ -2,6 +2,7 @@ import {
   booleanAttribute,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   output,
@@ -70,6 +71,7 @@ const OPCIONES: readonly OpcionDecision<DecisionDocumento>[] = [
               [src]="archivo.url"
               [alt]="titulo()"
               referrerpolicy="no-referrer"
+              (error)="cerrarVista('El enlace del documento venció. Vuelve a abrirlo.')"
               data-testid="visor-documento"
             />
           }
@@ -169,12 +171,19 @@ export class DocumentoRevision {
   protected readonly cargando = signal(false);
   protected readonly decidiendo = signal(false);
   protected readonly error = signal<string | null>(null);
+  private vencimientoVista: ReturnType<typeof setTimeout> | null = null;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.cancelarVencimiento());
+  }
 
   protected async ver(): Promise<void> {
     this.error.set(null);
     this.cargando.set(true);
     try {
-      this.vista.set(await this.api.verDocumento(this.documento().id));
+      const vista = await this.api.verDocumento(this.documento().id);
+      this.vista.set(vista);
+      this.programarVencimiento(vista.expiraEn);
     } catch (error: unknown) {
       this.error.set(mensajeGeneral(error));
     } finally {
@@ -195,6 +204,28 @@ export class DocumentoRevision {
       this.error.set(mensajeGeneral(error));
     } finally {
       this.decidiendo.set(false);
+    }
+  }
+
+  /** Cierra el visor cuando vence la URL firmada (5 min) para que se pida una nueva. */
+  protected cerrarVista(mensaje?: string): void {
+    this.cancelarVencimiento();
+    this.vista.set(null);
+    if (mensaje) {
+      this.error.set(mensaje);
+    }
+  }
+
+  private programarVencimiento(expiraEn: string): void {
+    this.cancelarVencimiento();
+    const restante = Math.max(new Date(expiraEn).getTime() - Date.now(), 0);
+    this.vencimientoVista = setTimeout(() => this.cerrarVista(), restante);
+  }
+
+  private cancelarVencimiento(): void {
+    if (this.vencimientoVista) {
+      clearTimeout(this.vencimientoVista);
+      this.vencimientoVista = null;
     }
   }
 }

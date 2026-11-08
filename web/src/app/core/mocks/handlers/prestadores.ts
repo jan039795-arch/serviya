@@ -8,7 +8,7 @@ import {
 } from '../../api/modelos';
 import { diasDesde, esMayorDeEdad } from '../../../shared/fechas/edad';
 import { nombrePublico } from '../../../shared/nombre-publico';
-import { PREFIJO_SUBIDA_SIMULADA } from '../../../shared/subida/subidor';
+import { PREFIJO_SUBIDA_SIMULADA } from '../../prototipo/acciones';
 import { asegurarPerfil, guardarPerfil, marcarEnviado } from '../estado/perfiles';
 import { nuevoId, usuarioActual, UsuarioSimulado } from '../estado/usuarios';
 import {

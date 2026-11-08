@@ -187,7 +187,10 @@ export class SubidaArchivo {
   }
 
   protected async seleccionar(evento: Event): Promise<void> {
-    const archivo = (evento.target as HTMLInputElement).files?.[0];
+    const entrada = evento.target as HTMLInputElement;
+    const archivo = entrada.files?.[0];
+    // Se limpia para que volver a elegir el mismo archivo (tras un error) dispare `change` otra vez.
+    entrada.value = '';
     if (!archivo) {
       return;
     }

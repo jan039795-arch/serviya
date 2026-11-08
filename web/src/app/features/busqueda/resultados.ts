@@ -92,7 +92,7 @@ export class Resultados {
     oficio: this.oficio(),
     municipio: this.municipio(),
     calificacionMin: numeroPositivo(this.calificacionMin()),
-    insignia: this.insignia() as Insignia | undefined,
+    insignia: insigniaValida(this.insignia()),
     tarifaMax: numeroPositivo(this.tarifaMax()),
     tamano: this.paginas() * POR_PAGINA,
   }));
@@ -160,4 +160,11 @@ export class Resultados {
 function numeroPositivo(valor: string | undefined): number | undefined {
   const numero = Number(valor);
   return Number.isFinite(numero) && numero > 0 ? numero : undefined;
+}
+
+const INSIGNIAS: readonly Insignia[] = ['IdentidadVerificada', 'AntecedentesPresentados'];
+
+/** Solo se envía a la API una insignia conocida; cualquier otro valor de la URL se ignora. */
+function insigniaValida(valor: string | undefined): Insignia | undefined {
+  return INSIGNIAS.find((insignia) => insignia === valor);
 }

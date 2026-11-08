@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { DocumentoPropio } from '../../core/api/modelos';
 import { diasDesde, hoyIso } from '../../shared/fechas/edad';
 import { mensajeGeneral } from '../../shared/formularios/errores';
+import { textoDe } from '../../shared/formularios/eventos';
 import { ArchivoSubido, SolicitarSubida, SubidaArchivo } from '../../shared/subida/subida-archivo';
 import { AltaApi } from './alta-api';
 import { AltaEstado } from './alta-estado';
@@ -48,7 +49,7 @@ const MAXIMO_DIAS_COMPROBANTE = 90;
             type="date"
             [max]="hoy"
             [value]="fecha()"
-            (input)="fecha.set($any($event.target).value)"
+            (input)="fecha.set(textoDe($event))"
             [attr.data-testid]="'fecha-' + descripcion().tipo"
           />
         </label>
@@ -100,6 +101,7 @@ export class DocumentoSubida {
   readonly descripcion = input.required<DescripcionDocumento>();
 
   protected readonly hoy = hoyIso();
+  protected readonly textoDe = textoDe;
   protected readonly actual = computed<DocumentoPropio | undefined>(() =>
     this.estado.perfil()?.documentos.find((d) => d.tipo === this.descripcion().tipo),
   );

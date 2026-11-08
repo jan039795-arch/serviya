@@ -35,7 +35,14 @@ async function cargarSinFallar(sesion: SesionService): ReturnType<SesionService[
   }
 }
 
+/**
+ * Manda a entrar recordando la URL completa (ruta y consulta) de la navegación en curso, por
+ * ejemplo `/pago/resultado?pagoId=…`. Si no hay navegación (pruebas), usa los segmentos.
+ */
 function aEntrar(router: Router, segmentos: readonly UrlSegment[]): UrlTree {
-  const volver = '/' + segmentos.map((segmento) => segmento.path).join('/');
+  const enCurso = router.currentNavigation()?.extractedUrl;
+  const volver = enCurso
+    ? router.serializeUrl(enCurso)
+    : '/' + segmentos.map((segmento) => encodeURIComponent(segmento.path)).join('/');
   return router.createUrlTree(['/entrar'], { queryParams: { volver } });
 }

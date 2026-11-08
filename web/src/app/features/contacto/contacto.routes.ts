@@ -13,12 +13,6 @@ export const rutasContacto: Routes = [
     title: 'Contactar · ServiYa',
   },
   {
-    path: 'pago/simulado',
-    canMatch: [conSesion],
-    loadComponent: () => import('./checkout-simulado').then((m) => m.CheckoutSimulado),
-    title: 'Pago · ServiYa',
-  },
-  {
     path: 'pago/resultado',
     canMatch: [conSesion],
     loadComponent: () => import('./resultado-pago').then((m) => m.ResultadoPago),

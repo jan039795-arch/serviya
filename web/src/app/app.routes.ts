@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { NoEncontrada, Pendiente, SinPermiso } from './core/layout/paginas';
 import { Shell } from './core/layout/shell';
+import { rutasPrototipo } from './core/prototipo/prototipo';
 import { conRol, conSesion } from './core/sesion/guards';
 
 /**
@@ -42,8 +43,7 @@ export const routes: Routes = [
       {
         path: 'cuenta',
         canMatch: [conSesion],
-        component: Pendiente,
-        data: { titulo: 'Mi cuenta' },
+        loadComponent: () => import('./features/cuenta/mi-cuenta').then((m) => m.MiCuenta),
         title: 'Mi cuenta · ServiYa',
       },
       {
@@ -59,6 +59,7 @@ export const routes: Routes = [
         canMatch: [conRol('Admin')],
         loadChildren: () => import('./features/admin/admin.routes').then((m) => m.rutasAdmin),
       },
+      ...rutasPrototipo,
       { path: 'sin-permiso', component: SinPermiso, title: 'Sin permiso · ServiYa' },
       { path: '**', component: NoEncontrada, title: 'Página no encontrada · ServiYa' },
     ],
