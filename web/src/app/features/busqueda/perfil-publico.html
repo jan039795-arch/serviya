@@ -1,0 +1,166 @@
+@if (noDisponible()) {
+  <section class="contenedor" data-testid="perfil-no-disponible">
+    <h1>Este perfil no está disponible</h1>
+    <p>Puede que esté en revisión o que ya no ofrezca sus servicios en ServiYa.</p>
+    <a appBoton routerLink="/">Buscar otro prestador</a>
+  </section>
+} @else if (perfil.error()) {
+  <section class="contenedor">
+    <p class="alerta alerta--error" role="alert">No pudimos cargar el perfil.</p>
+    <button appBoton type="button" (click)="perfil.reload()">Reintentar</button>
+  </section>
+} @else if (perfil.hasValue()) {
+  @let datos = perfil.value();
+  <article class="contenedor perfil" data-testid="perfil-publico">
+    <header class="encabezado">
+      @if (datos.fotos[0]; as foto) {
+        <img [src]="foto.url" alt="" width="88" height="88" class="avatar" />
+      } @else {
+        <span class="avatar avatar--iniciales" aria-hidden="true">{{
+          datos.nombrePublico.charAt(0)
+        }}</span>
+      }
+      <div>
+        <h1 data-testid="nombre-publico">{{ datos.nombrePublico }}</h1>
+        <p class="texto-suave">{{ datos.colonia }}, {{ datos.municipio }}</p>
+        <p class="calificacion">
+          <app-estrellas [valor]="promedio()" />
+          @if (datos.totalResenas > 0) {
+            <span class="texto-suave">({{ totalResenas() }})</span>
+          }
+        </p>
+      </div>
+    </header>
+
+    @if (datos.insignias.length > 0) {
+      <div class="insignias">
+        @for (insignia of datos.insignias; track insignia) {
+          <app-insignia [tipo]="insignia" />
+        }
+      </div>
+    }
+
+    <div class="contactar">
+      <a appBoton anchoCompleto [routerLink]="['/contactar', datos.id]" data-testid="contactar"
+        >Contactar</a
+      >
+      <p class="texto-suave">
+        Desbloquea su teléfono y el chat. Pagas por el contacto, no por el trabajo.
+      </p>
+    </div>
+
+    @if (datos.descripcion) {
+      <section aria-labelledby="titulo-sobre">
+        <h2 id="titulo-sobre">Sobre su trabajo</h2>
+        <p class="descripcion">{{ datos.descripcion }}</p>
+      </section>
+    }
+
+    <section aria-labelledby="titulo-oficios">
+      <h2 id="titulo-oficios">Oficios y tarifas de referencia</h2>
+      <ul class="oficios">
+        @for (oficio of datos.oficios; track oficio.oficioId) {
+          <li>
+            <strong>{{ oficio.nombre }}</strong>
+            <span class="texto-suave">{{ oficio.aniosExperiencia }} años de experiencia</span>
+            <span>
+              {{ oficio.tarifaMinCentavos | mxn }} a {{ oficio.tarifaMaxCentavos | mxn }} por
+              {{ textoUnidad(oficio.unidadTarifa) }}
+            </span>
+          </li>
+        }
+      </ul>
+      <p class="texto-suave">El precio final lo acuerdan ustedes. ServiYa no cobra comisión.</p>
+    </section>
+
+    @if (datos.disponibilidad.length > 0) {
+      <section aria-labelledby="titulo-horario">
+        <h2 id="titulo-horario">Horario</h2>
+        <ul class="horario">
+          @for (franja of datos.disponibilidad; track franja.dia) {
+            <li>
+              <span>{{ nombreDia(franja.dia) }}</span
+              ><span>{{ franja.desde }} a {{ franja.hasta }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (datos.videoUrl || datos.fotos.length > 0) {
+      <section aria-labelledby="titulo-trabajos">
+        <h2 id="titulo-trabajos">Trabajos realizados</h2>
+        @if (datos.videoUrl; as video) {
+          <video [src]="video" controls preload="metadata" playsinline class="video">
+            Tu navegador no puede reproducir este video.
+          </video>
+        }
+        <ul class="fotos">
+          @for (foto of datos.fotos; track foto.url) {
+            <li>
+              <img
+                [src]="foto.url"
+                [alt]="foto.descripcion || 'Foto de un trabajo'"
+                width="400"
+                height="300"
+                loading="lazy"
+              />
+              @if (foto.descripcion) {
+                <span>{{ foto.descripcion }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section aria-labelledby="titulo-calificaciones">
+      <h2 id="titulo-calificaciones">Calificaciones</h2>
+      @if (datos.totalResenas === 0) {
+        <p>
+          Todavía no tiene reseñas. Las reseñas solo las dejan clientes con un trabajo terminado.
+        </p>
+      } @else {
+        <dl class="ejes">
+          @for (eje of ejes; track eje.clave) {
+            <dt>{{ eje.texto }}</dt>
+            <dd><app-estrellas [valor]="datos.promedios[eje.clave]" /></dd>
+          }
+        </dl>
+
+        <ul class="resenas" data-testid="resenas">
+          @for (resena of resenas.hasValue() ? resenas.value().items : []; track resena.id) {
+            <li>
+              <p class="resena__autor">
+                <strong>{{ resena.autor }}</strong>
+                <span class="texto-suave">{{ fecha(resena.publicadaEn) }}</span>
+              </p>
+              <app-estrellas [valor]="promedioResena(resena.calificaciones)" />
+              @if (resena.comentario) {
+                <p>{{ resena.comentario }}</p>
+              }
+              @if (resena.respuesta) {
+                <p class="respuesta">
+                  <strong>Respuesta de {{ datos.nombrePublico }}:</strong> {{ resena.respuesta }}
+                </p>
+              }
+            </li>
+          }
+        </ul>
+        @if (hayMasResenas()) {
+          <button
+            appBoton
+            variante="secundario"
+            type="button"
+            (click)="verMasResenas()"
+            [disabled]="resenas.isLoading()"
+          >
+            Ver más reseñas
+          </button>
+        }
+      }
+    </section>
+  </article>
+} @else {
+  <app-cargando texto="Cargando el perfil…" />
+}

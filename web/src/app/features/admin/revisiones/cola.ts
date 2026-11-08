@@ -20,7 +20,7 @@ import { RevisionesApi } from './revisiones-api';
         <p class="alerta alerta--error" role="alert">{{ mensajeError() }}</p>
         <button appBoton type="button" (click)="pendientes.reload()">Reintentar</button>
       } @else {
-        @let lista = pendientes.value() ?? [];
+        @let lista = pendientes.hasValue() ? pendientes.value() : [];
         @if (lista.length === 0) {
           <app-estado-vacio titulo="No hay perfiles pendientes" mensaje="Todo está al día." />
         } @else {

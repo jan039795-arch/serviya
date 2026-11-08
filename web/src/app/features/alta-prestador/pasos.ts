@@ -73,12 +73,4 @@ export function tituloDocumento(tipo: TipoDocumento): string {
   return DOCUMENTOS.find((d) => d.tipo === tipo)?.titulo ?? tipo;
 }
 
-export const DIAS_SEMANA: readonly { readonly dia: number; readonly nombre: string }[] = [
-  { dia: 1, nombre: 'Lunes' },
-  { dia: 2, nombre: 'Martes' },
-  { dia: 3, nombre: 'Miércoles' },
-  { dia: 4, nombre: 'Jueves' },
-  { dia: 5, nombre: 'Viernes' },
-  { dia: 6, nombre: 'Sábado' },
-  { dia: 0, nombre: 'Domingo' },
-];
+export { DIAS_SEMANA } from '../../shared/textos';

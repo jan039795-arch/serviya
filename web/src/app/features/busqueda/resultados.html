@@ -1,0 +1,95 @@
+<section class="contenedor">
+  <p><a routerLink="/">← Cambiar búsqueda</a></p>
+  <h1>
+    {{ nombreOficio() }}
+    @if (nombreMunicipio(); as municipio) {
+      en {{ municipio }}
+    }
+  </h1>
+
+  <details [open]="hayFiltros()">
+    <summary>Filtrar resultados</summary>
+    <form class="filtros" novalidate (submit)="aplicar($event)" data-testid="form-filtros">
+      <label>
+        <span>Calificación mínima</span>
+        <select
+          [value]="editables().calificacionMin"
+          (change)="editar('calificacionMin', $event)"
+          data-testid="filtro-calificacion"
+        >
+          <option value="">Cualquiera</option>
+          <option value="4">4 estrellas o más</option>
+          <option value="4.5">4.5 estrellas o más</option>
+        </select>
+      </label>
+      <label>
+        <span>Insignia</span>
+        <select
+          [value]="editables().insignia"
+          (change)="editar('insignia', $event)"
+          data-testid="filtro-insignia"
+        >
+          <option value="">Cualquiera</option>
+          <option value="AntecedentesPresentados">Antecedentes presentados</option>
+        </select>
+      </label>
+      <label>
+        <span>Tarifa máxima ($)</span>
+        <input
+          type="number"
+          inputmode="numeric"
+          min="1"
+          [value]="editables().tarifaMaxPesos"
+          (input)="editar('tarifaMaxPesos', $event)"
+          data-testid="filtro-tarifa"
+        />
+      </label>
+      <div class="acciones">
+        @if (hayFiltros()) {
+          <button appBoton variante="secundario" type="button" (click)="limpiar()">
+            Quitar filtros
+          </button>
+        }
+        <button appBoton type="submit" data-testid="aplicar-filtros">Aplicar</button>
+      </div>
+    </form>
+  </details>
+
+  @if (resultados.error()) {
+    <p class="alerta alerta--error" role="alert">{{ mensajeError() }}</p>
+    <button appBoton type="button" (click)="resultados.reload()">Reintentar</button>
+  } @else if (resultados.hasValue()) {
+    @let pagina = resultados.value();
+    <p class="resumen texto-suave" role="status" data-testid="total-resultados">
+      {{ pagina.total === 1 ? '1 prestador' : pagina.total + ' prestadores' }}
+    </p>
+    @if (pagina.total === 0) {
+      <app-estado-vacio
+        titulo="No encontramos prestadores"
+        mensaje="Prueba con otro municipio o quita algún filtro."
+      >
+        <a appBoton variante="secundario" routerLink="/">Hacer otra búsqueda</a>
+      </app-estado-vacio>
+    } @else {
+      <ul class="lista" data-testid="resultados">
+        @for (tarjeta of pagina.items; track tarjeta.id) {
+          <li><app-tarjeta-prestador [tarjeta]="tarjeta" /></li>
+        }
+      </ul>
+      @if (hayMas()) {
+        <button
+          appBoton
+          variante="secundario"
+          anchoCompleto
+          type="button"
+          (click)="verMas()"
+          [disabled]="resultados.isLoading()"
+        >
+          {{ resultados.isLoading() ? 'Cargando…' : 'Ver más' }}
+        </button>
+      }
+    }
+  } @else {
+    <app-cargando texto="Buscando prestadores…" />
+  }
+</section>

@@ -49,8 +49,8 @@ contrato funcional que siguen el prototipo y la API.
 |---|---|---|---|
 | `GET /catalogos/oficios` | P | → `Oficio[]` | |
 | `GET /catalogos/municipios` | P | → `Municipio[]` (sin polígono) | |
-| `GET /catalogos/municipios/ubicar?lat&lng` | P | → `Municipio` o 404 | R5 |
-| `GET /prestadores?oficio&municipio&calificacionMin&insignia&tarifaMax&pagina` | P | → página de `TarjetaPrestador { id, nombrePublico, colonia, municipio, oficios[], tarifaDesde, promedios, totalResenas, insignias[], fotoPrincipalUrl }` | FR-018, FR-019 |
+| `POST /catalogos/municipios/ubicar` | P | `{ lat, lng }` en el cuerpo → `Municipio` o 404 (la ubicación es un dato personal y no va en la URL, principio I) | R5 |
+| `GET /prestadores?oficio&municipio&calificacionMin&insignia&tarifaMax&pagina&tamano` (`oficio` = slug; `tarifaMax` en centavos) | P | → página de `TarjetaPrestador { id, nombrePublico, colonia, municipio, oficios[], tarifaDesde, promedios, totalResenas, insignias[], fotoPrincipalUrl }` | FR-018, FR-019 |
 | `GET /prestadores/{id}` | P | → `PerfilPublico` (**nunca** teléfono, correo, dirección ni documentos); 404 si no está aprobado | FR-017, US2 |
 | `GET /prestadores/{id}/resenas?pagina` | P | → página de `ResenaPublica` | FR-039 |
 

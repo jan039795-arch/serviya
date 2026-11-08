@@ -89,10 +89,10 @@ los perfiles Pixel 7 e iPhone 14.
 
 ### Pantallas de US2 (búsqueda y perfil público)
 
-- [ ] T026 [P] [US2] Crear `web/src/app/features/busqueda/inicio.ts`: buscador por oficio y municipio, botón "Usar mi ubicación" (simulado) y oficios frecuentes
-- [ ] T027 [P] [US2] Crear `web/src/app/features/busqueda/resultados.ts`: filtros de calificación mínima, insignia y tarifa máxima guardados en la URL, lista de `TarjetaPrestador`, botón "Ver más" y estado vacío
-- [ ] T028 [P] [US2] Crear `web/src/app/features/busqueda/perfil-publico.ts`: nombre público, colonia o municipio, oficios, experiencia, tarifas, disponibilidad, video, fotos, insignias, promedios por eje, reseñas paginadas y botón "Contactar"; sin teléfono, correo, dirección ni documentos; página "Este perfil no está disponible" para perfiles no aprobados
-- [ ] T029 [US2] Crear el manejador `web/src/app/core/mocks/handlers/busqueda.ts`: catálogos, `GET /prestadores` (solo `Aprobado`, con filtros y paginación) y `GET /prestadores/{id}` (404 si no está aprobado)
+- [x] T026 [P] [US2] Crear `web/src/app/features/busqueda/inicio.ts`: buscador por oficio y municipio, botón "Usar mi ubicación" (simulado) y oficios frecuentes
+- [x] T027 [P] [US2] Crear `web/src/app/features/busqueda/resultados.ts`: filtros de calificación mínima, insignia y tarifa máxima guardados en la URL, lista de `TarjetaPrestador`, botón "Ver más" y estado vacío
+- [x] T028 [P] [US2] Crear `web/src/app/features/busqueda/perfil-publico.ts`: nombre público, colonia o municipio, oficios, experiencia, tarifas, disponibilidad, video, fotos, insignias, promedios por eje, reseñas paginadas y botón "Contactar"; sin teléfono, correo, dirección ni documentos; página "Este perfil no está disponible" para perfiles no aprobados
+- [x] T029 [US2] Crear el manejador `web/src/app/core/mocks/handlers/busqueda.ts`: catálogos, `GET /prestadores` (solo `Aprobado`, con filtros y paginación) y `GET /prestadores/{id}` (404 si no está aprobado)
 
 ### Pantallas de US3 y US4 (pago de acceso y pase)
 
@@ -165,7 +165,7 @@ Testcontainers).
 
 - [ ] T065 Crear en `api/src/Modulos/ServiYa.Busqueda/` las entidades `Oficio` (`Id`, `Nombre`, `Slug`, `Icono`, `Activo`) y `Municipio` (`Id`, `ClaveInegi`, `Nombre`, `Estado`, `Poligono` geography(MultiPolygon), `Centroide`) en el esquema `catalogos`, índice GIST sobre `poligono`, semilla de los 12 oficios y migración
 - [ ] T066 Crear el importador `api/src/Modulos/ServiYa.Busqueda/Datos/Semillas/importar-municipios.sql` que carga un GeoJSON del Marco Geoestadístico de INEGI con `ST_GeomFromGeoJSON` (sin paquetes extra); en desarrollo usar los municipios de una zona de prueba hasta que se defina la ciudad del piloto (pendiente abierto)
-- [ ] T067 Crear `api/src/Modulos/ServiYa.Busqueda/Endpoints/CatalogosEndpoints.cs`: `GET /catalogos/oficios`, `GET /catalogos/municipios` (sin polígono) y `POST /catalogos/municipios/ubicar` con `{ lat, lng }` en el cuerpo (punto dentro de polígono; 404 si no cae en la zona). **Cambia el `GET ?lat&lng` del contrato** porque la ubicación es un dato personal y no debe viajar en la URL (principio I): actualizar `contracts/api.md`. Pruebas en `api/tests/ServiYa.IntegrationTests/Busqueda/CatalogosTests.cs`; crear `ICatalogosService` para Prestadores
+- [ ] T067 Crear `api/src/Modulos/ServiYa.Busqueda/Endpoints/CatalogosEndpoints.cs`: `GET /catalogos/oficios`, `GET /catalogos/municipios` (sin polígono) y `POST /catalogos/municipios/ubicar` con `{ lat, lng }` en el cuerpo (punto dentro de polígono; 404 si no cae en la zona). El contrato ya se cambió de `GET ?lat&lng` a `POST` en la Etapa 2, porque la ubicación es un dato personal y no debe viajar en la URL (principio I). Pruebas en `api/tests/ServiYa.IntegrationTests/Busqueda/CatalogosTests.cs`; crear `ICatalogosService` para Prestadores
 
 ### Conexión base del frontend
 

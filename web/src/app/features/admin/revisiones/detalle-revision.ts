@@ -16,6 +16,7 @@ import { DIAS_SEMANA } from '../../alta-prestador/pasos';
 import { DecisionConMotivo, DecisionTomada, OpcionDecision } from './decision-con-motivo';
 import { DocumentoRevision } from './documento-revision';
 import { RevisionesApi } from './revisiones-api';
+import { valorDe } from '../../../shared/recursos';
 
 const OBLIGATORIOS = ['IneFrente', 'IneReverso', 'Selfie', 'ComprobanteDomicilio'];
 
@@ -96,22 +97,22 @@ export class DetalleRevision {
   protected readonly decidiendo = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  protected readonly editable = computed(() => this.perfil.value()?.estado === 'EnRevision');
+  protected readonly editable = computed(() => valorDe(this.perfil)?.estado === 'EnRevision');
   protected readonly edad = computed(() => {
-    const fecha = this.perfil.value()?.datosPersonales?.fechaNacimiento;
+    const fecha = valorDe(this.perfil)?.datosPersonales?.fechaNacimiento;
     return fecha ? calcularEdad(fecha) : null;
   });
   protected readonly nombresOficios = computed(() => {
-    const catalogo = this.oficios.value() ?? [];
+    const catalogo = valorDe(this.oficios) ?? [];
     return new Map(catalogo.map((o) => [o.id, o.nombre]));
   });
   protected readonly nombresCobertura = computed(() => {
-    const catalogo = this.municipios.value() ?? [];
-    const ids = this.perfil.value()?.cobertura ?? [];
+    const catalogo = valorDe(this.municipios) ?? [];
+    const ids = valorDe(this.perfil)?.cobertura ?? [];
     return ids.map((id) => catalogo.find((m) => m.id === id)?.nombre ?? id).join(', ');
   });
   protected readonly opcionesPerfil = computed<readonly OpcionDecision<DecisionPerfil>[]>(() => {
-    const documentos = this.perfil.value()?.documentos ?? [];
+    const documentos = valorDe(this.perfil)?.documentos ?? [];
     const aprobados = OBLIGATORIOS.every(
       (tipo) => documentos.find((d) => d.tipo === tipo)?.estado === 'Aprobado',
     );

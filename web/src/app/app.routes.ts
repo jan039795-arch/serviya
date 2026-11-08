@@ -12,7 +12,17 @@ export const routes: Routes = [
     path: '',
     component: Shell,
     children: [
-      { path: '', component: Pendiente, data: { titulo: 'Busca un oficio' }, title: 'ServiYa' },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/busqueda/busqueda.routes').then((m) => m.rutasBusqueda),
+      },
+      {
+        path: 'contactar/:prestadorId',
+        component: Pendiente,
+        data: { titulo: 'Contactar' },
+        title: 'Contactar · ServiYa',
+      },
       {
         path: '',
         loadChildren: () => import('./features/cuenta/cuenta.routes').then((m) => m.rutasCuenta),

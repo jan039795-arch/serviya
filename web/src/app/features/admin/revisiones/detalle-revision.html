@@ -6,7 +6,8 @@
   } @else if (perfil.error()) {
     <p class="alerta alerta--error" role="alert">No pudimos cargar el perfil.</p>
     <button appBoton type="button" (click)="recargar()">Reintentar</button>
-  } @else if (perfil.value(); as datos) {
+  } @else if (perfil.hasValue()) {
+    @let datos = perfil.value();
     <h1 data-testid="titulo-revision">{{ datos.nombrePublico }}</h1>
     @if (!editable()) {
       <p class="alerta alerta--info">Este perfil ya no está en revisión ({{ datos.estado }}).</p>
