@@ -295,3 +295,4 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | Oferta del pase con mínimo de $39 en el prototipo, FR-027, data-model y T113 | ver `git log` |
 | 2026-11-08 | Docker Desktop y WSL 2 funcionando; servicios locales probados (T039) y migración `Inicial` de Cuentas aplicada | ver `git log` |
 | 2026-11-08 | Fábrica de pruebas con PostgreSQL y RustFS reales (T046) e integración de almacenamiento (T050) y candado de tareas (T052) | ver `git log` |
+| 2026-11-08 | Subidos a GitHub (`main`) los commits de la Etapa 3 hasta T046, a pedido del usuario | ver `git log` |
