@@ -37,6 +37,7 @@ public static class RegistroDatos
             ?? throw new InvalidOperationException($"Falta la cadena de conexión ConnectionStrings:{nombre}.");
 
         services.TryAddSingleton<MarcasTiempoInterceptor>();
+        ObtenerCatalogo(services).Agregar(typeof(TContexto));
         services.AddDbContext<TContexto>((proveedor, opciones) => opciones
             .UseNpgsql(cadena, npgsql =>
             {
@@ -48,5 +49,37 @@ public static class RegistroDatos
             })
             .AddInterceptors(proveedor.GetRequiredService<MarcasTiempoInterceptor>()));
         return services;
+    }
+
+    private static CatalogoDbContexts ObtenerCatalogo(IServiceCollection services)
+    {
+        if (services.FirstOrDefault(d => d.ServiceType == typeof(CatalogoDbContexts))?.ImplementationInstance
+            is CatalogoDbContexts catalogo)
+        {
+            return catalogo;
+        }
+
+        var nuevo = new CatalogoDbContexts();
+        services.AddSingleton(nuevo);
+        return nuevo;
+    }
+}
+
+/// <summary>
+/// Los <c>DbContext</c> de todos los módulos, en el orden en que se registraron. Lo usan las pruebas
+/// de integración para aplicar todas las migraciones en una base nueva.
+/// </summary>
+public sealed class CatalogoDbContexts
+{
+    private readonly List<Type> tipos = [];
+
+    public IReadOnlyList<Type> Tipos => tipos;
+
+    internal void Agregar(Type tipo)
+    {
+        if (!tipos.Contains(tipo))
+        {
+            tipos.Add(tipo);
+        }
     }
 }

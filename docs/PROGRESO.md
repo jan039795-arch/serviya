@@ -7,7 +7,7 @@
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
 **Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 terminada (T038–T043). Docker Desktop ya
 funciona: PostgreSQL con PostGIS y RustFS corren en local y la migración `Inicial` de Cuentas está
-aplicada. De la Fase 4 están hechas
+aplicada. De la Fase 4 faltan la bitácora (T049) y Cuentas desde T058 en adelante, y los catálogos. De la Fase 4 están hechas
 T044, T045, T047, T048, T051, T053–T057 y T060, y la parte sin servidor de T050 y T052; lo que
 falta necesita PostgreSQL o RustFS.
 
@@ -118,7 +118,16 @@ falta necesita PostgreSQL o RustFS.
   `withCredentials` solo hacia `environment.apiUrl`, también si es absoluta), el de Angular apagado,
   token pedido al arrancar sin bloquear la pantalla y `web/proxy.conf.json` hacia la API en el
   puerto 5189 para `/api` y `/hubs`. 97 pruebas unitarias y 70 E2E del frontend pasan.
-- 237 pruebas del backend pasan; cobertura: `ContactMasker` 97%, `ServicioCodigos` 94%,
+- Pruebas de integración con base real (T046): `ContenedoresServiYa` levanta una vez PostGIS (con el
+  `init.sql` del proyecto, así los roles son los mismos) y RustFS; `ServiYaFactory` crea una base por
+  clase copiada de la plantilla, aplica todas las migraciones como `serviya_owner` y conecta la API
+  como `serviya_app`, con `FakeTimeProvider` y el correo en memoria. Probado contra la base: la app no
+  puede cambiar el esquema, marcas de tiempo con el reloj, uuid v7, correo único y que dos
+  verificaciones simultáneas del mismo código no se saltan los intentos (`xmin`). Contra RustFS: subida
+  con URL firmada, tipo firmado, validar y conservar con ETag, reemplazo detectado, lectura firmada,
+  copia al público y borrado (T050). Contra PostgreSQL: el candado de tareas con dos y diez instancias
+  (T052).
+- 252 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
   `AlmacenR2` 81%, `ValidadorFirmaArchivo` y `LimitesUso` 100%.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
@@ -128,10 +137,10 @@ falta necesita PostgreSQL o RustFS.
    app" de `specs/001-serviya-mvp/quickstart.md` (`npm run serve:prototipo` + `chrome://inspect`)
    y anota en esta bitácora los ajustes que pida. Con su aprobación se marca T037.
 2. Al abrir una sesión: Docker Desktop debe estar abierto; `docker compose up -d` desde la raíz.
-3. Seguir con T046 (fábrica de pruebas con PostGIS y RustFS; reutilizar
-   `Infraestructura/FabricaSinBaseDeDatos.cs` y `RegistroEnMemoria.cs`), las pruebas de integración
-   que faltan de T050 (RustFS) y T052 (dos instancias), T049 (bitácora), T058 (pruebas de cuentas y
-   permisos, TDD), T059 (Identity y cookie), T061–T064 y catálogos (T065–T067).
+3. Seguir con T049 (bitácora en el esquema `admin`, migración con `REVOKE UPDATE, DELETE` y prueba
+   con `ServiYaFactory` de que la app no puede modificarla), luego T058 (pruebas de cuentas y permisos,
+   TDD), T059 (Identity y cookie), T061 (endpoints; tratar `DbUpdateConcurrencyException` como
+   intento rechazado), `ClientesDePrueba.cs` de T046, T062–T064.
 4. Después de Cuentas: catálogos (T065–T067), tipos desde OpenAPI y guardas (T068) y conexión de
    las pantallas de cuenta (T070).
 5. Nada más pendiente de decidir para la Etapa 3.
@@ -245,6 +254,10 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | El pase con descuento nunca baja de $39 (precio de un contacto): 1 contacto pagado → $90, 2 → $51, 3 o más → $39 | El usuario no tuvo preferencia y se tomó la opción recomendada: el cliente sigue ganando y la plataforma no regala 30 contactos. Actualiza FR-027 y data-model |
 | 2026-11-08 | Smart App Control de Windows apagado (lo hizo el usuario) | Tras reiniciar pasó a "Activado" y bloqueaba todo lo que compila .NET (API, pruebas y `dotnet ef`); el antivirus de Defender sigue activo |
 | 2026-11-08 | Pendiente para producción (T148): quitar a `serviya_app` la escritura sobre `__ef_migraciones` de cada esquema | Los privilegios por defecto de `init.sql` también le dan escritura al historial de migraciones |
+| 2026-11-08 | Pruebas de integración: contenedores compartidos por ensamblado (`AssemblyFixture`) y una base por clase copiada de la plantilla `serviya` | Arrancar PostGIS una sola vez es rápido; la plantilla trae los roles, PostGIS y los privilegios por defecto del `init.sql` real |
+| 2026-11-08 | En las pruebas, las migraciones se aplican con el `DbContext` de la API cambiando solo la cadena a la del dueño (`SetConnectionString`) | Mismo modelo y opciones (Identity con esquema 2) que la API; los módulos se descubren con `CatalogoDbContexts` |
+| 2026-11-08 | En las pruebas el planificador no corre solo; cada prueba llama a `EjecutarRondaAsync` | Resultados deterministas con `FakeTimeProvider` |
+| 2026-11-08 | RustFS de pruebas como root sobre `tmpfs` | Sin volumen no hay que ajustar permisos y se borra al terminar |
 
 ## Pendientes abiertos
 
@@ -281,3 +294,4 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | XSRF propio, token al arrancar y proxy de desarrollo en el frontend (T069) | ver `git log` |
 | 2026-11-08 | Oferta del pase con mínimo de $39 en el prototipo, FR-027, data-model y T113 | ver `git log` |
 | 2026-11-08 | Docker Desktop y WSL 2 funcionando; servicios locales probados (T039) y migración `Inicial` de Cuentas aplicada | ver `git log` |
+| 2026-11-08 | Fábrica de pruebas con PostgreSQL y RustFS reales (T046) e integración de almacenamiento (T050) y candado de tareas (T052) | ver `git log` |

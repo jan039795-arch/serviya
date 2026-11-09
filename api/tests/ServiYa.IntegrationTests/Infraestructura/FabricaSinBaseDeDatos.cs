@@ -43,24 +43,29 @@ internal static class FabricaSinBaseDeDatos
                 builder.UseSetting(clave, valor);
             }
 
-            // Sin los user-secrets del desarrollador: en "Development" se cargarían y las pruebas
-            // dependerían de la máquina.
-            builder.ConfigureAppConfiguration((_, fuentes) =>
-            {
-                var secretos = fuentes.Sources.OfType<JsonConfigurationSource>()
-                    .Where(fuente => fuente.Path == "secrets.json")
-                    .ToList();
-                foreach (var fuente in secretos)
-                {
-                    fuentes.Sources.Remove(fuente);
-                }
-            });
+            QuitarUserSecrets(builder);
 
             // El planificador nunca toma el candado de PostgreSQL: no hay base de datos.
             builder.ConfigureServices(s => s.Replace(ServiceDescriptor.Singleton<ICandadoTareas, CandadoNuncaDisponible>()));
             if (servicios is not null)
             {
                 builder.ConfigureServices(servicios);
+            }
+        });
+
+    /// <summary>
+    /// Sin los user-secrets del desarrollador: en "Development" se cargarían y las pruebas dependerían
+    /// de la máquina.
+    /// </summary>
+    public static void QuitarUserSecrets(IWebHostBuilder builder) =>
+        builder.ConfigureAppConfiguration((_, fuentes) =>
+        {
+            var secretos = fuentes.Sources.OfType<JsonConfigurationSource>()
+                .Where(fuente => fuente.Path == "secrets.json")
+                .ToList();
+            foreach (var fuente in secretos)
+            {
+                fuentes.Sources.Remove(fuente);
             }
         });
 
