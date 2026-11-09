@@ -1,8 +1,10 @@
 using ServiYa.Api.Modulos;
 using ServiYa.Api.Seguridad;
+using ServiYa.Comun.Almacenamiento;
 using ServiYa.Comun.Configuracion;
 using ServiYa.Comun.Correo;
 using ServiYa.Comun.Errores;
+using ServiYa.Comun.Tareas;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AgregarOpcionesDeServiYa(builder.Configuration);
 builder.Services.AgregarCorreo();
+builder.Services.AgregarAlmacenamiento();
+builder.Services.AgregarTareasProgramadas();
 builder.Services.AgregarSeguridadHttp(builder.Configuration);
 builder.Services.AgregarLimitesUso();
 builder.AgregarModulos();

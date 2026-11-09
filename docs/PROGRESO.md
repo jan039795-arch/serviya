@@ -7,7 +7,8 @@
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
 **Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 lista (T038, T040–T043) salvo probar
 `docker-compose.yml` (T039), que espera a que el usuario instale Docker. De la Fase 4 están hechas
-T044, T045, T047, T048, T051, T053–T057 y T060; lo que falta necesita PostgreSQL o RustFS.
+T044, T045, T047, T048, T051, T053–T057 y T060, y la parte sin servidor de T050 y T052; lo que
+falta necesita PostgreSQL o RustFS.
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -92,7 +93,16 @@ T044, T045, T047, T048, T051, T053–T057 y T060; lo que falta necesita PostgreS
   intentos, 3 envíos por hora, solo el hash); `CuentasDbContext` en el esquema `cuentas` con las
   tablas de Identity renombradas (`usuarios`, `roles`...) y la migración `Inicial` generada (**sin
   aplicar todavía**). Una prueba falla si el modelo cambia sin su migración.
-- 137 pruebas del backend pasan (unitarias e integración sin base de datos).
+- Almacenamiento (T050, parcial): `ValidadorFirmaArchivo` reconoce JPEG, PNG, WebP, PDF, MP4 y MOV
+  por sus primeros bytes (MP4 y MOV equivalen; HEIC no pasa); `IAlmacenArchivos` con `AlmacenR2`
+  (URL de subida PUT de 10 min con el tipo firmado, lectura de 5 min, URL pública, copiar al
+  público, eliminar y leer el inicio); claves `carpeta/guid` validadas. Las URL firmadas se probaron
+  sin conexión; copiar, eliminar y leer esperan a RustFS.
+- Tareas programadas (T052, parcial): `PlanificadorTareas` corre al arrancar y cada 5 min, cada
+  tarea en su ámbito y con su candado (`CandadoPostgres` con `pg_try_advisory_lock`); una tarea con
+  error no detiene a las demás. Los módulos registran sus tareas con `AgregarTarea<T>()`. Probado con
+  un candado simulado; falta la prueba de dos instancias contra PostgreSQL.
+- 169 pruebas del backend pasan (unitarias e integración sin base de datos).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
@@ -105,11 +115,11 @@ T044, T045, T047, T048, T051, T053–T057 y T060; lo que falta necesita PostgreS
    `almacen-buckets` termina bien y que `serviya_app` entra a PostgreSQL; con eso se marca T039.
 3. Con Docker: aplicar la migración `Inicial` (`dotnet tool restore` y `dotnet ef database update`,
    ver `CLAUDE.md`) y seguir con T046 (fábrica de pruebas con PostGIS y RustFS; reutilizar
-   `Infraestructura/FabricaSinBaseDeDatos.cs` y `RegistroEnMemoria.cs`), T049 (bitácora), T050
-   (almacenamiento), T052 (tareas programadas), T058 (pruebas de cuentas y permisos, TDD), T059
-   (Identity y cookie), T061–T064 y catálogos (T065–T067).
-4. Sin Docker todavía se puede adelantar la parte pura de T050 (`ValidadorFirmaArchivo` y las URL
-   firmadas, que se calculan sin conectarse) y de T052 (planificador con un candado simulado).
+   `Infraestructura/FabricaSinBaseDeDatos.cs` y `RegistroEnMemoria.cs`), las pruebas de integración
+   que faltan de T050 (RustFS) y T052 (dos instancias), T049 (bitácora), T058 (pruebas de cuentas y
+   permisos, TDD), T059 (Identity y cookie), T061–T064 y catálogos (T065–T067).
+4. Sin Docker ya no queda trabajo de backend que valga la pena adelantar: lo siguiente depende de la
+   base de datos.
 5. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
 
 ## Etapas del proyecto
@@ -201,6 +211,10 @@ T044, T045, T047, T048, T051, T053–T057 y T060; lo que falta necesita PostgreS
 | 2026-11-08 | Quien nació un 29 de febrero cumple el 1 de marzo en años no bisiestos | Igual que `web/src/app/shared/fechas/edad.ts`; es la regla más estricta para la mayoría de edad |
 | 2026-11-08 | `dotnet ef` usa la conexión `Migraciones` (`EF.IsDesignTime`) y la API la `Default` | Las migraciones las aplica el dueño del esquema; la app no puede cambiarlo |
 | 2026-11-08 | Las migraciones se marcan como código generado en `api/.editorconfig` | Los analizadores con advertencias como errores rechazaban el código de `dotnet ef` |
+| 2026-11-08 | Cliente S3 con estilo de ruta, región configurable (`auto` en R2, `us-east-1` en RustFS) y sumas de verificación solo cuando se requieren | R2 rechaza las sumas de verificación que el SDK 4 agrega por defecto |
+| 2026-11-08 | MP4 y MOV cuentan como el mismo tipo al validar la firma; HEIC y AVIF no se aceptan | Cada celular marca el video distinto; las fotos ya llegan comprimidas a JPEG o WebP desde el navegador |
+| 2026-11-08 | Claves de objeto con el formato `carpeta/guid` y validadas antes de firmar | Nunca llevan datos personales ni rutas que salgan de la carpeta |
+| 2026-11-08 | Las tareas se registran por tipo (`AgregarTarea<T>`) y cada ejecución se resuelve en un ámbito nuevo | Un `DbContext` con error no contamina a la siguiente tarea |
 
 ## Pendientes abiertos
 
@@ -233,3 +247,4 @@ T044, T045, T047, T048, T051, T053–T057 y T060; lo que falta necesita PostgreS
 | 2026-11-08 | Preparación del backend (T038, T040–T043; T039 escrito sin probar): solución .NET, opciones validadas, docker-compose con PostGIS y RustFS, script de secretos y CI | ver `git log` |
 | 2026-11-08 | Fase 4 sin base de datos (T044, T047, T048, T051, T053–T055): host de la API, `ContactMasker` con TDD, correo, límites de uso, encabezados y registro sin datos personales | ver `git log` |
 | 2026-11-08 | Persistencia y Cuentas sin base de datos (T045, T056, T057, T060): convenciones, marcas de tiempo, dominio, códigos con TDD, `CuentasDbContext` y migración `Inicial` | ver `git log` |
+| 2026-11-08 | Parte sin servidor de T050 (validador de firmas, almacenamiento R2 y URL firmadas) y T052 (planificador y candado de PostgreSQL) | ver `git log` |

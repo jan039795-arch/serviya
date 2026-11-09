@@ -28,6 +28,10 @@ public sealed class StorageOptions : IOpcionesConSeccion
     [Required]
     public string BucketPublico { get; init; } = "serviya-publico";
 
+    /// <summary>Región para firmar: <c>auto</c> en Cloudflare R2; <c>us-east-1</c> en RustFS local.</summary>
+    [Required]
+    public string Region { get; init; } = "auto";
+
     /// <summary>URL base con la que se arman las direcciones públicas del bucket público.</summary>
     [Required, Url]
     public string UrlPublica { get; init; } = string.Empty;
