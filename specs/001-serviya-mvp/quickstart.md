@@ -5,19 +5,25 @@ entidades en [data-model.md](data-model.md).
 
 ## Requisitos previos
 
-| Herramienta | Versión | Estado en el equipo (2026-11-05) |
+| Herramienta | Versión | Estado en el equipo (2026-11-08) |
 |---|---|---|
 | .NET SDK | 10.0.x | ✅ 10.0.402 |
 | Node.js | 24 LTS | ✅ 24.22 |
 | Angular CLI | 22.x (`npx @angular/cli@22`) | Se instala con el proyecto |
 | Docker Desktop (con WSL 2) | reciente | ❌ **Falta**: necesario para PostgreSQL local y Testcontainers |
 | Cuenta de Mercado Pago (desarrollador) | — | Pendiente: credenciales de prueba y clave secreta del webhook |
-| Cuenta de Cloudflare R2 | — | Pendiente (en desarrollo se puede usar MinIO en Docker) |
+| Cuenta de Cloudflare R2 | — | Pendiente (en desarrollo se usa RustFS en Docker) |
 
 Variables de entorno (en `dotnet user-secrets` para desarrollo; nunca en el repositorio):
-`ConnectionStrings__Default`, `Storage__Endpoint`, `Storage__AccessKey`, `Storage__SecretKey`,
+`ConnectionStrings__Default` (rol `serviya_app`), `ConnectionStrings__Migraciones` (rol
+`serviya_owner`), `Storage__Endpoint`, `Storage__AccessKey`, `Storage__SecretKey`,
 `MercadoPago__AccessToken`, `MercadoPago__WebhookSecret`, `Email__ApiKey`, `WebPush__PublicKey` y
-`WebPush__PrivateKey`.
+`WebPush__PrivateKey`. La API no arranca si falta una obligatoria y dice cuál (`ValidateOnStart`).
+
+`scripts/configurar-desarrollo.ps1` deja todo listo para desarrollo: crea `.env` (contraseñas
+aleatorias para `docker-compose.yml`, ignorado por git), copia esas contraseñas a los user-secrets
+y genera las claves VAPID y la del webhook. Se puede repetir sin cambiar lo que ya existe. El token
+de Mercado Pago queda como `TEST-pendiente-etapa-6` hasta tener el de prueba real.
 
 ## Etapa 2: prototipo con datos ficticios (solo frontend)
 
@@ -77,10 +83,16 @@ prototipo se puede revisar en el emulador de iPhone 14 del navegador.
 ## Etapas 3 a 9: sistema completo
 
 ```bash
-docker compose up -d            # PostgreSQL 17 con PostGIS y MinIO
+powershell -ExecutionPolicy Bypass -File scripts/configurar-desarrollo.ps1   # una sola vez
+docker compose up -d            # PostgreSQL 17 con PostGIS y RustFS (S3)
 cd api && dotnet ef database update && dotnet run --project src/ServiYa.Api
-cd web && npm start             # environment.useMocks = false
+cd web && npm start             # con mocks en false por área
 ```
+
+Servicios locales (solo escuchan en `127.0.0.1`): PostgreSQL en el puerto 5432, la API S3 de
+RustFS en el 9000 y su consola en http://localhost:9001 (usuario y clave: `ALMACEN_ACCESS_KEY` y
+`ALMACEN_SECRET_KEY` de `.env`). La API corre en http://localhost:5189 y publica su contrato en
+`/openapi/v1.json` solo en desarrollo. `docker compose down -v` borra los datos locales.
 
 Escenarios a validar (cada uno corresponde a sus escenarios de aceptación en [spec.md](spec.md)):
 
@@ -100,7 +112,7 @@ Escenarios a validar (cada uno corresponde a sus escenarios de aceptación en [s
 ## Pruebas automatizadas
 
 ```bash
-cd api && dotnet test                       # unitarias e integración (requiere Docker)
+cd api && dotnet test                       # unitarias e integración (las de base de datos requieren Docker)
 cd web && npx ng test --no-watch            # unitarias del frontend
 cd web && npx playwright test               # E2E en perfiles de celular
 ```

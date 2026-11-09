@@ -1,0 +1,5 @@
+# Lo que corre dentro de contenedores Linux necesita fin de línea LF (un \r rompe sh y psql).
+*.sh text eol=lf
+*.sql text eol=lf
+docker/** text eol=lf
+docker-compose.yml text eol=lf

@@ -64,4 +64,14 @@ npm run lint                 # ESLint
 npm run format               # Prettier
 ```
 
-Backend: pendiente (Fase 3 de `tasks.md`).
+Backend (desde `api/`; requiere .NET SDK 10 y, para la base de datos, Docker Desktop):
+
+```bash
+powershell -ExecutionPolicy Bypass -File ../scripts/configurar-desarrollo.ps1  # una vez: .env y user-secrets
+docker compose up -d                          # desde la raíz: PostgreSQL + PostGIS y RustFS (S3)
+dotnet ef database update                     # migraciones (cuando existan, Fase 4)
+dotnet run --project src/ServiYa.Api          # API en http://localhost:5189
+dotnet build                                  # advertencias = errores
+dotnet test                                   # xUnit v3 (Microsoft.Testing.Platform)
+dotnet test --coverage --coverage-output-format cobertura   # con cobertura
+```

@@ -4,7 +4,9 @@
 
 ## Estado actual
 
-**Etapa 2 — Prototipo** (en curso). Terminadas la Fase 1 (T001–T009), la base del prototipo (T010–T018) las pantallas de US1 a US4 (T019–T033), Mi cuenta (T034), el recorrido E2E (T035), la guía para probar en el celular (T036) y la revisión de código (T037). **Falta solo que el usuario pruebe el prototipo en su celular y lo apruebe (T037).**
+**Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
+**Etapa 3 — Preparación del backend** (en curso): Fase 3 lista (T038, T040–T043) salvo probar
+`docker-compose.yml` (T039), que espera a que el usuario instale Docker.
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -56,18 +58,33 @@
   la API real: H2 (validar respuestas, en T068) y M2 (dominio de R2 en las subidas, en T085).
   También se corrigió `security.allowedHosts`: el servidor SSR rechazaba hasta `localhost`.
 - 80 pruebas unitarias y 70 E2E (Pixel 7 e iPhone 14) pasan, estables en corridas repetidas.
-- Sin backend todavía. **Docker no está instalado** (lo necesitan PostgreSQL local y Testcontainers).
+- Backend (Fase 3): `api/ServiYa.sln` con `ServiYa.Api`, `ServiYa.Comun`, los 10 módulos (vacíos
+  por ahora) y 3 proyectos de pruebas (xUnit v3 sobre Microsoft.Testing.Platform). Versiones
+  centralizadas en `api/Directory.Packages.props`; advertencias como errores con
+  `latest-recommended`. Opciones `Storage`, `MercadoPago`, `Email` y `WebPush` validadas al
+  arrancar. 8 pruebas unitarias y 3 de integración (arranque de la API, sin Docker) pasan.
+- `docker-compose.yml`: PostGIS 17 con roles `serviya_owner` y `serviya_app` (`docker/postgres/init.sql`)
+  y RustFS 1.0.4 como S3 local con los buckets `serviya-privado` y `serviya-publico`. **Escrito pero
+  sin probar: Docker ni WSL están instalados.**
+- Secretos de desarrollo: `scripts/configurar-desarrollo.ps1` crea `.env` (ignorado por git) y los
+  user-secrets de la API; ya se ejecutó en este equipo y la API arranca en desarrollo.
+- CI en `.github/workflows/ci.yml` (API y web); sus pasos pasan en local; correrá en GitHub al subir.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
 
 1. **El usuario prueba el prototipo en su celular** siguiendo "Probar en el celular e instalar la
    app" de `specs/001-serviya-mvp/quickstart.md` (`npm run serve:prototipo` + `chrome://inspect`)
-   y anota en esta bitácora los ajustes que pida. Con su aprobación se marca T037 y termina la
-   Etapa 2.
-2. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
-3. Etapa 3 (Fase 3 de `tasks.md`, T038–T043): requiere Docker Desktop con WSL 2 instalado por el
-   usuario. Empieza por `api/ServiYa.sln` y `docker-compose.yml`.
+   y anota en esta bitácora los ajustes que pida. Con su aprobación se marca T037.
+2. **El usuario instala WSL 2 y Docker Desktop** (`wsl --install` como administrador, reiniciar y
+   luego Docker Desktop). Después: `docker compose up -d` desde la raíz y comprobar que
+   `almacen-buckets` termina bien y que `serviya_app` entra a PostgreSQL; con eso se marca T039.
+3. Fase 4 de `tasks.md`. Sin Docker se pueden hacer: T044 (`Program.cs` con `ProblemDetails`,
+   grupo `/api/v1`, `TimeProvider` e `IModulo`), T047–T048 (`ContactMasker` con TDD, servicio
+   puro), T051 (correo), T053 (límites de uso), T054 (encabezados) y T055 (registro sin datos
+   personales). Con Docker: T045 (agregar entonces `dotnet-ef` como herramienta local en
+   `api/.config/dotnet-tools.json`), T046, T049, T050 y T052.
+4. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
 
 ## Etapas del proyecto
 
@@ -75,7 +92,7 @@
 |---|---|---|
 | 1 | Definición (constitución, especificación, plan, tareas) | Terminada |
 | 2 | Prototipo móvil con datos ficticios | Lista; falta la aprobación del usuario en su celular |
-| 3 | Cuentas y perfiles | Pendiente |
+| 3 | Cuentas y perfiles | En curso: preparación del backend lista; falta Docker |
 | 4 | Documentos y panel del administrador | Pendiente |
 | 5 | Búsqueda y perfil público | Pendiente |
 | 6 | Pagos y desbloqueo de contacto | Pendiente |
@@ -136,6 +153,12 @@
 | 2026-11-08 | Acciones de prueba (simular pago, acreditar, vencer, sesión) detrás del token `ACCIONES_PROTOTIPO` | Las pantallas las usan solo si existen; en producción el token no se provee |
 | 2026-11-08 | `security.allowedHosts`: `localhost`, `127.0.0.1`, `serviya.mx` y `*.serviya.mx` | El servidor SSR de Angular rechaza cualquier otro host; sin esto no abría ni en local |
 | 2026-11-08 | Playwright local con 4 procesos y `test.slow()` en los flujos largos de pago | Con 6 procesos WebKit agotaba el tiempo de forma intermitente |
+| 2026-11-08 | RustFS 1.0.4 como almacenamiento S3 en desarrollo y pruebas, en lugar de MinIO; buckets con `amazon/aws-cli` | MinIO dejó de publicar imágenes (Docker Hub y quay.io); RustFS es compatible con S3 y Apache-2.0. Producción sigue en R2 |
+| 2026-11-08 | xUnit v3 sobre Microsoft.Testing.Platform (`api/global.json`) y cobertura con `Microsoft.Testing.Extensions.CodeCoverage` | El SDK de .NET 10 ya no ejecuta VSTest con esta plataforma; `coverlet.collector` solo funciona con VSTest |
+| 2026-11-08 | Dos cadenas de conexión: `Default` (rol `serviya_app`) y `Migraciones` (rol `serviya_owner`) | Mínimo privilegio: la app no puede cambiar el esquema ni modificar la bitácora |
+| 2026-11-08 | Secretos locales en `.env` y user-secrets generados por `scripts/configurar-desarrollo.ps1`; puertos de Docker solo en `127.0.0.1` | Ninguna contraseña en el repositorio, ni siquiera de desarrollo |
+| 2026-11-08 | Opciones como `sealed class` con `init`, no `record` | El `ToString()` de un `record` imprimiría las claves si alguien registra las opciones |
+| 2026-11-08 | Versiones centralizadas en `api/Directory.Packages.props` | Una sola versión por paquete en los 15 proyectos |
 
 ## Pendientes abiertos
 
@@ -165,3 +188,4 @@
 | 2026-11-08 | Búsqueda y perfil público del prototipo (T026–T029) | ver `git log` |
 | 2026-11-08 | Contacto pagado, checkout simulado, mis contactos y pase en el prototipo (T030–T033) | ver `git log` |
 | 2026-11-08 | Cierre del prototipo (T034–T036), revisión con `typescript-reviewer` y correcciones (T037, falta la prueba en celular) | ver `git log` |
+| 2026-11-08 | Preparación del backend (T038, T040–T043; T039 escrito sin probar): solución .NET, opciones validadas, docker-compose con PostGIS y RustFS, script de secretos y CI | ver `git log` |

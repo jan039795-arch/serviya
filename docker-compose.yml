@@ -1,0 +1,83 @@
+# Servicios locales de desarrollo (tasks.md T039). Los puertos solo escuchan en 127.0.0.1.
+# Las contraseñas vienen de .env (no se sube al repositorio); se genera con
+# scripts/configurar-desarrollo.ps1. Ver specs/001-serviya-mvp/quickstart.md.
+name: serviya
+
+services:
+  postgres:
+    image: postgis/postgis:17-3.7
+    environment:
+      POSTGRES_DB: serviya
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD en .env}
+      # Las lee docker/postgres/init.sql para crear los roles de ServiYa.
+      SERVIYA_OWNER_PASSWORD: ${SERVIYA_OWNER_PASSWORD:?Falta SERVIYA_OWNER_PASSWORD en .env}
+      SERVIYA_APP_PASSWORD: ${SERVIYA_APP_PASSWORD:?Falta SERVIYA_APP_PASSWORD en .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-datos:/var/lib/postgresql/data
+      # Corre después de 10_postgis.sh de la imagen, solo la primera vez (volumen vacío).
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/20_serviya.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d serviya"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Almacenamiento compatible con S3 en lugar de Cloudflare R2. MinIO dejó de publicar imágenes.
+  almacen-permisos:
+    image: alpine:3.22
+    volumes:
+      - almacen-datos:/data
+    # RustFS corre como el usuario 10001 y necesita escribir en su volumen.
+    command: ["chown", "-R", "10001:10001", "/data"]
+    restart: "no"
+
+  almacen:
+    image: rustfs/rustfs:1.0.4
+    depends_on:
+      almacen-permisos:
+        condition: service_completed_successfully
+    security_opt:
+      - "no-new-privileges:true"
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_ACCESS_KEY: ${ALMACEN_ACCESS_KEY:?Falta ALMACEN_ACCESS_KEY en .env}
+      RUSTFS_SECRET_KEY: ${ALMACEN_SECRET_KEY:?Falta ALMACEN_SECRET_KEY en .env}
+    ports:
+      - "127.0.0.1:9000:9000" # API S3
+      - "127.0.0.1:9001:9001" # consola web
+    volumes:
+      - almacen-datos:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  # Crea los buckets y sus reglas; termina al acabar. Se puede repetir sin efectos.
+  almacen-buckets:
+    image: amazon/aws-cli:2.39.6
+    depends_on:
+      almacen:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: ${ALMACEN_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${ALMACEN_SECRET_KEY}
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://almacen:9000
+    volumes:
+      - ./docker/almacen:/config:ro
+    entrypoint: ["/bin/sh", "/config/crear-buckets.sh"]
+    restart: "no"
+
+volumes:
+  postgres-datos:
+  almacen-datos:

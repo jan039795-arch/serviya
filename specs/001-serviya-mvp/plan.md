@@ -25,7 +25,7 @@ rate limiting), EF Core 10 + Npgsql 10.0.3 + NetTopologySuite, `mercadopago-sdk`
 (desarrollo)
 
 **Storage**: PostgreSQL 17 + PostGIS (Neon en producción, Docker en desarrollo); Cloudflare R2
-(`serviya-privado`, `serviya-publico`; MinIO en desarrollo)
+(`serviya-privado`, `serviya-publico`; RustFS en desarrollo)
 
 **Testing**: xUnit + AwesomeAssertions + NSubstitute; WebApplicationFactory + Testcontainers
 (`postgis/postgis:17`); Vitest (Angular CLI); Playwright 1.65 con perfiles de celular
@@ -122,7 +122,7 @@ web/
 ├── e2e/                              # Playwright
 └── ngsw-config.json
 
-docker-compose.yml                    # PostgreSQL con PostGIS y MinIO para desarrollo
+docker-compose.yml                    # PostgreSQL con PostGIS y RustFS (S3) para desarrollo
 ```
 
 **Structure Decision**: aplicación web con dos proyectos desplegables (`api/` y `web/`). El backend es

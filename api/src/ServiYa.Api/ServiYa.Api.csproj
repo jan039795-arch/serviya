@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <UserSecretsId>serviya-api-7c0f3e52-5b8e-4d1a-9f6c-2a4b8e1d0c93</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiYa.Comun\ServiYa.Comun.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Cuentas\ServiYa.Cuentas.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Prestadores\ServiYa.Prestadores.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Documentos\ServiYa.Documentos.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Busqueda\ServiYa.Busqueda.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Pagos\ServiYa.Pagos.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Chat\ServiYa.Chat.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Contrataciones\ServiYa.Contrataciones.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Calificaciones\ServiYa.Calificaciones.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Reportes\ServiYa.Reportes.csproj" />
+    <ProjectReference Include="..\Modulos\ServiYa.Administracion\ServiYa.Administracion.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ServiYa.IntegrationTests" />
+    <InternalsVisibleTo Include="ServiYa.ContractTests" />
+  </ItemGroup>
+
+</Project>
