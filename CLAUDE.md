@@ -54,7 +54,7 @@ Actualiza `docs/PROGRESO.md` **en el mismo commit que el cambio**:
 Frontend (desde `web/`; requiere Node 24):
 
 ```bash
-npm start                    # servidor de desarrollo en http://localhost:4200 (datos ficticios)
+npm start                    # http://localhost:4200; áreas simuladas o, con mocks en false, la API por proxy.conf.json
 npm run start:prototipo      # prototipo optimizado, todo simulado
 npm run serve:prototipo      # compila el prototipo y lo sirve como en producción (puerto 4000, PWA)
 npx ng build                 # compilación de producción

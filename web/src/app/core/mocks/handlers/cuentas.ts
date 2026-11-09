@@ -126,6 +126,9 @@ export const rutasCuentas: readonly RutaSimulada[] = [
     return sinContenido();
   }),
 
+  // La API real emite aquí la cookie XSRF-TOKEN; el prototipo no la necesita.
+  ruta('cuentas', 'GET', '/cuentas/xsrf', () => sinContenido()),
+
   ruta('cuentas', 'GET', '/cuentas/yo', () => {
     const usuario = usuarioActual();
     return usuario ? ok(aSesion(usuario)) : problema(401, 'No has iniciado sesión.');

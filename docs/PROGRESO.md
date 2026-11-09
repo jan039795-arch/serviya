@@ -112,6 +112,10 @@ falta necesita PostgreSQL o RustFS.
   minuto, IPv6 por red /64, `Cache-Control: no-store` y CSP en la API, PostGIS solo donde se usa,
   pruebas del host herméticas, acciones de CI fijadas por SHA y `packages.lock.json` con
   `--locked-mode`. El script de secretos ya no pasa valores por la línea de comandos.
+- Frontend para la API real (T069): `xsrfInterceptor` propio (encabezado `X-XSRF-TOKEN` y
+  `withCredentials` solo hacia `environment.apiUrl`, también si es absoluta), el de Angular apagado,
+  token pedido al arrancar sin bloquear la pantalla y `web/proxy.conf.json` hacia la API en el
+  puerto 5189 para `/api` y `/hubs`. 97 pruebas unitarias y 70 E2E del frontend pasan.
 - 237 pruebas del backend pasan; cobertura: `ContactMasker` 97%, `ServicioCodigos` 94%,
   `AlmacenR2` 81%, `ValidadorFirmaArchivo` y `LimitesUso` 100%.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
@@ -129,7 +133,8 @@ falta necesita PostgreSQL o RustFS.
    `Infraestructura/FabricaSinBaseDeDatos.cs` y `RegistroEnMemoria.cs`), las pruebas de integración
    que faltan de T050 (RustFS) y T052 (dos instancias), T049 (bitácora), T058 (pruebas de cuentas y
    permisos, TDD), T059 (Identity y cookie), T061–T064 y catálogos (T065–T067).
-4. Sin Docker ya no queda trabajo de backend que valga la pena adelantar: lo siguiente depende de la
+4. Sin Docker ya no queda trabajo que valga la pena adelantar: lo que sigue (endpoints de cuentas,
+   tipos generados desde OpenAPI y guardas de T068, conexión de las pantallas en T070) depende de la
    base de datos.
 5. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
 
@@ -236,6 +241,9 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | `UseNetTopologySuite()` solo en los módulos con geografía; la extensión `postgis` la crea el aprovisionamiento | Cuentas pedía `CREATE EXTENSION`, que `serviya_owner` no puede ejecutar |
 | 2026-11-08 | Acciones de GitHub fijadas por SHA, `packages.lock.json` con `dotnet restore --locked-mode` y NuGetAudit en modo `all` | Cadena de suministro: nada cambia sin un commit |
 | 2026-11-08 | Las pruebas del host quitan los user-secrets y usan un candado de tareas que nunca se toma | En "Development" se colaban los secretos del desarrollador |
+| 2026-11-08 | El XSRF de Angular se apaga (`withNoXsrfProtection`) y solo actúa `xsrfInterceptor` | El de Angular omite URL absolutas y duplicaba el encabezado en las relativas; un solo mecanismo es más claro |
+| 2026-11-08 | El token XSRF se pide al arrancar sin esperar la respuesta, y antes de la primera petición que modifica datos si aún falta | La PWA se muestra de inmediato; un fallo de red no bloquea el arranque |
+| 2026-11-08 | Las guardas de formato de T068 se escriben al conectar cada área a la API real | Dependen de los tipos generados desde OpenAPI; escribirlas antes sería rehacerlas |
 
 ## Pendientes abiertos
 
@@ -270,3 +278,4 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | Persistencia y Cuentas sin base de datos (T045, T056, T057, T060): convenciones, marcas de tiempo, dominio, códigos con TDD, `CuentasDbContext` y migración `Inicial` | ver `git log` |
 | 2026-11-08 | Parte sin servidor de T050 (validador de firmas, almacenamiento R2 y URL firmadas) y T052 (planificador y candado de PostgreSQL) | ver `git log` |
 | 2026-11-08 | Revisión de la Etapa 3 (`csharp-reviewer` y `security-reviewer`) y correcciones de los hallazgos | ver `git log` |
+| 2026-11-08 | XSRF propio, token al arrancar y proxy de desarrollo en el frontend (T069) | ver `git log` |
