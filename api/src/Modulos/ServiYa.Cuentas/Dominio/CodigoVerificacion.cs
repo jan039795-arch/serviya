@@ -42,6 +42,13 @@ public sealed class CodigoVerificacion
 
     public DateTimeOffset? UsadoEn { get; private set; }
 
+    /// <summary>
+    /// Columna de sistema <c>xmin</c> como token de concurrencia: si dos peticiones verifican el mismo
+    /// código a la vez, solo una guarda; la otra recibe <c>DbUpdateConcurrencyException</c>. Sin esto,
+    /// peticiones en paralelo se saltarían el límite de 5 intentos o usarían el código dos veces.
+    /// </summary>
+    public uint Version { get; private set; }
+
     internal void RegistrarIntentoFallido() => Intentos++;
 
     internal void MarcarUsado(DateTimeOffset ahora) => UsadoEn = ahora;

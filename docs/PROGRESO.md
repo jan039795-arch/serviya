@@ -102,7 +102,18 @@ falta necesita PostgreSQL o RustFS.
   tarea en su ámbito y con su candado (`CandadoPostgres` con `pg_try_advisory_lock`); una tarea con
   error no detiene a las demás. Los módulos registran sus tareas con `AgregarTarea<T>()`. Probado con
   un candado simulado; falta la prueba de dos instancias contra PostgreSQL.
-- 169 pruebas del backend pasan (unitarias e integración sin base de datos).
+- Revisión de la Etapa 3 con `csharp-reviewer` y `security-reviewer` (0 CRITICAL; 3 HIGH en total).
+  Corregidos: intentos de código saltables en paralelo (token `xmin`), evasiones de `ContactMasker`
+  (`/`, `|`, `:`, comas, caracteres invisibles, emojis de teclas, O/l por 0/1, fechas falsas, correos
+  con espacios o "at/dot", más dominios) y su costo cuadrático (vista atrás y largo máximo 5000), y el
+  planificador que podía tumbar la API; además ETag entre validar y conservar un archivo
+  (`ConservarAsync`), tamaño máximo por tipo, solo tipos permitidos en la URL de subida, `\z` en las
+  claves, https obligatorio en el almacenamiento fuera de desarrollo, límite general de 300 por
+  minuto, IPv6 por red /64, `Cache-Control: no-store` y CSP en la API, PostGIS solo donde se usa,
+  pruebas del host herméticas, acciones de CI fijadas por SHA y `packages.lock.json` con
+  `--locked-mode`. El script de secretos ya no pasa valores por la línea de comandos.
+- 237 pruebas del backend pasan; cobertura: `ContactMasker` 97%, `ServicioCodigos` 94%,
+  `AlmacenR2` 81%, `ValidadorFirmaArchivo` y `LimitesUso` 100%.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
@@ -215,6 +226,16 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | MP4 y MOV cuentan como el mismo tipo al validar la firma; HEIC y AVIF no se aceptan | Cada celular marca el video distinto; las fotos ya llegan comprimidas a JPEG o WebP desde el navegador |
 | 2026-11-08 | Claves de objeto con el formato `carpeta/guid` y validadas antes de firmar | Nunca llevan datos personales ni rutas que salgan de la carpeta |
 | 2026-11-08 | Las tareas se registran por tipo (`AgregarTarea<T>`) y cada ejecución se resuelve en un ámbito nuevo | Un `DbContext` con error no contamina a la siguiente tarea |
+| 2026-11-08 | Token de concurrencia `xmin` en `CodigoVerificacion` | Revisión: peticiones en paralelo se saltaban los 5 intentos o usaban el código dos veces |
+| 2026-11-08 | `ContactMasker` normaliza el texto (quita invisibles y marcas, O/l junto a dígitos) y acepta cualquier símbolo como separador; solo exenta palabras que son por completo fecha, hora o cantidad | Revisión: `/`, `|`, `:`, espacios de ancho cero y fechas falsas dejaban pasar teléfonos. Sigue siendo la primera barrera; los reportes y la moderación son la segunda |
+| 2026-11-08 | Sin "pimienta" en el hash del código | Con el token de concurrencia el límite de 5 intentos se cumple; el código vence en 10 min. Se puede agregar una clave HMAC si la revisión final lo pide |
+| 2026-11-08 | Un archivo validado se fija con `ConservarAsync`: copia con `ETagToMatch` a una clave definitiva y se borra la de subida | La URL de subida vive 10 min y permitiría reemplazar el archivo después de validarlo |
+| 2026-11-08 | La URL de subida no limita el tamaño; se revisa al validar (10 MB fotos y documentos, 60 MB video) y R2 borra subidas no registradas (T148) | R2 no garantiza respetar un `Content-Length` firmado |
+| 2026-11-08 | Límite general de 300 peticiones por minuto por usuario o red, además de los de login y mensajes; IPv6 se limita por red /64 | Regla de seguridad del proyecto (límite en todos los endpoints); con IPv6 una persona tiene millones de direcciones |
+| 2026-11-08 | `Cache-Control: no-store` por defecto y CSP `default-src 'none'` en la API | Las respuestas llevan datos personales o URL firmadas |
+| 2026-11-08 | `UseNetTopologySuite()` solo en los módulos con geografía; la extensión `postgis` la crea el aprovisionamiento | Cuentas pedía `CREATE EXTENSION`, que `serviya_owner` no puede ejecutar |
+| 2026-11-08 | Acciones de GitHub fijadas por SHA, `packages.lock.json` con `dotnet restore --locked-mode` y NuGetAudit en modo `all` | Cadena de suministro: nada cambia sin un commit |
+| 2026-11-08 | Las pruebas del host quitan los user-secrets y usan un candado de tareas que nunca se toma | En "Development" se colaban los secretos del desarrollador |
 
 ## Pendientes abiertos
 
@@ -248,3 +269,4 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | Fase 4 sin base de datos (T044, T047, T048, T051, T053–T055): host de la API, `ContactMasker` con TDD, correo, límites de uso, encabezados y registro sin datos personales | ver `git log` |
 | 2026-11-08 | Persistencia y Cuentas sin base de datos (T045, T056, T057, T060): convenciones, marcas de tiempo, dominio, códigos con TDD, `CuentasDbContext` y migración `Inicial` | ver `git log` |
 | 2026-11-08 | Parte sin servidor de T050 (validador de firmas, almacenamiento R2 y URL firmadas) y T052 (planificador y candado de PostgreSQL) | ver `git log` |
+| 2026-11-08 | Revisión de la Etapa 3 (`csharp-reviewer` y `security-reviewer`) y correcciones de los hallazgos | ver `git log` |

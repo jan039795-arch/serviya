@@ -58,16 +58,28 @@ if ($faltaron) {
     Write-Output '.env ya estaba completo'
 }
 
-# 2. user-secrets de la API
-$existentes = @{}
-foreach ($linea in (& dotnet user-secrets list --project $proyectoApi 2>$null)) {
-    if ($linea -match '^(.+?) = (.*)$') { $existentes[$Matches[1]] = $Matches[2] }
+# 2. user-secrets de la API. Se edita su secrets.json directamente (mismo formato que usa
+#    `dotnet user-secrets`): así los valores no pasan por la línea de comandos, donde otros procesos
+#    los verían, y un valor que empieza con "-" no se confunde con una opción.
+[xml] $csproj = Get-Content -LiteralPath (Join-Path $proyectoApi 'ServiYa.Api.csproj')
+$idSecretos = ($csproj.Project.PropertyGroup | Where-Object { $_.UserSecretsId } | Select-Object -First 1).UserSecretsId
+if (-not $idSecretos) { throw 'ServiYa.Api.csproj no tiene UserSecretsId' }
+$carpetaSecretos = Join-Path $env:APPDATA "Microsoft\UserSecrets\$idSecretos"
+$archivoSecretos = Join-Path $carpetaSecretos 'secrets.json'
+
+$existentes = [ordered]@{}
+if (Test-Path -LiteralPath $archivoSecretos) {
+    $json = Get-Content -LiteralPath $archivoSecretos -Raw
+    if ($json.Trim()) {
+        foreach ($propiedad in (ConvertFrom-Json $json).PSObject.Properties) { $existentes[$propiedad.Name] = [string] $propiedad.Value }
+    }
 }
+$cambios = 0
 
 function Fijar([string] $clave, [string] $valor, [switch] $SoloSiFalta) {
-    if ($SoloSiFalta -and $existentes.ContainsKey($clave)) { return }
-    & dotnet user-secrets set $clave $valor --project $proyectoApi | Out-Null
-    if ($LASTEXITCODE -ne 0) { throw "No se pudo guardar $clave en user-secrets" }
+    if ($SoloSiFalta -and $existentes.Contains($clave)) { return }
+    $existentes[$clave] = $valor
+    $script:cambios++
     Write-Output "user-secrets: $clave"
 }
 
@@ -80,7 +92,7 @@ Fijar 'MercadoPago:AccessToken' 'TEST-pendiente-etapa-6' -SoloSiFalta
 Fijar 'MercadoPago:WebhookSecret' (Nuevo-Secreto 32) -SoloSiFalta
 
 # 3. Claves VAPID (P-256): pública = 0x04 || X || Y, privada = D, en base64url.
-if (-not $existentes.ContainsKey('WebPush:PublicKey') -or -not $existentes.ContainsKey('WebPush:PrivateKey')) {
+if (-not $existentes.Contains('WebPush:PublicKey') -or -not $existentes.Contains('WebPush:PrivateKey')) {
     $ec = [System.Security.Cryptography.ECDsa]::Create([System.Security.Cryptography.ECCurve+NamedCurves]::nistP256)
     try {
         $parametros = $ec.ExportParameters($true)
@@ -90,6 +102,12 @@ if (-not $existentes.ContainsKey('WebPush:PublicKey') -or -not $existentes.Conta
     } finally {
         $ec.Dispose()
     }
+}
+
+if ($cambios -gt 0) {
+    New-Item -ItemType Directory -Force -Path $carpetaSecretos | Out-Null
+    $contenidoSecretos = [pscustomobject] $existentes | ConvertTo-Json
+    [System.IO.File]::WriteAllText($archivoSecretos, $contenidoSecretos, (New-Object System.Text.UTF8Encoding $false))
 }
 
 Write-Output 'Listo. Siguiente: docker compose up -d'

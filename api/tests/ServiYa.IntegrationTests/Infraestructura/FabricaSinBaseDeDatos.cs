@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using ServiYa.Comun.Tareas;
 
 namespace ServiYa.IntegrationTests.Infraestructura;
 
@@ -13,10 +16,10 @@ internal static class FabricaSinBaseDeDatos
     /// <summary>Valores ficticios; nunca credenciales reales.</summary>
     public static readonly IReadOnlyDictionary<string, string> ConfiguracionFicticia = new Dictionary<string, string>
     {
-        ["Storage:Endpoint"] = "http://localhost:9000",
+        ["Storage:Endpoint"] = "https://almacen.serviya.test",
         ["Storage:AccessKey"] = "clave-ficticia",
         ["Storage:SecretKey"] = "secreto-ficticio",
-        ["Storage:UrlPublica"] = "http://localhost:9000/serviya-publico",
+        ["Storage:UrlPublica"] = "https://archivos.serviya.test",
         ["MercadoPago:AccessToken"] = "TEST-ficticio",
         ["MercadoPago:WebhookSecret"] = "firma-ficticia",
         ["Email:Proveedor"] = "Consola",
@@ -40,11 +43,33 @@ internal static class FabricaSinBaseDeDatos
                 builder.UseSetting(clave, valor);
             }
 
+            // Sin los user-secrets del desarrollador: en "Development" se cargarían y las pruebas
+            // dependerían de la máquina.
+            builder.ConfigureAppConfiguration((_, fuentes) =>
+            {
+                var secretos = fuentes.Sources.OfType<JsonConfigurationSource>()
+                    .Where(fuente => fuente.Path == "secrets.json")
+                    .ToList();
+                foreach (var fuente in secretos)
+                {
+                    fuentes.Sources.Remove(fuente);
+                }
+            });
+
+            // El planificador nunca toma el candado de PostgreSQL: no hay base de datos.
+            builder.ConfigureServices(s => s.Replace(ServiceDescriptor.Singleton<ICandadoTareas, CandadoNuncaDisponible>()));
             if (servicios is not null)
             {
                 builder.ConfigureServices(servicios);
             }
         });
+
+    /// <summary>Como si otra instancia tuviera siempre el candado: ninguna tarea corre.</summary>
+    private sealed class CandadoNuncaDisponible : ICandadoTareas
+    {
+        public Task<IAsyncDisposable?> IntentarTomarAsync(string nombreTarea, CancellationToken cancellationToken) =>
+            Task.FromResult<IAsyncDisposable?>(null);
+    }
 
     public static Dictionary<string, string> ConfiguracionCon(params (string Clave, string Valor)[] cambios)
     {

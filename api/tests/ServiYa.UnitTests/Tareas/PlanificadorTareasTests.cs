@@ -41,6 +41,45 @@ public sealed class PlanificadorTareasTests
     }
 
     [Fact]
+    public async Task Una_tarea_que_no_se_puede_crear_no_detiene_a_las_demas()
+    {
+        using var proveedor = Proveedor(s => s.AgregarTarea<TareaSinDependencia>().AgregarTarea<TareaB>());
+
+        await Planificador(proveedor).EjecutarRondaAsync(TestContext.Current.CancellationToken);
+
+        bitacora.Ejecutadas.Should().Equal("B");
+    }
+
+    [Fact]
+    public async Task Si_el_candado_falla_la_ronda_sigue_con_las_demas()
+    {
+        candado.FallaCon = "A";
+        using var proveedor = Proveedor(s => s.AgregarTarea<TareaA>().AgregarTarea<TareaB>());
+
+        await Planificador(proveedor).EjecutarRondaAsync(TestContext.Current.CancellationToken);
+
+        bitacora.Ejecutadas.Should().Equal("B");
+    }
+
+    [Fact]
+    public async Task Una_ronda_con_errores_no_detiene_el_servicio()
+    {
+        candado.FallaCon = "A";
+        using var proveedor = Proveedor(s => s.AgregarTarea<TareaA>().AgregarTarea<TareaSinDependencia>());
+        using var planificador = Planificador(proveedor);
+
+        await planificador.StartAsync(TestContext.Current.CancellationToken);
+        reloj.Advance(PlanificadorTareas.Intervalo);
+        reloj.Advance(PlanificadorTareas.Intervalo);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        planificador.ExecuteTask!.IsFaulted.Should().BeFalse();
+        planificador.ExecuteTask.IsCompleted.Should().BeFalse("sigue esperando la siguiente ronda");
+        await planificador.StopAsync(TestContext.Current.CancellationToken);
+        planificador.ExecuteTask.IsFaulted.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Una_tarea_que_falla_no_detiene_a_las_demas_y_suelta_su_candado()
     {
         using var proveedor = Proveedor(s => s.AgregarTarea<TareaQueFalla>().AgregarTarea<TareaB>());
@@ -148,8 +187,16 @@ public sealed class PlanificadorTareasTests
 
         public ICollection<string> Activos => activos.Keys;
 
+        /// <summary>Tarea para la que el candado lanza una excepción (por ejemplo, sin base de datos).</summary>
+        public string? FallaCon { get; set; }
+
         public Task<IAsyncDisposable?> IntentarTomarAsync(string nombreTarea, CancellationToken cancellationToken)
         {
+            if (nombreTarea == FallaCon)
+            {
+                throw new InvalidOperationException("sin conexión ficticia");
+            }
+
             if (Ocupados.Contains(nombreTarea) || !activos.TryAdd(nombreTarea, true))
             {
                 return Task.FromResult<IAsyncDisposable?>(null);
@@ -190,6 +237,16 @@ public sealed class PlanificadorTareasTests
             return Task.CompletedTask;
         }
     }
+
+    /// <summary>Depende de un servicio que nadie registró: no se puede crear.</summary>
+    private sealed class TareaSinDependencia(IServicioNoRegistrado servicio) : ITareaProgramada
+    {
+        public string Nombre => servicio.ToString() ?? "SinDependencia";
+
+        public Task EjecutarAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    }
+
+    private interface IServicioNoRegistrado;
 
     private sealed class TareaQueFalla(Bitacora bitacora) : ITareaProgramada
     {

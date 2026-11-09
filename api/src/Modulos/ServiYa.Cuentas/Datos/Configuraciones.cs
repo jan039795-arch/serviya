@@ -31,6 +31,8 @@ internal sealed class CodigoVerificacionConfiguracion : IEntityTypeConfiguration
         builder.ToTable("codigos_verificacion");
         builder.Property(c => c.Proposito).HasConversion<string>().HasMaxLength(Largos.Enumeracion);
         builder.Property(c => c.CodigoHash).HasMaxLength(CodigoVerificacion.LargoHash).IsFixedLength();
+        // Columna de sistema de PostgreSQL: no se crea; Npgsql la lee y la compara al guardar.
+        builder.Property(c => c.Version).IsRowVersion().HasColumnName("xmin").HasColumnType("xid");
         builder.HasOne<Usuario>().WithMany().HasForeignKey(c => c.UsuarioId).OnDelete(DeleteBehavior.Cascade);
 
         // Buscar el último código y contar los envíos de la última hora (máximo 3).

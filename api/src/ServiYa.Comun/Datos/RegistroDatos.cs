@@ -16,14 +16,19 @@ public static class RegistroDatos
     public const string TablaHistorialMigraciones = "__ef_migraciones";
 
     /// <summary>
-    /// Registra el <c>DbContext</c> de un módulo con PostgreSQL, PostGIS, su propio esquema (también para
-    /// el historial de migraciones) y las marcas de tiempo. Con <c>dotnet ef</c> usa la conexión de
+    /// Registra el <c>DbContext</c> de un módulo con PostgreSQL, su propio esquema (también para el
+    /// historial de migraciones) y las marcas de tiempo. Con <c>dotnet ef</c> usa la conexión de
     /// migraciones; en la API, la de la app.
     /// </summary>
+    /// <param name="usaGeografia">
+    /// Solo los módulos con columnas geográficas (catálogos y prestadores) activan NetTopologySuite.
+    /// La extensión <c>postgis</c> la crea el aprovisionamiento de la base, no cada migración.
+    /// </param>
     public static IServiceCollection AgregarDbContextDeModulo<TContexto>(
         this IServiceCollection services,
         IConfiguration configuracion,
-        string esquema)
+        string esquema,
+        bool usaGeografia = false)
         where TContexto : DbContext
     {
         ArgumentNullException.ThrowIfNull(configuracion);
@@ -33,9 +38,14 @@ public static class RegistroDatos
 
         services.TryAddSingleton<MarcasTiempoInterceptor>();
         services.AddDbContext<TContexto>((proveedor, opciones) => opciones
-            .UseNpgsql(cadena, npgsql => npgsql
-                .UseNetTopologySuite()
-                .MigrationsHistoryTable(TablaHistorialMigraciones, esquema))
+            .UseNpgsql(cadena, npgsql =>
+            {
+                npgsql.MigrationsHistoryTable(TablaHistorialMigraciones, esquema);
+                if (usaGeografia)
+                {
+                    npgsql.UseNetTopologySuite();
+                }
+            })
             .AddInterceptors(proveedor.GetRequiredService<MarcasTiempoInterceptor>()));
         return services;
     }

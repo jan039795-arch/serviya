@@ -26,6 +26,8 @@ public static class RegistroCorreo
             http.BaseAddress = ResendEmailSender.DireccionBase;
             http.Timeout = ResendEmailSender.TiempoMaximo;
         });
+        // Transitorio a propósito: ResendEmailSender es un cliente tipado y su HttpClient se renueva.
+        // No inyectar IEmailSender en un singleton (fijaría un HttpMessageHandler para siempre).
         services.AddTransient<IEmailSender>(proveedor =>
             proveedor.GetRequiredService<IOptions<EmailOptions>>().Value.Proveedor == ProveedorCorreo.Resend
                 ? proveedor.GetRequiredService<ResendEmailSender>()

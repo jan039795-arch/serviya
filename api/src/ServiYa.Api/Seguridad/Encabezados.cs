@@ -46,6 +46,17 @@ internal static class Encabezados
                 encabezados.XContentTypeOptions = "nosniff";
                 encabezados["Referrer-Policy"] = "no-referrer";
                 encabezados.XFrameOptions = "DENY";
+
+                // La API solo devuelve JSON: nada se ejecuta ni se incrusta.
+                encabezados.ContentSecurityPolicy = "default-src 'none'; frame-ancestors 'none'";
+
+                // Respuestas con datos personales o URL firmadas: ni el navegador ni un proxy las guardan.
+                // Un endpoint público puede poner su propio Cache-Control (p. ej. el perfil público).
+                if (string.IsNullOrEmpty(encabezados.CacheControl))
+                {
+                    encabezados.CacheControl = "no-store";
+                }
+
                 return Task.CompletedTask;
             });
             return siguiente(contexto);

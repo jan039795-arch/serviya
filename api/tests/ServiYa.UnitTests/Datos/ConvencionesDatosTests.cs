@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Time.Testing;
 using ServiYa.Comun.Datos;
 
 namespace ServiYa.UnitTests.Datos;
@@ -81,6 +83,23 @@ public sealed class ConvencionesDatosTests
         entrada.Property(MarcasTiempo.CreadoEn).CurrentValue.Should().Be(creadoEn);
         entrada.Property(MarcasTiempo.CreadoEn).IsModified.Should().BeFalse();
         entrada.Property(MarcasTiempo.ActualizadoEn).CurrentValue.Should().Be(actualizadoEn);
+    }
+
+    [Fact]
+    public async Task El_interceptor_pone_las_marcas_con_el_reloj_inyectado_al_guardar()
+    {
+        var ahora = new DateTimeOffset(2026, 11, 8, 15, 30, 0, TimeSpan.Zero);
+        var interceptor = new MarcasTiempoInterceptor(new FakeTimeProvider(ahora));
+        using var contexto = new ContextoDePrueba();
+        var entidad = new EntidadDePrueba { NombreCompleto = "Rita Ficticia" };
+        contexto.Add(entidad);
+        var evento = new DbContextEventData(null!, (_, _) => string.Empty, contexto);
+
+        await interceptor.SavingChangesAsync(evento, default, TestContext.Current.CancellationToken);
+        interceptor.SavingChanges(evento, default);
+
+        contexto.Entry(entidad).Property(MarcasTiempo.CreadoEn).CurrentValue.Should().Be(ahora);
+        contexto.Entry(entidad).Property(MarcasTiempo.ActualizadoEn).CurrentValue.Should().Be(ahora);
     }
 
     private sealed class EntidadDePrueba

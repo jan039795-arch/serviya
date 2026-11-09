@@ -16,9 +16,6 @@ namespace ServiYa.Cuentas.Datos.Migraciones
             migrationBuilder.EnsureSchema(
                 name: "cuentas");
 
-            migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:PostgresExtension:postgis", ",,");
-
             migrationBuilder.CreateTable(
                 name: "roles",
                 schema: "cuentas",
@@ -135,6 +132,7 @@ namespace ServiYa.Cuentas.Datos.Migraciones
                     expira_en = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     intentos = table.Column<int>(type: "integer", nullable: false),
                     usado_en = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },

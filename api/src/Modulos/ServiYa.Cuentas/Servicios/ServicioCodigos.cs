@@ -44,7 +44,10 @@ public sealed class ServicioCodigos(TimeProvider reloj)
         return new CodigoCreado(registro, codigo);
     }
 
-    /// <summary>Revisa el código y actualiza intentos o uso en <paramref name="registro"/>.</summary>
+    /// <summary>
+    /// Revisa el código y actualiza intentos o uso en <paramref name="registro"/>. Quien guarda debe
+    /// tratar <c>DbUpdateConcurrencyException</c> como un intento rechazado (ver <see cref="CodigoVerificacion.Version"/>).
+    /// </summary>
     public ResultadoVerificacion Verificar(CodigoVerificacion registro, string codigoIngresado)
     {
         ArgumentNullException.ThrowIfNull(registro);
@@ -82,9 +85,17 @@ public sealed class ServicioCodigos(TimeProvider reloj)
 
     internal static string Hash(Guid usuarioId, PropositoCodigo proposito, string codigo)
     {
-        var datos = Encoding.UTF8.GetBytes($"{usuarioId:N}:{proposito}:{codigo}");
+        var datos = Encoding.UTF8.GetBytes($"{usuarioId:N}:{NombreEstable(proposito)}:{codigo}");
         return Convert.ToHexStringLower(SHA256.HashData(datos));
     }
+
+    /// <summary>Texto fijo por propósito: renombrar el enum no invalida los códigos pendientes.</summary>
+    private static string NombreEstable(PropositoCodigo proposito) => proposito switch
+    {
+        PropositoCodigo.VerificarCorreo => "verificar-correo",
+        PropositoCodigo.RecuperarContrasena => "recuperar-contrasena",
+        _ => throw new ArgumentOutOfRangeException(nameof(proposito), proposito, "Propósito sin nombre estable."),
+    };
 
     private static bool Coincide(CodigoVerificacion registro, string codigo)
     {

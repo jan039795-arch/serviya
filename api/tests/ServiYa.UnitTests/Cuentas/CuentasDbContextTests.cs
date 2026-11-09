@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
+using ServiYa.Comun.Datos;
 using ServiYa.Cuentas;
 using ServiYa.Cuentas.Datos;
 using ServiYa.Cuentas.Dominio;
@@ -56,6 +58,32 @@ public sealed class CuentasDbContextTests : IDisposable
     {
         contexto.Model.GetEntityTypes().Select(e => e.GetTableName())
             .Should().NotContain(tabla => tabla != null && tabla.Contains("passkey", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void El_codigo_tiene_token_de_concurrencia_en_xmin_para_que_no_se_salten_los_intentos()
+    {
+        var version = contexto.Model.FindEntityType(typeof(CodigoVerificacion))!
+            .FindProperty(nameof(CodigoVerificacion.Version))!;
+
+        version.IsConcurrencyToken.Should().BeTrue();
+        version.GetColumnName().Should().Be("xmin");
+        version.GetColumnType().Should().Be("xid");
+    }
+
+    [Fact]
+    public void Cuentas_no_pide_la_extension_postgis()
+    {
+        contexto.Model.GetAnnotations().Select(a => a.Name)
+            .Should().NotContain(nombre => nombre.Contains("postgis", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void El_contexto_usa_el_interceptor_de_marcas_de_tiempo()
+    {
+        var opciones = contexto.GetService<IDbContextOptions>().FindExtension<CoreOptionsExtension>()!;
+
+        opciones.Interceptors.Should().ContainSingle(i => i is MarcasTiempoInterceptor);
     }
 
     [Fact]

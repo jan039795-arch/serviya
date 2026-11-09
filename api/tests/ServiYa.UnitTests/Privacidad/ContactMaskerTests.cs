@@ -57,15 +57,39 @@ public sealed class ContactMaskerTests
         ocultar.Should().Throw<ArgumentNullException>();
     }
 
-    [Fact]
-    public void Un_texto_largo_se_procesa_rapido()
+    [Theory]
+    [InlineData("5 a 5-5 . ( ")]
+    [InlineData("a")]
+    [InlineData("a.")]
+    [InlineData("a arroba ")]
+    [InlineData("cinco y ")]
+    public void Un_texto_del_largo_maximo_se_procesa_rapido_y_sin_ocultarlo_todo(string fragmento)
     {
-        // 2000 caracteres es el máximo de un mensaje; se prueba con más para descartar retrocesos lentos.
-        var texto = string.Concat(Enumerable.Repeat("5 a 5-5 . ( ", 2000));
+        // Sin la vista atrás, una palabra larga sin "@" costaba tiempo cuadrático y llegaba al límite,
+        // con lo que el mensaje completo se cambiaba por el marcador.
+        var repeticiones = ContactMasker.LargoMaximo / fragmento.Length;
+        var texto = string.Concat(Enumerable.Repeat(fragmento, repeticiones));
 
         var inicio = TimeProvider.System.GetTimestamp();
-        ContactMasker.Ocultar(texto);
+        var resultado = ContactMasker.Ocultar(texto);
 
-        TimeProvider.System.GetElapsedTime(inicio).Should().BeLessThan(TimeSpan.FromSeconds(1));
+        TimeProvider.System.GetElapsedTime(inicio).Should().BeLessThan(TimeSpan.FromMilliseconds(500));
+        resultado.Texto.Should().NotBe(ContactMasker.Marcador);
+    }
+
+    [Fact]
+    public void Un_texto_mas_largo_que_el_maximo_no_es_valido()
+    {
+        var ocultar = () => ContactMasker.Ocultar(new string('a', ContactMasker.LargoMaximo + 1));
+
+        ocultar.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void Los_caracteres_invisibles_fuera_del_contacto_se_conservan()
+    {
+        var resultado = ContactMasker.Ocultar("Hola​, llámame al 55​1234​5678");
+
+        resultado.Texto.Should().Be($"Hola​, llámame al {ContactMasker.Marcador}");
     }
 }

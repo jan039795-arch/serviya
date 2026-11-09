@@ -39,7 +39,29 @@ public static class ValidadorFirmaArchivo
 
     private static ReadOnlySpan<byte> FirmaFtyp => "ftyp"u8;
 
+    /// <summary>Fotos y documentos: 10 MB (igual que la app).</summary>
+    public const long TamanoMaximoArchivo = 10L * 1024 * 1024;
+
+    /// <summary>Video de presentación: 60 MB (research R4).</summary>
+    public const long TamanoMaximoVideo = 60L * 1024 * 1024;
+
     public static bool EsTipoPermitido(string tipoContenido) => Permitidos.Contains(Normalizar(tipoContenido));
+
+    public static long TamanoMaximo(string tipoContenido) =>
+        EsVideo(Normalizar(tipoContenido)) ? TamanoMaximoVideo : TamanoMaximoArchivo;
+
+    /// <summary>
+    /// Revisión completa de un archivo ya subido: no vacío, dentro del tamaño máximo de su tipo y con
+    /// los bytes del tipo declarado. La URL firmada no limita el tamaño, así que esto es obligatorio.
+    /// </summary>
+    public static bool EsValido(ObjetoAlmacenado objeto, string tipoDeclarado)
+    {
+        ArgumentNullException.ThrowIfNull(objeto);
+        return objeto.TamanoBytes > 0
+            && EsTipoPermitido(tipoDeclarado)
+            && objeto.TamanoBytes <= TamanoMaximo(tipoDeclarado)
+            && Coincide(objeto.Inicio, tipoDeclarado);
+    }
 
     /// <summary>Tipo reconocido por los primeros bytes, o <c>null</c> si no es uno permitido.</summary>
     public static string? Detectar(ReadOnlySpan<byte> inicio)

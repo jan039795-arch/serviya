@@ -8,8 +8,11 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <InvariantGlobalization>false</InvariantGlobalization>
     <SatelliteResourceLanguages>es</SatelliteResourceLanguages>
+    <!-- packages.lock.json por proyecto: CI restaura con locked-mode y detecta cambios de dependencias. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- Vulnerabilidades conocidas en paquetes directos y transitivos (como errores, por TreatWarningsAsErrors). -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
 </Project>

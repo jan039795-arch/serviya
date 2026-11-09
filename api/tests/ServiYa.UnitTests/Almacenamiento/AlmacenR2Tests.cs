@@ -39,7 +39,8 @@ public sealed class AlmacenR2Tests : IDisposable
         firmada.Url.Host.Should().Be("cuenta-ficticia.r2.cloudflarestorage.com");
         firmada.Url.AbsolutePath.Should().Be($"/serviya-privado/{clave}");
         var consulta = HttpUtility.ParseQueryString(firmada.Url.Query);
-        consulta["X-Amz-Expires"].Should().Be("600");
+        // El SDK calcula la vigencia con el reloj real: puede salir uno o dos segundos menos.
+        int.Parse(consulta["X-Amz-Expires"]!, System.Globalization.CultureInfo.InvariantCulture).Should().BeInRange(595, 600);
         consulta["X-Amz-SignedHeaders"].Should().Contain("content-type");
         consulta["X-Amz-Credential"].Should().Contain("/auto/s3/");
         firmada.ExpiraEn.Should().Be(reloj.GetUtcNow().AddMinutes(10));
@@ -51,7 +52,8 @@ public sealed class AlmacenR2Tests : IDisposable
         var firmada = await almacen.UrlLecturaAsync(clave, TestContext.Current.CancellationToken);
 
         firmada.Url.AbsolutePath.Should().Be($"/serviya-privado/{clave}");
-        HttpUtility.ParseQueryString(firmada.Url.Query)["X-Amz-Expires"].Should().Be("300");
+        int.Parse(HttpUtility.ParseQueryString(firmada.Url.Query)["X-Amz-Expires"]!, System.Globalization.CultureInfo.InvariantCulture)
+            .Should().BeInRange(295, 300);
         firmada.ExpiraEn.Should().Be(reloj.GetUtcNow().AddMinutes(5));
     }
 
@@ -86,6 +88,7 @@ public sealed class AlmacenR2Tests : IDisposable
     [InlineData("../documentos/abc")]
     [InlineData("documentos/Juan Perez INE.jpg")]
     [InlineData("documentos/")]
+    [InlineData("documentos/0193a1b2c3d4e5f60718293a4b5c6d7e\n")] // "$" aceptaba el salto final
     [InlineData("")]
     public async Task Rechaza_claves_que_no_genero_la_API(string claveInvalida)
     {
@@ -94,6 +97,17 @@ public sealed class AlmacenR2Tests : IDisposable
         await firmar.Should().ThrowAsync<ArgumentException>();
         var publica = () => almacen.UrlPublica(claveInvalida);
         publica.Should().Throw<ArgumentException>();
+    }
+
+    [Theory]
+    [InlineData("text/html")]
+    [InlineData("image/svg+xml")]
+    [InlineData("application/octet-stream")]
+    public async Task No_firma_subidas_de_tipos_no_permitidos(string tipo)
+    {
+        var firmar = () => almacen.UrlSubidaAsync(clave, tipo, TestContext.Current.CancellationToken);
+
+        await firmar.Should().ThrowAsync<ArgumentException>();
     }
 
     [Fact]

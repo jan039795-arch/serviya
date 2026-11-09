@@ -5,8 +5,8 @@ namespace ServiYa.Comun.Almacenamiento;
 /// <summary>URL firmada y cuándo deja de servir.</summary>
 public sealed record UrlFirmada(Uri Url, DateTimeOffset ExpiraEn);
 
-/// <summary>Tamaño, tipo y primeros bytes de un objeto ya subido.</summary>
-public sealed record ObjetoAlmacenado(long TamanoBytes, string? TipoContenido, byte[] Inicio);
+/// <summary>Tamaño, tipo, primeros bytes y versión (ETag) de un objeto ya subido.</summary>
+public sealed record ObjetoAlmacenado(long TamanoBytes, string? TipoContenido, byte[] Inicio, string ETag);
 
 /// <summary>
 /// Archivos en R2 (research R3). Todo se sube y se revisa en el bucket privado; solo el portafolio
@@ -23,7 +23,15 @@ public interface IAlmacenArchivos
     /// <summary>Dirección pública de un objeto del bucket público.</summary>
     Uri UrlPublica(string clave);
 
-    /// <summary>Copia un objeto aprobado del bucket privado al público.</summary>
+    /// <summary>
+    /// Fija un archivo ya validado: lo copia a una clave nueva de <paramref name="carpetaDestino"/> solo
+    /// si sigue siendo la misma versión (<paramref name="etag"/>) y borra la clave de subida. Así nadie
+    /// puede reemplazarlo con la URL de subida, que sigue viva 10 minutos. Devuelve la clave definitiva,
+    /// o <c>null</c> si el archivo cambió después de validarlo (hay que volver a subirlo).
+    /// </summary>
+    Task<string?> ConservarAsync(string claveSubida, string etag, string carpetaDestino, CancellationToken cancellationToken);
+
+    /// <summary>Copia un objeto ya conservado y aprobado del bucket privado al público.</summary>
     Task CopiarAPublicoAsync(string clave, CancellationToken cancellationToken);
 
     Task EliminarAsync(Contenedor contenedor, string clave, CancellationToken cancellationToken);
@@ -58,6 +66,7 @@ public static partial class ClavesArchivo
         }
     }
 
-    [GeneratedRegex("^[a-z]{3,20}/[0-9a-f]{32}$", RegexOptions.CultureInvariant)]
+    // \z y no $: en .NET "$" también acepta un salto de línea final.
+    [GeneratedRegex(@"^[a-z]{3,20}/[0-9a-f]{32}\z", RegexOptions.CultureInvariant)]
     private static partial Regex Formato();
 }

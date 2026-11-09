@@ -96,5 +96,28 @@ public sealed class ValidadorFirmaArchivoTests
         ValidadorFirmaArchivo.Coincide(jpeg, "Image/JPEG; charset=binary").Should().BeTrue();
     }
 
+    [Theory]
+    [InlineData("image/jpeg", 10L * 1024 * 1024, true)]
+    [InlineData("image/jpeg", (10L * 1024 * 1024) + 1, false)]
+    [InlineData("image/jpeg", 0, false)]
+    [InlineData("video/mp4", 60L * 1024 * 1024, true)]
+    [InlineData("video/mp4", (60L * 1024 * 1024) + 1, false)]
+    public void Un_archivo_subido_es_valido_solo_dentro_del_tamano_de_su_tipo(string tipo, long tamano, bool esperado)
+    {
+        byte[] video = [0x00, 0x00, 0x00, 0x20, .. Ascii("ftypisom"), 0x00, 0x00, 0x02, 0x00];
+        byte[] jpeg = [0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01];
+        var inicio = tipo == "video/mp4" ? video : jpeg;
+
+        ValidadorFirmaArchivo.EsValido(new ObjetoAlmacenado(tamano, tipo, inicio, "\"e\""), tipo).Should().Be(esperado);
+    }
+
+    [Fact]
+    public void Un_archivo_con_bytes_de_otro_tipo_no_es_valido_aunque_el_tamano_este_bien()
+    {
+        byte[] png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D];
+
+        ValidadorFirmaArchivo.EsValido(new ObjetoAlmacenado(1024, "image/jpeg", png, "\"e\""), "image/jpeg").Should().BeFalse();
+    }
+
     private static byte[] Ascii(string texto) => Encoding.ASCII.GetBytes(texto);
 }

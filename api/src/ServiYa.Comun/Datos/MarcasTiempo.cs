@@ -7,6 +7,8 @@ namespace ServiYa.Comun.Datos;
 /// <summary>
 /// Columnas <c>created_at</c> y <c>updated_at</c>. Son propiedades sombra: las entidades no las
 /// declaran, pero se pueden consultar con <c>EF.Property&lt;DateTimeOffset&gt;(e, MarcasTiempo.CreadoEn)</c>.
+/// Ojo: <c>ExecuteUpdate</c> y <c>ExecuteDelete</c> no pasan por el interceptor; quien los use debe
+/// poner <c>updated_at</c> en el mismo <c>SetProperty</c>.
 /// </summary>
 public static class MarcasTiempo
 {

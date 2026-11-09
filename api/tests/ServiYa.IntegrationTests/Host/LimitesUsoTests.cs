@@ -57,7 +57,41 @@ public sealed class LimitesUsoTests
         estados[^1].Should().Be(HttpStatusCode.TooManyRequests);
     }
 
-    private static async Task<WebApplication> ServidorConLimite(string politica)
+    [Fact]
+    public async Task Todo_endpoint_tiene_un_limite_general_por_minuto()
+    {
+        await using var app = await ServidorConLimite(politica: null);
+        using var cliente = app.GetTestClient();
+
+        var estados = new List<HttpStatusCode>();
+        for (var intento = 1; intento <= LimitesUso.PeticionesGeneralesPorMinuto + 1; intento++)
+        {
+            using var respuesta = await cliente.PostAsync(new Uri("/prueba", UriKind.Relative), null, Cancelacion);
+            estados.Add(respuesta.StatusCode);
+        }
+
+        estados.Take(LimitesUso.PeticionesGeneralesPorMinuto).Should().AllBeEquivalentTo(HttpStatusCode.NoContent);
+        estados[^1].Should().Be(HttpStatusCode.TooManyRequests);
+    }
+
+    [Theory]
+    [InlineData("203.0.113.7", "ip:203.0.113.7")]
+    [InlineData("::ffff:203.0.113.7", "ip:203.0.113.7")]
+    [InlineData("2001:db8:1234:5678:aaaa:bbbb:cccc:dddd", "ip6:2001:db8:1234:5678::/64")]
+    [InlineData("2001:db8:1234:5678::1", "ip6:2001:db8:1234:5678::/64")]
+    public void IPv6_se_limita_por_red_64_y_no_por_direccion(string ip, string clave)
+    {
+        LimitesUso.ClaveIp(IPAddress.Parse(ip)).Should().Be(clave);
+    }
+
+    [Fact]
+    public void Dos_redes_IPv6_distintas_tienen_limites_distintos()
+    {
+        LimitesUso.ClaveIp(IPAddress.Parse("2001:db8:1234:5678::1"))
+            .Should().NotBe(LimitesUso.ClaveIp(IPAddress.Parse("2001:db8:1234:5679::1")));
+    }
+
+    private static async Task<WebApplication> ServidorConLimite(string? politica)
     {
         var builder = WebApplication.CreateSlimBuilder();
         builder.WebHost.UseTestServer();
@@ -67,7 +101,12 @@ public sealed class LimitesUsoTests
         builder.Services.AgregarLimitesUso();
         var app = builder.Build();
         app.UseRateLimiter();
-        app.MapPost("/prueba", () => Results.NoContent()).RequireRateLimiting(politica);
+        var endpoint = app.MapPost("/prueba", () => Results.NoContent());
+        if (politica is not null)
+        {
+            endpoint.RequireRateLimiting(politica);
+        }
+
         await app.StartAsync(Cancelacion);
         return app;
     }

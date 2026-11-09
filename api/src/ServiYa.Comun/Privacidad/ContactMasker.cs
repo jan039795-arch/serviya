@@ -9,12 +9,17 @@ public sealed record ResultadoOcultamiento(string Texto, bool HuboOcultamiento);
 /// <summary>
 /// Oculta teléfonos, correos y cuentas o enlaces de otras apps de mensajería (FR-033, research R8).
 /// Se aplica en el servidor a los mensajes sin acceso activo y a los textos públicos del perfil.
-/// Servicio puro: sin estado ni dependencias. Los casos que cubre están en
-/// <c>tests/ServiYa.UnitTests/Privacidad/CasosEvasion.cs</c>.
+/// Servicio puro: sin estado ni dependencias. Es la primera barrera, no la única: siempre se podrá
+/// inventar otra forma de escribir un número, por eso existen los reportes y la moderación (US7).
+/// Los casos que cubre están en <c>tests/ServiYa.UnitTests/Privacidad/CasosEvasion.cs</c>; las
+/// expresiones, en <c>ContactMasker.Patrones.cs</c>.
 /// </summary>
 public static partial class ContactMasker
 {
     public const string Marcador = "[contacto oculto]";
+
+    /// <summary>Más que cualquier texto de la app (mensajes de 2000); evita gastar CPU en textos enormes.</summary>
+    public const int LargoMaximo = 5000;
 
     /// <summary>Un teléfono de México tiene 10 dígitos; con 8 ya se puede adivinar el resto.</summary>
     private const int DigitosDeTelefono = 8;
@@ -25,41 +30,25 @@ public static partial class ContactMasker
     /// <summary>Hasta dónde se busca "WhatsApp" antes de los números.</summary>
     private const int VentanaWhatsApp = 30;
 
-    private const int TiempoMaximoMs = 250;
-    private const RegexOptions Opciones = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
-
-    private const string Unidades = "cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve";
-
-    /// <summary>Palabras que valen dos dígitos: 10–19, 20–29 y decenas con "y" opcional.</summary>
-    private const string Decenas =
-        "(?:treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa)(?:\\s+y\\s+(?:" + Unidades + "))?"
-        + "|diez|once|doce|trece|catorce|quince|dieci(?:s[eé]is|siete|ocho|nueve)"
-        + "|veinti(?:uno|una|d[oó]s|tr[eé]s|cuatro|cinco|s[eé]is|siete|ocho|nueve)|veinte";
-
-    /// <summary>Un dígito o un número escrito con palabra, sin pegarse a otras letras.</summary>
-    private const string Unidad =
-        "(?:(?<d>\\d)|(?<!\\p{L})(?:(?<dos>" + Decenas + ")|(?<uno>" + Unidades + "))(?!\\p{L}))";
-
-    /// <summary>Espacios, guiones, puntos, paréntesis, más, guion bajo, asterisco y coma seguida de espacio.</summary>
-    private const string Separador = "(?:[\\s\\-\\u2010-\\u2015.()+_*]|,(?=\\s))";
-
     public static ResultadoOcultamiento Ocultar(string texto)
     {
         ArgumentNullException.ThrowIfNull(texto);
-        if (texto.Length == 0)
+        if (texto.Length > LargoMaximo)
+        {
+            throw new ArgumentException($"El texto pasa de {LargoMaximo} caracteres.", nameof(texto));
+        }
+
+        var normalizado = TextoNormalizado.Crear(texto);
+        if (normalizado.Texto.Length == 0)
         {
             return new ResultadoOcultamiento(texto, false);
         }
 
         try
         {
-            var tramos = new List<(int Inicio, int Fin)>();
-            AgregarCoincidencias(tramos, Enlace().Matches(texto));
-            AgregarCoincidencias(tramos, Correo().Matches(texto));
-            AgregarCoincidencias(tramos, CorreoDisfrazado().Matches(texto));
-            AgregarCoincidencias(tramos, CuentaConArroba().Matches(texto));
-            AgregarCuentasTrasPalabra(tramos, texto);
-            AgregarTelefonos(tramos, texto);
+            var tramos = BuscarContactos(normalizado.Texto)
+                .Select(t => normalizado.AlOriginal(t.Inicio, t.Fin))
+                .ToList();
             return tramos.Count == 0
                 ? new ResultadoOcultamiento(texto, false)
                 : new ResultadoOcultamiento(Reemplazar(texto, tramos), true);
@@ -71,6 +60,24 @@ public static partial class ContactMasker
         }
     }
 
+    private static List<(int Inicio, int Fin)> BuscarContactos(string texto)
+    {
+        var tramos = new List<(int Inicio, int Fin)>();
+        AgregarCoincidencias(tramos, Enlace().Matches(texto));
+        AgregarCoincidencias(tramos, Correo().Matches(texto));
+        AgregarCoincidencias(tramos, CorreoDisfrazado().Matches(texto));
+        AgregarCoincidencias(tramos, CorreoEnIngles().Matches(texto));
+        AgregarCoincidencias(tramos, CuentaConArroba().Matches(texto));
+        foreach (Match coincidencia in CuentaTrasPalabra().Matches(texto))
+        {
+            var cuenta = coincidencia.Groups["cuenta"];
+            tramos.Add((cuenta.Index, cuenta.Index + cuenta.Length));
+        }
+
+        AgregarTelefonos(tramos, texto);
+        return tramos;
+    }
+
     private static void AgregarCoincidencias(List<(int Inicio, int Fin)> tramos, MatchCollection coincidencias)
     {
         foreach (Match coincidencia in coincidencias)
@@ -79,21 +86,11 @@ public static partial class ContactMasker
         }
     }
 
-    private static void AgregarCuentasTrasPalabra(List<(int Inicio, int Fin)> tramos, string texto)
-    {
-        foreach (Match coincidencia in CuentaTrasPalabra().Matches(texto))
-        {
-            var cuenta = coincidencia.Groups["cuenta"];
-            tramos.Add((cuenta.Index, cuenta.Index + cuenta.Length));
-        }
-    }
-
     private static void AgregarTelefonos(List<(int Inicio, int Fin)> tramos, string texto)
     {
-        var fechas = Fecha().Matches(texto).Select(f => (Inicio: f.Index, Fin: f.Index + f.Length)).ToList();
         foreach (Match secuencia in SecuenciaNumerica().Matches(texto))
         {
-            var digitos = ContarDigitos(secuencia, fechas);
+            var digitos = ContarDigitos(secuencia.Value);
             var esTelefono = digitos >= DigitosDeTelefono
                 || (digitos >= DigitosTrasWhatsApp && VieneDespuesDeWhatsApp(texto, secuencia.Index));
             if (esTelefono)
@@ -103,22 +100,34 @@ public static partial class ContactMasker
         }
     }
 
-    /// <summary>Cuenta los dígitos de la secuencia, sin los que forman parte de una fecha.</summary>
-    private static int ContarDigitos(Match secuencia, List<(int Inicio, int Fin)> fechas)
+    /// <summary>
+    /// Cuenta los dígitos de una secuencia (cifras y números con palabras). No cuentan las palabras
+    /// sueltas que son por completo una fecha, una hora o una cantidad con comas de miles: así
+    /// "12/11/2026 10:30" o "$1,250,000.00" no se ocultan, pero "10-12-3456-78" sí.
+    /// </summary>
+    private static int ContarDigitos(string secuencia)
     {
-        var total = 0;
-        foreach (Match unidad in UnidadNumerica().Matches(secuencia.Value))
-        {
-            var posicion = secuencia.Index + unidad.Index;
-            if (fechas.Exists(f => posicion >= f.Inicio && posicion < f.Fin))
-            {
-                continue;
-            }
+        var exentas = Palabra().Matches(secuencia)
+            .Where(p => EsFechaHoraOCantidad(p.Value))
+            .Select(p => (Inicio: p.Index, Fin: p.Index + p.Length))
+            .ToList();
 
-            total += unidad.Groups["dos"].Success ? 2 : 1;
+        var total = 0;
+        foreach (Match unidad in UnidadNumerica().Matches(secuencia))
+        {
+            if (!exentas.Exists(e => unidad.Index >= e.Inicio && unidad.Index < e.Fin))
+            {
+                total += unidad.Groups["dos"].Success ? 2 : 1;
+            }
         }
 
         return total;
+    }
+
+    private static bool EsFechaHoraOCantidad(string palabra)
+    {
+        var limpia = palabra.Trim().TrimEnd(',', ';', '.', ')', ':').TrimStart('(', '$');
+        return FechaCompleta().IsMatch(limpia) || HoraCompleta().IsMatch(limpia) || CantidadCompleta().IsMatch(limpia);
     }
 
     private static bool VieneDespuesDeWhatsApp(string texto, int inicio)
@@ -148,52 +157,4 @@ public static partial class ContactMasker
 
         return resultado.Append(texto, posicion, texto.Length - posicion).ToString();
     }
-
-    /// <summary>Enlaces de WhatsApp, Telegram, Instagram, Facebook, Messenger y TikTok.</summary>
-    [GeneratedRegex(
-        @"(?<![\w.])(?:https?://)?(?:www\.)?(?:wa\.me|(?:api\.|chat\.|web\.)?whatsapp\.com|t\.me|telegram\.(?:me|dog)"
-        + @"|instagram\.com|instagr\.am|facebook\.com|fb\.com|fb\.me|m\.me|tiktok\.com)(?![\w-])(?:/\S*)?",
-        Opciones,
-        TiempoMaximoMs)]
-    private static partial Regex Enlace();
-
-    [GeneratedRegex(@"[\w.+-]+@[\w-]+(?:\.[\w-]+)*", Opciones, TiempoMaximoMs)]
-    private static partial Regex Correo();
-
-    /// <summary>"juan arroba correo punto com", "juan (arroba) correo (punto) com", "[at]" y "[dot]".</summary>
-    [GeneratedRegex(
-        @"[\w.+-]+\s*(?:\(\s*arroba\s*\)|\[\s*arroba\s*\]|\barroba\b|\[\s*at\s*\]|\(\s*at\s*\))\s*[\w-]+"
-        + @"(?:\s*(?:\.|\(\s*punto\s*\)|\[\s*punto\s*\]|\bpunto\b|\[\s*dot\s*\]|\(\s*dot\s*\))\s*[\w-]+)*",
-        Opciones,
-        TiempoMaximoMs)]
-    private static partial Regex CorreoDisfrazado();
-
-    /// <summary>Una cuenta con arroba ("@plomero.juan") que no es parte de un correo.</summary>
-    [GeneratedRegex(@"(?<![\w.@])@\w(?:[\w.]{0,28}\w)?", Opciones, TiempoMaximoMs)]
-    private static partial Regex CuentaConArroba();
-
-    /// <summary>"insta: plomero.juan", "mi face es plomerojuan": se oculta solo la cuenta.</summary>
-    [GeneratedRegex(
-        @"\b(?:instagram|insta|ig|telegram|tg|facebook|face|fb|tiktok)\b\s*(?::|=|\bes\b|\bcomo\b)\s*(?<cuenta>@?\w[\w.]{2,29})",
-        Opciones,
-        TiempoMaximoMs)]
-    private static partial Regex CuentaTrasPalabra();
-
-    /// <summary>Dígitos y números con palabras unidos solo por separadores; puede empezar con "+" o "(".</summary>
-    [GeneratedRegex("(?:[+(]\\s*)*" + Unidad + "(?:" + Separador + "*" + Unidad + ")*", Opciones, TiempoMaximoMs)]
-    private static partial Regex SecuenciaNumerica();
-
-    [GeneratedRegex(Unidad, Opciones, TiempoMaximoMs)]
-    private static partial Regex UnidadNumerica();
-
-    /// <summary>Fechas como 12/11/2026, 12-11-26 o 2026-11-12, que no son teléfonos.</summary>
-    [GeneratedRegex(
-        @"(?<!\d)(?:(?:0?[1-9]|[12]\d|3[01])[-/.](?:0?[1-9]|1[0-2])[-/.](?:\d{4}|\d{2})"
-        + @"|(?:19|20)\d{2}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[12]\d|3[01]))(?!\d)",
-        Opciones,
-        TiempoMaximoMs)]
-    private static partial Regex Fecha();
-
-    [GeneratedRegex(@"\b(?:whats\s?app|whats|wats|wasap|guasap|wsp|wpp)\b[^\d\n]{0,25}$", Opciones, TiempoMaximoMs)]
-    private static partial Regex PrefijoWhatsApp();
 }

@@ -40,13 +40,35 @@ public sealed partial class PlanificadorTareas(
         {
             do
             {
-                await EjecutarRondaAsync(stoppingToken).ConfigureAwait(false);
+                await EjecutarRondaSinFallarAsync(stoppingToken).ConfigureAwait(false);
             }
             while (await temporizador.WaitForNextTickAsync(stoppingToken).ConfigureAwait(false));
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
         {
             // La API se está deteniendo.
+        }
+    }
+
+    /// <summary>
+    /// Una excepción que escape de <c>ExecuteAsync</c> detendría toda la API
+    /// (<c>BackgroundServiceExceptionBehavior.StopHost</c>), así que la ronda nunca falla hacia afuera.
+    /// </summary>
+    private async Task EjecutarRondaSinFallarAsync(CancellationToken stoppingToken)
+    {
+        try
+        {
+            await EjecutarRondaAsync(stoppingToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+            throw;
+        }
+#pragma warning disable CA1031 // Ver el resumen: el planificador no debe tumbar la API.
+        catch (Exception error)
+#pragma warning restore CA1031
+        {
+            RondaFallo(logger, error);
         }
     }
 
@@ -65,13 +87,16 @@ public sealed partial class PlanificadorTareas(
         var ambito = ambitos.CreateAsyncScope();
         await using (ambito.ConfigureAwait(false))
         {
-            var tarea = (ITareaProgramada)ambito.ServiceProvider.GetRequiredService(tipo);
+            var nombre = tipo.Name;
             try
             {
-                var tomado = await candado.IntentarTomarAsync(tarea.Nombre, cancellationToken).ConfigureAwait(false);
+                // Dentro del try: si la tarea no se puede crear (falta una dependencia), solo falla ella.
+                var tarea = (ITareaProgramada)ambito.ServiceProvider.GetRequiredService(tipo);
+                nombre = tarea.Nombre;
+                var tomado = await candado.IntentarTomarAsync(nombre, cancellationToken).ConfigureAwait(false);
                 if (tomado is null)
                 {
-                    TareaEnOtraInstancia(logger, tarea.Nombre);
+                    TareaEnOtraInstancia(logger, nombre);
                     return;
                 }
 
@@ -88,7 +113,7 @@ public sealed partial class PlanificadorTareas(
             catch (Exception error)
 #pragma warning restore CA1031
             {
-                TareaFallo(logger, tarea.Nombre, error);
+                TareaFallo(logger, nombre, error);
             }
         }
     }
@@ -98,4 +123,7 @@ public sealed partial class PlanificadorTareas(
 
     [LoggerMessage(Level = LogLevel.Error, Message = "La tarea {Tarea} falló")]
     private static partial void TareaFallo(ILogger logger, string tarea, Exception error);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "La ronda de tareas programadas falló")]
+    private static partial void RondaFallo(ILogger logger, Exception error);
 }

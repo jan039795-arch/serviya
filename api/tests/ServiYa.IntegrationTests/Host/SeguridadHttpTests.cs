@@ -26,6 +26,8 @@ public sealed class SeguridadHttpTests
         respuesta.Headers.GetValues("X-Content-Type-Options").Should().Equal("nosniff");
         respuesta.Headers.GetValues("Referrer-Policy").Should().Equal("no-referrer");
         respuesta.Headers.GetValues("X-Frame-Options").Should().Equal("DENY");
+        respuesta.Headers.GetValues("Content-Security-Policy").Should().Equal("default-src 'none'; frame-ancestors 'none'");
+        respuesta.Headers.CacheControl!.NoStore.Should().BeTrue();
         respuesta.Headers.GetValues("Strict-Transport-Security").Single()
             .Should().Contain("max-age=31536000").And.Contain("includeSubDomains");
     }

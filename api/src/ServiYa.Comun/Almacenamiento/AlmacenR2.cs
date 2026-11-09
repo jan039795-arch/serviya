@@ -37,6 +37,12 @@ public sealed class AlmacenR2(IAmazonS3 s3, IOptions<StorageOptions> opciones, T
     public Task<UrlFirmada> UrlSubidaAsync(string clave, string tipoContenido, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(tipoContenido);
+        if (!ValidadorFirmaArchivo.EsTipoPermitido(tipoContenido))
+        {
+            // Nunca se firma un tipo como text/html o image/svg+xml, aunque lo pida el cliente.
+            throw new ArgumentException("Ese tipo de archivo no está permitido.", nameof(tipoContenido));
+        }
+
         return FirmarAsync(clave, HttpVerb.PUT, VigenciaSubida, tipoContenido);
     }
 
@@ -47,6 +53,37 @@ public sealed class AlmacenR2(IAmazonS3 s3, IOptions<StorageOptions> opciones, T
     {
         ClavesArchivo.Validar(clave);
         return new Uri($"{Configuracion.UrlPublica.TrimEnd('/')}/{clave}");
+    }
+
+    public async Task<string?> ConservarAsync(
+        string claveSubida,
+        string etag,
+        string carpetaDestino,
+        CancellationToken cancellationToken)
+    {
+        ClavesArchivo.Validar(claveSubida);
+        ArgumentException.ThrowIfNullOrWhiteSpace(etag);
+        var claveDefinitiva = ClavesArchivo.Nueva(carpetaDestino);
+        try
+        {
+            await s3.CopyObjectAsync(
+                new CopyObjectRequest
+                {
+                    SourceBucket = Configuracion.BucketPrivado,
+                    SourceKey = claveSubida,
+                    DestinationBucket = Configuracion.BucketPrivado,
+                    DestinationKey = claveDefinitiva,
+                    ETagToMatch = etag,
+                },
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (AmazonS3Exception error) when (error.StatusCode is HttpStatusCode.PreconditionFailed or HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        await s3.DeleteObjectAsync(Configuracion.BucketPrivado, claveSubida, cancellationToken).ConfigureAwait(false);
+        return claveDefinitiva;
     }
 
     public async Task CopiarAPublicoAsync(string clave, CancellationToken cancellationToken)
@@ -87,7 +124,7 @@ public sealed class AlmacenR2(IAmazonS3 s3, IOptions<StorageOptions> opciones, T
 
         if (metadatos.ContentLength == 0)
         {
-            return new ObjetoAlmacenado(0, metadatos.Headers.ContentType, []);
+            return new ObjetoAlmacenado(0, metadatos.Headers.ContentType, [], metadatos.ETag);
         }
 
         var peticion = new GetObjectRequest
@@ -95,11 +132,21 @@ public sealed class AlmacenR2(IAmazonS3 s3, IOptions<StorageOptions> opciones, T
             BucketName = Configuracion.BucketPrivado,
             Key = clave,
             ByteRange = new ByteRange(0, Math.Min(bytes, metadatos.ContentLength) - 1),
+            // Los bytes deben ser de la misma versión que el tamaño y el ETag.
+            EtagToMatch = metadatos.ETag,
         };
-        using var respuesta = await s3.GetObjectAsync(peticion, cancellationToken).ConfigureAwait(false);
-        using var memoria = new MemoryStream();
-        await respuesta.ResponseStream.CopyToAsync(memoria, cancellationToken).ConfigureAwait(false);
-        return new ObjetoAlmacenado(metadatos.ContentLength, metadatos.Headers.ContentType, memoria.ToArray());
+        try
+        {
+            using var respuesta = await s3.GetObjectAsync(peticion, cancellationToken).ConfigureAwait(false);
+            using var memoria = new MemoryStream();
+            await respuesta.ResponseStream.CopyToAsync(memoria, cancellationToken).ConfigureAwait(false);
+            return new ObjetoAlmacenado(metadatos.ContentLength, metadatos.Headers.ContentType, memoria.ToArray(), metadatos.ETag);
+        }
+        catch (AmazonS3Exception error) when (error.StatusCode is HttpStatusCode.PreconditionFailed or HttpStatusCode.NotFound)
+        {
+            // Lo reemplazaron o borraron entre las dos lecturas: se trata como si no existiera.
+            return null;
+        }
     }
 
     private async Task<UrlFirmada> FirmarAsync(string clave, HttpVerb metodo, TimeSpan vigencia, string? tipoContenido)

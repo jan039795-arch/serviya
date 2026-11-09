@@ -50,6 +50,28 @@ public static class CasosEvasion
         { "mándame whats al 1234 56", "1234 56" },
         { "Escríbeme por WhatsApp: cinco cinco uno dos", "cinco cinco uno dos" },
         { "mi wasap 33 12 34", "33 12 34" },
+        // Encontrados en la revisión de seguridad de la Etapa 3
+        { "55/1234/5678", "1234/5678" },
+        { "55|12|34|56|78", "56|78" },
+        { "55:12:34:56:78", "56:78" },
+        { "55,1234,5678", "1234,5678" },
+        { "55​1234​5678", "5678" },
+        { "55­1234­5678", "5678" },
+        { "5️⃣5️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣", "8️⃣" },
+        { "55 1234 56O8", "56O8" },
+        { "55 l234 5678", "5678" },
+        { "10-12-3456-78", "3456-78" },
+        { "33-11-2345-67", "2345-67" },
+        { "12/11/2026 55 1234 5678", "1234 5678" },
+        { "juan @ correo.test", "correo.test" },
+        { "juan at correo dot com", "correo dot com" },
+        { "ju​an@correo.test", "correo.test" },
+        { "signal.me/#p/+5215512345678", "signal.me" },
+        { "line.me/ti/p/plomero", "line.me" },
+        { "discord.gg/plomeros", "discord.gg" },
+        { "linktr.ee/plomero.ficticio", "linktr.ee" },
+        { "wa . me/5215512345678", "5215512345678" },
+        { "w​a.me/5215512345678", "5215512345678" },
     };
 
     /// <summary>Textos normales de un oficio que deben quedar idénticos.</summary>
@@ -71,5 +93,12 @@ public static class CasosEvasion
         "Hago trabajos de 2026, garantía de 6 meses",
         "",
         "Hola, ¿a qué hora puede venir?",
+        "Horario 08:00-18:00 de lunes a viernes",
+        "Llego el 12/11/2026 10:30",
+        "Garantía de 1/2 año, tubo de 3/4",
+        "Hoy es 2026-11-08 y llego a las 9:30",
+        "Son $3,500 de mano de obra y $1,200 de material",
+        "Calle 5 #123 int. 4",
+        "Precio: 1,250,000.00 pesos",
     };
 }
