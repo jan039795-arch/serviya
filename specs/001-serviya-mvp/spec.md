@@ -341,7 +341,8 @@ perfil desaparece y los documentos se eliminan según la política de conservaci
   acceso pagado, el sistema DEBE otorgar un crédito por un contacto nuevo; el cliente DEBE poder
   solicitar la devolución en dinero en lugar del crédito.
 - **FR-027**: Al pagar un segundo contacto individual dentro de 30 días, el sistema DEBE ofrecer el
-  pase descontando lo pagado en contactos individuales en ese periodo.
+  pase descontando lo pagado en contactos individuales en ese periodo, sin que el pase baje del
+  precio de un contacto ($39 MXN).
 - **FR-028**: Con renovación automática, el sistema DEBE avisar 3 días antes del cobro y permitir
   cancelarla en una sola acción, conservando el acceso hasta el fin del periodo pagado.
 - **FR-029**: El sistema DEBE limitar los contactos nuevos por día de un mismo cliente (10 por defecto)

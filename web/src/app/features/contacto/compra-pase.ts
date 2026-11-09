@@ -24,8 +24,8 @@ export interface OfertaPase {
           <strong>{{ descuento.montoCentavos | mxn }}</strong>
         </p>
         <p class="alerta alerta--exito" data-testid="oferta-pase">
-          Te descontamos {{ descuento.descuentoCentavos | mxn }} que ya pagaste en contactos de los
-          últimos 30 días.
+          Te descontamos {{ descuento.descuentoCentavos | mxn }} por los contactos que pagaste en
+          los últimos 30 días.
         </p>
       } @else {
         <p class="precio">

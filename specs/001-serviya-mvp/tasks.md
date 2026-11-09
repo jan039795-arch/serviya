@@ -289,7 +289,7 @@ cancelar la renovación en un clic (quickstart, escenario 8).
 
 ### Tests for User Story 4 ⚠️ (módulo crítico: TDD)
 
-- [ ] T113 [P] [US4] Pruebas en `api/tests/ServiYa.IntegrationTests/Pagos/PasesTests.cs`: con pase activo el contacto se desbloquea sin pago y el contador baja en uno; 31 peticiones simultáneas dejan exactamente 30 contactos usados; el 31.º → 409 con oferta de contacto individual; oferta del pase = 12900 − lo pagado en contactos individuales en 30 días (3900 → 9000); renovación: aviso una sola vez 3 días antes, cancelación en una acción (`PUT preapproval {status: cancelled}`), acceso hasta `FinEn` y sin más cobros; `subscription_authorized_payment` aprobado → nuevo periodo; al terminar el pase, sus accesos vencen y la conversación queda en solo lectura
+- [ ] T113 [P] [US4] Pruebas en `api/tests/ServiYa.IntegrationTests/Pagos/PasesTests.cs`: con pase activo el contacto se desbloquea sin pago y el contador baja en uno; 31 peticiones simultáneas dejan exactamente 30 contactos usados; el 31.º → 409 con oferta de contacto individual; oferta del pase = 12900 − lo pagado en contactos individuales en 30 días, sin bajar de 3900 (3900 → 9000; 7800 → 5100; 11700 o más → 3900); renovación: aviso una sola vez 3 días antes, cancelación en una acción (`PUT preapproval {status: cancelled}`), acceso hasta `FinEn` y sin más cobros; `subscription_authorized_payment` aprobado → nuevo periodo; al terminar el pase, sus accesos vencen y la conversación queda en solo lectura
 
 ### Implementation for User Story 4
 

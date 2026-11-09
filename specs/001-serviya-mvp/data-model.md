@@ -171,7 +171,7 @@ contactos_usados < contactos_incluidos`).
 | Id | uuid | Se usa como `external_reference` en Mercado Pago |
 | ClienteId | uuid | |
 | Concepto | enum | `ContactoIndividual`, `PaseMensual`, `RenovacionPase`, `CuotaAdministracion` |
-| MontoCentavos | int | 3900, 12900 o 12900 menos el descuento (FR-027) |
+| MontoCentavos | int | 3900, 12900 o 12900 menos el descuento, nunca menos de 3900 (FR-027) |
 | DescuentoCentavos | int | ≥ 0 |
 | Metodo | text? | `credit_card`, `debit_card`, `ticket` (OXXO o Paycash), `bank_transfer` (SPEI), `account_money` |
 | Estado | enum | `Creado`, `Pendiente`, `Aprobado`, `Rechazado`, `Expirado`, `Reembolsado` |

@@ -8,6 +8,7 @@ import {
   EstadoPagos,
   ofertaPase,
   PagoInterno,
+  PRECIO_MINIMO_PASE_CENTAVOS,
 } from './estado/reglas-acceso';
 import { iniciarSesion } from './estado/usuarios';
 import { AVISO_PAGO, rutasAccesos } from './handlers/accesos';
@@ -96,6 +97,24 @@ describe('reglas de acceso', () => {
     expect(ofertaPase({ ...vacio, pagos: [pago({})] }, CLIENTE, ahora)).toEqual({
       montoCentavos: 9000,
       descuentoCentavos: 3900,
+    });
+  });
+
+  it('con 2 contactos pagados el pase cuesta lo que falta para $129', () => {
+    const pagos = [pago({ id: 'a' }), pago({ id: 'b' })];
+
+    expect(ofertaPase({ ...vacio, pagos }, CLIENTE, ahora)).toEqual({
+      montoCentavos: 5100,
+      descuentoCentavos: 7800,
+    });
+  });
+
+  it.each([3, 4, 6])('con %i contactos pagados el pase nunca baja de $39', (cantidad) => {
+    const pagos = Array.from({ length: cantidad }, (_, i) => pago({ id: `p${i}` }));
+
+    expect(ofertaPase({ ...vacio, pagos }, CLIENTE, ahora)).toEqual({
+      montoCentavos: PRECIO_MINIMO_PASE_CENTAVOS,
+      descuentoCentavos: 12900 - PRECIO_MINIMO_PASE_CENTAVOS,
     });
   });
 

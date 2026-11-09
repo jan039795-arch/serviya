@@ -136,7 +136,7 @@ falta necesita PostgreSQL o RustFS.
 4. Sin Docker ya no queda trabajo que valga la pena adelantar: lo que sigue (endpoints de cuentas,
    tipos generados desde OpenAPI y guardas de T068, conexión de las pantallas en T070) depende de la
    base de datos.
-5. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
+5. Nada más pendiente de decidir para la Etapa 3.
 
 ## Etapas del proyecto
 
@@ -200,7 +200,7 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | Se agregó `GET /pases/yo` y `prestadorId` es opcional en `GET /accesos/opciones` (contrato actualizado) | La pantalla del pase necesita su estado y el aviso vigente sin un prestador |
 | 2026-11-08 | La app solo redirige a pagar a la ruta interna del checkout simulado o a `https` de `mercadopago.com(.mx)` | Evita que una respuesta alterada mande al usuario a otro sitio |
 | 2026-11-08 | El teléfono se pide al pulsar "Ver teléfono" y no se guarda en el navegador | Menos exposición del dato; la API lo entrega solo con acceso activo (FR-020) |
-| 2026-11-08 | La oferta del pase descuenta lo pagado en contactos individuales de los últimos 30 días, sin bajar de $0 | FR-027; con 4 contactos pagados el pase saldría gratis, a revisar con el usuario antes del piloto |
+| 2026-11-08 | La oferta del pase descuenta lo pagado en contactos individuales de los últimos 30 días, sin bajar de $0 | FR-027; con 4 contactos pagados el pase saldría gratis, a revisar con el usuario antes del piloto (reemplazada abajo) |
 | 2026-11-08 | Las piezas del prototipo se registran en `core/prototipo/prototipo.ts`, que producción reemplaza por un archivo vacío (`fileReplacements`) | Un `if` en tiempo de ejecución dejaba los datos ficticios y `/dev/*` en el paquete y el service worker los precargaba |
 | 2026-11-08 | Acciones de prueba (simular pago, acreditar, vencer, sesión) detrás del token `ACCIONES_PROTOTIPO` | Las pantallas las usan solo si existen; en producción el token no se provee |
 | 2026-11-08 | `security.allowedHosts`: `localhost`, `127.0.0.1`, `serviya.mx` y `*.serviya.mx` | El servidor SSR de Angular rechaza cualquier otro host; sin esto no abría ni en local |
@@ -244,6 +244,7 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | El XSRF de Angular se apaga (`withNoXsrfProtection`) y solo actúa `xsrfInterceptor` | El de Angular omite URL absolutas y duplicaba el encabezado en las relativas; un solo mecanismo es más claro |
 | 2026-11-08 | El token XSRF se pide al arrancar sin esperar la respuesta, y antes de la primera petición que modifica datos si aún falta | La PWA se muestra de inmediato; un fallo de red no bloquea el arranque |
 | 2026-11-08 | Las guardas de formato de T068 se escriben al conectar cada área a la API real | Dependen de los tipos generados desde OpenAPI; escribirlas antes sería rehacerlas |
+| 2026-11-08 | El pase con descuento nunca baja de $39 (precio de un contacto): 1 contacto pagado → $90, 2 → $51, 3 o más → $39 | El usuario no tuvo preferencia y se tomó la opción recomendada: el cliente sigue ganando y la plataforma no regala 30 contactos. Actualiza FR-027 y data-model |
 
 ## Pendientes abiertos
 
@@ -251,7 +252,6 @@ falta necesita PostgreSQL o RustFS.
 - Ciudad o zona del piloto.
 - Oficios incluidos en el piloto.
 - Revisión de textos legales con un abogado y del régimen fiscal con un contador.
-- Oferta del pase cuando lo pagado en contactos supera $129 (hoy queda en $0): ¿tope mínimo?
 - Cómo generar el PDF del comprobante de pago (research R14, tarea T108; opción a evaluar: QuestPDF Community).
 
 ## Bitácora
@@ -279,3 +279,4 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | Parte sin servidor de T050 (validador de firmas, almacenamiento R2 y URL firmadas) y T052 (planificador y candado de PostgreSQL) | ver `git log` |
 | 2026-11-08 | Revisión de la Etapa 3 (`csharp-reviewer` y `security-reviewer`) y correcciones de los hallazgos | ver `git log` |
 | 2026-11-08 | XSRF propio, token al arrancar y proxy de desarrollo en el frontend (T069) | ver `git log` |
+| 2026-11-08 | Oferta del pase con mínimo de $39 en el prototipo, FR-027, data-model y T113 | ver `git log` |

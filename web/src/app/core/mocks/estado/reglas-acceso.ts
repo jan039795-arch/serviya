@@ -13,6 +13,11 @@ import {
  */
 export const PRECIO_CONTACTO_CENTAVOS = 3900;
 export const PRECIO_PASE_CENTAVOS = 12900;
+/**
+ * El descuento al pasar al pase nunca lo deja por debajo del precio de un contacto: con 4 o más
+ * contactos pagados en 30 días el pase sale gratis si no (decisión del 2026-11-08).
+ */
+export const PRECIO_MINIMO_PASE_CENTAVOS = PRECIO_CONTACTO_CENTAVOS;
 export const DIAS_VIGENCIA = 30;
 export const CONTACTOS_POR_PASE = 30;
 export const LIMITE_CONTACTOS_DIARIOS = 10;
@@ -121,7 +126,7 @@ export function creditosDisponibles(estado: EstadoPagos, clienteId: string): Cre
 
 /**
  * Oferta del pase al ir por el segundo contacto individual en 30 días: 129 menos lo ya pagado en
- * contactos individuales de ese periodo (FR-027), nunca menos de cero.
+ * contactos individuales de ese periodo (FR-027), sin bajar de $39 (`PRECIO_MINIMO_PASE_CENTAVOS`).
  */
 export function ofertaPase(
   estado: EstadoPagos,
@@ -144,7 +149,7 @@ export function ofertaPase(
   if (pagado === 0) {
     return undefined;
   }
-  const descuento = Math.min(pagado, PRECIO_PASE_CENTAVOS);
+  const descuento = Math.min(pagado, PRECIO_PASE_CENTAVOS - PRECIO_MINIMO_PASE_CENTAVOS);
   return { montoCentavos: PRECIO_PASE_CENTAVOS - descuento, descuentoCentavos: descuento };
 }
 
