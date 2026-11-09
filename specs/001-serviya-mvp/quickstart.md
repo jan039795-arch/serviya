@@ -10,7 +10,8 @@ entidades en [data-model.md](data-model.md).
 | .NET SDK | 10.0.x | ✅ 10.0.402 |
 | Node.js | 24 LTS | ✅ 24.22 |
 | Angular CLI | 22.x (`npx @angular/cli@22`) | Se instala con el proyecto |
-| Docker Desktop (con WSL 2) | reciente | ❌ **Falta**: necesario para PostgreSQL local y Testcontainers |
+| Docker Desktop (con WSL 2) | reciente | ✅ 4.98 (motor 29.9); necesita "Plataforma de máquina virtual" (`wsl --install --no-distribution` como administrador y reiniciar) |
+| Smart App Control de Windows | — | ✅ Apagado: encendido bloquea los `.dll` y `.exe` que compila .NET (API, pruebas y `dotnet ef`) |
 | Cuenta de Mercado Pago (desarrollador) | — | Pendiente: credenciales de prueba y clave secreta del webhook |
 | Cuenta de Cloudflare R2 | — | Pendiente (en desarrollo se usa RustFS en Docker) |
 
@@ -90,7 +91,7 @@ cd web && npm start             # con mocks en false por área
 ```
 
 Servicios locales (solo escuchan en `127.0.0.1`): PostgreSQL en el puerto 5432, la API S3 de
-RustFS en el 9000 y su consola en http://localhost:9001 (usuario y clave: `ALMACEN_ACCESS_KEY` y
+RustFS en el 9000 y su consola en http://localhost:9001/rustfs/console/ (usuario y clave: `ALMACEN_ACCESS_KEY` y
 `ALMACEN_SECRET_KEY` de `.env`). La API corre en http://localhost:5189 y publica su contrato en
 `/openapi/v1.json` solo en desarrollo. `docker compose down -v` borra los datos locales.
 

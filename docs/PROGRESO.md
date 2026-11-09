@@ -5,8 +5,9 @@
 ## Estado actual
 
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
-**Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 lista (T038, T040–T043) salvo probar
-`docker-compose.yml` (T039), que espera a que el usuario instale Docker. De la Fase 4 están hechas
+**Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 terminada (T038–T043). Docker Desktop ya
+funciona: PostgreSQL con PostGIS y RustFS corren en local y la migración `Inicial` de Cuentas está
+aplicada. De la Fase 4 están hechas
 T044, T045, T047, T048, T051, T053–T057 y T060, y la parte sin servidor de T050 y T052; lo que
 falta necesita PostgreSQL o RustFS.
 
@@ -66,8 +67,9 @@ falta necesita PostgreSQL o RustFS.
   `latest-recommended`. Opciones `Storage`, `MercadoPago`, `Email` y `WebPush` validadas al
   arrancar. 8 pruebas unitarias y 3 de integración (arranque de la API, sin Docker) pasan.
 - `docker-compose.yml`: PostGIS 17 con roles `serviya_owner` y `serviya_app` (`docker/postgres/init.sql`)
-  y RustFS 1.0.4 como S3 local con los buckets `serviya-privado` y `serviya-publico`. **Escrito pero
-  sin probar: Docker ni WSL están instalados.**
+  y RustFS 1.0.4 como S3 local con los buckets `serviya-privado` y `serviya-publico`. Probado:
+  `serviya_app` lee y escribe pero no puede crear, borrar ni alterar tablas; el bucket público se lee
+  sin credenciales (200) y el privado no (403).
 - Secretos de desarrollo: `scripts/configurar-desarrollo.ps1` crea `.env` (ignorado por git) y los
   user-secrets de la API; ya se ejecutó en este equipo y la API arranca en desarrollo.
 - CI en `.github/workflows/ci.yml` (API y web); sus pasos pasan en local; correrá en GitHub al subir.
@@ -125,17 +127,13 @@ falta necesita PostgreSQL o RustFS.
 1. **El usuario prueba el prototipo en su celular** siguiendo "Probar en el celular e instalar la
    app" de `specs/001-serviya-mvp/quickstart.md` (`npm run serve:prototipo` + `chrome://inspect`)
    y anota en esta bitácora los ajustes que pida. Con su aprobación se marca T037.
-2. **El usuario instala WSL 2 y Docker Desktop** (`wsl --install` como administrador, reiniciar y
-   luego Docker Desktop). Después: `docker compose up -d` desde la raíz y comprobar que
-   `almacen-buckets` termina bien y que `serviya_app` entra a PostgreSQL; con eso se marca T039.
-3. Con Docker: aplicar la migración `Inicial` (`dotnet tool restore` y `dotnet ef database update`,
-   ver `CLAUDE.md`) y seguir con T046 (fábrica de pruebas con PostGIS y RustFS; reutilizar
+2. Al abrir una sesión: Docker Desktop debe estar abierto; `docker compose up -d` desde la raíz.
+3. Seguir con T046 (fábrica de pruebas con PostGIS y RustFS; reutilizar
    `Infraestructura/FabricaSinBaseDeDatos.cs` y `RegistroEnMemoria.cs`), las pruebas de integración
    que faltan de T050 (RustFS) y T052 (dos instancias), T049 (bitácora), T058 (pruebas de cuentas y
    permisos, TDD), T059 (Identity y cookie), T061–T064 y catálogos (T065–T067).
-4. Sin Docker ya no queda trabajo que valga la pena adelantar: lo que sigue (endpoints de cuentas,
-   tipos generados desde OpenAPI y guardas de T068, conexión de las pantallas en T070) depende de la
-   base de datos.
+4. Después de Cuentas: catálogos (T065–T067), tipos desde OpenAPI y guardas (T068) y conexión de
+   las pantallas de cuenta (T070).
 5. Nada más pendiente de decidir para la Etapa 3.
 
 ## Etapas del proyecto
@@ -245,6 +243,8 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | El token XSRF se pide al arrancar sin esperar la respuesta, y antes de la primera petición que modifica datos si aún falta | La PWA se muestra de inmediato; un fallo de red no bloquea el arranque |
 | 2026-11-08 | Las guardas de formato de T068 se escriben al conectar cada área a la API real | Dependen de los tipos generados desde OpenAPI; escribirlas antes sería rehacerlas |
 | 2026-11-08 | El pase con descuento nunca baja de $39 (precio de un contacto): 1 contacto pagado → $90, 2 → $51, 3 o más → $39 | El usuario no tuvo preferencia y se tomó la opción recomendada: el cliente sigue ganando y la plataforma no regala 30 contactos. Actualiza FR-027 y data-model |
+| 2026-11-08 | Smart App Control de Windows apagado (lo hizo el usuario) | Tras reiniciar pasó a "Activado" y bloqueaba todo lo que compila .NET (API, pruebas y `dotnet ef`); el antivirus de Defender sigue activo |
+| 2026-11-08 | Pendiente para producción (T148): quitar a `serviya_app` la escritura sobre `__ef_migraciones` de cada esquema | Los privilegios por defecto de `init.sql` también le dan escritura al historial de migraciones |
 
 ## Pendientes abiertos
 
@@ -280,3 +280,4 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | Revisión de la Etapa 3 (`csharp-reviewer` y `security-reviewer`) y correcciones de los hallazgos | ver `git log` |
 | 2026-11-08 | XSRF propio, token al arrancar y proxy de desarrollo en el frontend (T069) | ver `git log` |
 | 2026-11-08 | Oferta del pase con mínimo de $39 en el prototipo, FR-027, data-model y T113 | ver `git log` |
+| 2026-11-08 | Docker Desktop y WSL 2 funcionando; servicios locales probados (T039) y migración `Inicial` de Cuentas aplicada | ver `git log` |
