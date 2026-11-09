@@ -1,34 +1,16 @@
 using System.Net;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Options;
+using ServiYa.IntegrationTests.Infraestructura;
 
 namespace ServiYa.IntegrationTests.Arranque;
 
-/// <summary>
-/// La API valida su configuración al arrancar (T041). No usa base de datos, así que corre sin Docker.
-/// </summary>
+/// <summary>La API valida su configuración al arrancar (T041).</summary>
 public sealed class ArranqueApiTests
 {
-    /// <summary>Valores ficticios; nunca credenciales reales.</summary>
-    private static readonly Dictionary<string, string> ConfiguracionFicticia = new()
-    {
-        ["Storage:Endpoint"] = "http://localhost:9000",
-        ["Storage:AccessKey"] = "clave-ficticia",
-        ["Storage:SecretKey"] = "secreto-ficticio",
-        ["Storage:UrlPublica"] = "http://localhost:9000/serviya-publico",
-        ["MercadoPago:AccessToken"] = "TEST-ficticio",
-        ["MercadoPago:WebhookSecret"] = "firma-ficticia",
-        ["Email:Proveedor"] = "Consola",
-        ["Email:Remitente"] = "no-responder@serviya.test",
-        ["WebPush:PublicKey"] = "publica-ficticia",
-        ["WebPush:PrivateKey"] = "privada-ficticia",
-    };
-
     [Fact]
     public async Task Con_la_configuracion_completa_arranca_y_publica_OpenAPI_en_desarrollo()
     {
-        await using var fabrica = Fabrica("Development", ConfiguracionFicticia);
+        await using var fabrica = FabricaSinBaseDeDatos.Crear("Development");
         using var cliente = fabrica.CreateClient();
 
         using var respuesta = await cliente.GetAsync(
@@ -44,7 +26,7 @@ public sealed class ArranqueApiTests
     public async Task Sin_secretos_no_arranca_y_dice_que_clave_falta()
     {
         // "Testing" no carga user-secrets ni appsettings.Development.json.
-        await using var fabrica = Fabrica("Testing", new Dictionary<string, string>());
+        await using var fabrica = FabricaSinBaseDeDatos.Crear("Testing", new Dictionary<string, string>());
 
         var arrancar = () => fabrica.CreateClient();
 
@@ -58,11 +40,9 @@ public sealed class ArranqueApiTests
     [Fact]
     public async Task En_produccion_no_publica_OpenAPI()
     {
-        var configuracion = new Dictionary<string, string>(ConfiguracionFicticia)
-        {
-            ["AllowedHosts"] = "localhost",
-        };
-        await using var fabrica = Fabrica("Production", configuracion);
+        await using var fabrica = FabricaSinBaseDeDatos.Crear(
+            "Production",
+            FabricaSinBaseDeDatos.ConfiguracionCon(("Email:Proveedor", "Resend"), ("Email:ApiKey", "re_ficticia")));
         using var cliente = fabrica.CreateClient();
 
         using var respuesta = await cliente.GetAsync(
@@ -71,16 +51,4 @@ public sealed class ArranqueApiTests
 
         respuesta.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
-
-    private static WebApplicationFactory<Program> Fabrica(
-        string entorno,
-        Dictionary<string, string> configuracion) =>
-        new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.UseEnvironment(entorno);
-            foreach (var (clave, valor) in configuracion)
-            {
-                builder.UseSetting(clave, valor);
-            }
-        });
 }

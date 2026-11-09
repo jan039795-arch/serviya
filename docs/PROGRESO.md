@@ -5,8 +5,9 @@
 ## Estado actual
 
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
-**Etapa 3 — Preparación del backend** (en curso): Fase 3 lista (T038, T040–T043) salvo probar
-`docker-compose.yml` (T039), que espera a que el usuario instale Docker.
+**Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 lista (T038, T040–T043) salvo probar
+`docker-compose.yml` (T039), que espera a que el usuario instale Docker. De la Fase 4 están hechas
+las tareas que no necesitan base de datos: T044, T047, T048, T051, T053, T054 y T055.
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -69,6 +70,19 @@
 - Secretos de desarrollo: `scripts/configurar-desarrollo.ps1` crea `.env` (ignorado por git) y los
   user-secrets de la API; ya se ejecutó en este equipo y la API arranca en desarrollo.
 - CI en `.github/workflows/ci.yml` (API y web); sus pasos pasan en local; correrá en GitHub al subir.
+- Host de la API (Fase 4): `IModulo` con los 10 módulos registrados en una lista explícita
+  (`ServiYa.Api/Modulos/RegistroModulos.cs`) bajo `/api/v1`; errores como `ProblemDetails` con
+  títulos en español; `TimeProvider` inyectable; HTTPS, HSTS, CORS con credenciales y encabezados
+  de seguridad; límites `login-codigos` (5/min por IP) y `mensajes` (30/min por usuario) con 429 y
+  `Retry-After`; registro JSON con solo método, ruta, estado y duración.
+- `ContactMasker` (`ServiYa.Comun/Privacidad/`): oculta teléfonos (con separadores, `+52`, con
+  palabras o mezclados), correos (también "arroba" y "punto com"), enlaces y cuentas de WhatsApp,
+  Telegram, Instagram, Facebook y TikTok, y números tras "WhatsApp". Catálogo de 35 evasiones y 16
+  textos que no se tocan en `CasosEvasion.cs`; cobertura 96%.
+- Correo: `IEmailSender` con `ConsolaEmailSender` (memoria, `GET /api/v1/dev/correos` solo en
+  desarrollo) y `ResendEmailSender` (HTTP sin SDK); plantillas de código de verificación y de
+  recuperación.
+- 87 pruebas del backend pasan (unitarias e integración sin base de datos).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
@@ -79,11 +93,12 @@
 2. **El usuario instala WSL 2 y Docker Desktop** (`wsl --install` como administrador, reiniciar y
    luego Docker Desktop). Después: `docker compose up -d` desde la raíz y comprobar que
    `almacen-buckets` termina bien y que `serviya_app` entra a PostgreSQL; con eso se marca T039.
-3. Fase 4 de `tasks.md`. Sin Docker se pueden hacer: T044 (`Program.cs` con `ProblemDetails`,
-   grupo `/api/v1`, `TimeProvider` e `IModulo`), T047–T048 (`ContactMasker` con TDD, servicio
-   puro), T051 (correo), T053 (límites de uso), T054 (encabezados) y T055 (registro sin datos
-   personales). Con Docker: T045 (agregar entonces `dotnet-ef` como herramienta local en
-   `api/.config/dotnet-tools.json`), T046, T049, T050 y T052.
+3. Resto de la Fase 4, que necesita Docker: T045 (base de persistencia; agregar entonces
+   `dotnet-ef` como herramienta local en `api/.config/dotnet-tools.json`), T046 (fábrica de pruebas
+   con PostGIS y RustFS; reutilizar `Infraestructura/FabricaSinBaseDeDatos.cs` y
+   `RegistroEnMemoria.cs`), T049 (bitácora), T050 (almacenamiento), T052 (tareas programadas) y
+   luego Cuentas (T056–T064) y catálogos (T065–T067). Sin Docker solo queda T060
+   (`ServicioCodigos`), que conviene hacer junto con T056.
 4. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
 
 ## Etapas del proyecto
@@ -159,6 +174,14 @@
 | 2026-11-08 | Secretos locales en `.env` y user-secrets generados por `scripts/configurar-desarrollo.ps1`; puertos de Docker solo en `127.0.0.1` | Ninguna contraseña en el repositorio, ni siquiera de desarrollo |
 | 2026-11-08 | Opciones como `sealed class` con `init`, no `record` | El `ToString()` de un `record` imprimiría las claves si alguien registra las opciones |
 | 2026-11-08 | Versiones centralizadas en `api/Directory.Packages.props` | Una sola versión por paquete en los 15 proyectos |
+| 2026-11-08 | `ContactMasker` estático y puro; marcador `[contacto oculto]`; teléfono = 8 o más dígitos (cifras o palabras) unidos por separadores, o 4 o más tras "WhatsApp" | Un teléfono de México tiene 10 dígitos; con 8 ya se adivina. Si una expresión tarda demasiado se oculta todo el texto (falla cerrado) |
+| 2026-11-08 | En `ContactMasker` la coma separa dígitos solo si va seguida de espacio, y las fechas (12/11/2026, 12-11-26, 2026-11-12) no cuentan | Evita ocultar precios como `$1,250,000.00` y fechas. Limitación conocida: una lista de años separados por comas y espacios se ocultaría |
+| 2026-11-08 | Títulos de `ProblemDetails` en español para los errores estándar (404, 405, 429, 500...) | La app muestra `title` o `detail` al usuario |
+| 2026-11-08 | `GET /api/v1/dev/correos` solo en `Development`; el proveedor `Consola` hace fallar el arranque fuera de desarrollo y pruebas | Los códigos solo se leen en local; un error de configuración no deja a producción sin correos |
+| 2026-11-08 | Registro en consola simple en desarrollo y JSON en los demás entornos | Legible al programar; JSON para el hospedaje |
+| 2026-11-08 | Orígenes de CORS en `Cors:Origenes`: `https://serviya.mx` en producción y `http://localhost:4200` solo en desarrollo; se expone `Retry-After`; además `X-Frame-Options: DENY` | Un origen local no debe tener acceso con credenciales en producción; la app necesita leer `Retry-After` |
+| 2026-11-08 | El límite por IP usa `RemoteIpAddress`; al desplegar (T147) se configura `ForwardedHeaders` con las redes del proxy | Detrás del proxy todos compartirían la IP del proxy; confiar en cualquier `X-Forwarded-For` permitiría saltarse el límite |
+| 2026-11-08 | Los límites de uso se prueban en un servidor mínimo con un endpoint de prueba | Aún no hay endpoints que los usen; se prueba la misma configuración (`LimitesUso`) |
 
 ## Pendientes abiertos
 
@@ -189,3 +212,4 @@
 | 2026-11-08 | Contacto pagado, checkout simulado, mis contactos y pase en el prototipo (T030–T033) | ver `git log` |
 | 2026-11-08 | Cierre del prototipo (T034–T036), revisión con `typescript-reviewer` y correcciones (T037, falta la prueba en celular) | ver `git log` |
 | 2026-11-08 | Preparación del backend (T038, T040–T043; T039 escrito sin probar): solución .NET, opciones validadas, docker-compose con PostGIS y RustFS, script de secretos y CI | ver `git log` |
+| 2026-11-08 | Fase 4 sin base de datos (T044, T047, T048, T051, T053–T055): host de la API, `ContactMasker` con TDD, correo, límites de uso, encabezados y registro sin datos personales | ver `git log` |
