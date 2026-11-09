@@ -26,7 +26,9 @@ public sealed class ArranqueApiTests
     public async Task Sin_secretos_no_arranca_y_dice_que_clave_falta()
     {
         // "Testing" no carga user-secrets ni appsettings.Development.json.
-        await using var fabrica = FabricaSinBaseDeDatos.Crear("Testing", new Dictionary<string, string>());
+        await using var fabrica = FabricaSinBaseDeDatos.Crear(
+            "Testing",
+            new Dictionary<string, string> { ["ConnectionStrings:Default"] = "Host=localhost;Database=ficticia" });
 
         var arrancar = () => fabrica.CreateClient();
 
@@ -35,6 +37,19 @@ public sealed class ArranqueApiTests
         error.InnerExceptions.Should().AllBeOfType<OptionsValidationException>();
         error.Message.Should().Contain("StorageOptions").And.Contain("SecretKey")
             .And.Contain("MercadoPagoOptions").And.Contain("WebPushOptions");
+    }
+
+    [Fact]
+    public async Task Sin_cadena_de_conexion_no_arranca_y_dice_cual_falta()
+    {
+        var configuracion = new Dictionary<string, string>(FabricaSinBaseDeDatos.ConfiguracionFicticia);
+        configuracion.Remove("ConnectionStrings:Default");
+        await using var fabrica = FabricaSinBaseDeDatos.Crear("Testing", configuracion);
+
+        var arrancar = () => fabrica.CreateClient();
+
+        arrancar.Should().Throw<InvalidOperationException>()
+            .Which.Message.Should().Contain("ConnectionStrings:Default");
     }
 
     [Fact]

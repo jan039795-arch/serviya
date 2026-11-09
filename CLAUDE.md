@@ -69,7 +69,9 @@ Backend (desde `api/`; requiere .NET SDK 10 y, para la base de datos, Docker Des
 ```bash
 powershell -ExecutionPolicy Bypass -File ../scripts/configurar-desarrollo.ps1  # una vez: .env y user-secrets
 docker compose up -d                          # desde la raíz: PostgreSQL + PostGIS y RustFS (S3)
-dotnet ef database update                     # migraciones (cuando existan, Fase 4)
+dotnet tool restore                           # una vez: dotnet-ef local (api/dotnet-tools.json)
+dotnet ef database update --project src/Modulos/ServiYa.Cuentas --startup-project src/ServiYa.Api
+dotnet ef migrations add <Nombre> --project src/Modulos/ServiYa.<Modulo> --startup-project src/ServiYa.Api --output-dir Datos/Migraciones
 dotnet run --project src/ServiYa.Api          # API en http://localhost:5189
 dotnet build                                  # advertencias = errores
 dotnet test                                   # xUnit v3 (Microsoft.Testing.Platform)

@@ -7,7 +7,7 @@
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
 **Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 lista (T038, T040–T043) salvo probar
 `docker-compose.yml` (T039), que espera a que el usuario instale Docker. De la Fase 4 están hechas
-las tareas que no necesitan base de datos: T044, T047, T048, T051, T053, T054 y T055.
+T044, T045, T047, T048, T051, T053–T057 y T060; lo que falta necesita PostgreSQL o RustFS.
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -82,7 +82,17 @@ las tareas que no necesitan base de datos: T044, T047, T048, T051, T053, T054 y 
 - Correo: `IEmailSender` con `ConsolaEmailSender` (memoria, `GET /api/v1/dev/correos` solo en
   desarrollo) y `ResendEmailSender` (HTTP sin SDK); plantillas de código de verificación y de
   recuperación.
-- 87 pruebas del backend pasan (unitarias e integración sin base de datos).
+- Persistencia (T045): `AplicarConvencionesServiYa()` al final de cada `OnModelCreating` pone
+  snake_case, `created_at`/`updated_at` (propiedades sombra que llena `MarcasTiempoInterceptor` con
+  `TimeProvider`) y claves uuid v7; `AgregarDbContextDeModulo<T>` registra cada `DbContext` con
+  PostGIS, su esquema y su historial de migraciones.
+- Cuentas (T056, T057, T060): `Usuario : IdentityUser<Guid>` (nombre 3–120, fecha de nacimiento,
+  estado, mayoría de edad con la hora de México), `CodigoVerificacion`, `Consentimiento` (solo se
+  agrega, IP en `inet`) y `Bloqueo` (no a uno mismo); `ServicioCodigos` (6 dígitos, 10 min, 5
+  intentos, 3 envíos por hora, solo el hash); `CuentasDbContext` en el esquema `cuentas` con las
+  tablas de Identity renombradas (`usuarios`, `roles`...) y la migración `Inicial` generada (**sin
+  aplicar todavía**). Una prueba falla si el modelo cambia sin su migración.
+- 137 pruebas del backend pasan (unitarias e integración sin base de datos).
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
 ## Siguiente paso exacto
@@ -93,13 +103,14 @@ las tareas que no necesitan base de datos: T044, T047, T048, T051, T053, T054 y 
 2. **El usuario instala WSL 2 y Docker Desktop** (`wsl --install` como administrador, reiniciar y
    luego Docker Desktop). Después: `docker compose up -d` desde la raíz y comprobar que
    `almacen-buckets` termina bien y que `serviya_app` entra a PostgreSQL; con eso se marca T039.
-3. Resto de la Fase 4, que necesita Docker: T045 (base de persistencia; agregar entonces
-   `dotnet-ef` como herramienta local en `api/.config/dotnet-tools.json`), T046 (fábrica de pruebas
-   con PostGIS y RustFS; reutilizar `Infraestructura/FabricaSinBaseDeDatos.cs` y
-   `RegistroEnMemoria.cs`), T049 (bitácora), T050 (almacenamiento), T052 (tareas programadas) y
-   luego Cuentas (T056–T064) y catálogos (T065–T067). Sin Docker solo queda T060
-   (`ServicioCodigos`), que conviene hacer junto con T056.
-4. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
+3. Con Docker: aplicar la migración `Inicial` (`dotnet tool restore` y `dotnet ef database update`,
+   ver `CLAUDE.md`) y seguir con T046 (fábrica de pruebas con PostGIS y RustFS; reutilizar
+   `Infraestructura/FabricaSinBaseDeDatos.cs` y `RegistroEnMemoria.cs`), T049 (bitácora), T050
+   (almacenamiento), T052 (tareas programadas), T058 (pruebas de cuentas y permisos, TDD), T059
+   (Identity y cookie), T061–T064 y catálogos (T065–T067).
+4. Sin Docker todavía se puede adelantar la parte pura de T050 (`ValidadorFirmaArchivo` y las URL
+   firmadas, que se calculan sin conectarse) y de T052 (planificador con un candado simulado).
+5. Decidir el pendiente de la oferta del pase cuando lo pagado supera $129 (ver "Pendientes").
 
 ## Etapas del proyecto
 
@@ -182,6 +193,14 @@ las tareas que no necesitan base de datos: T044, T047, T048, T051, T053, T054 y 
 | 2026-11-08 | Orígenes de CORS en `Cors:Origenes`: `https://serviya.mx` en producción y `http://localhost:4200` solo en desarrollo; se expone `Retry-After`; además `X-Frame-Options: DENY` | Un origen local no debe tener acceso con credenciales en producción; la app necesita leer `Retry-After` |
 | 2026-11-08 | El límite por IP usa `RemoteIpAddress`; al desplegar (T147) se configura `ForwardedHeaders` con las redes del proxy | Detrás del proxy todos compartirían la IP del proxy; confiar en cualquier `X-Forwarded-For` permitiría saltarse el límite |
 | 2026-11-08 | Los límites de uso se prueban en un servidor mínimo con un endpoint de prueba | Aún no hay endpoints que los usen; se prueba la misma configuración (`LimitesUso`) |
+| 2026-11-08 | `created_at` y `updated_at` como propiedades sombra (`MarcasTiempo.CreadoEn`/`ActualizadoEn`) | Todas las tablas las tienen, incluidas las de Identity, sin repetirlas en cada entidad |
+| 2026-11-08 | Identity con el esquema 2 (sin passkeys) y tablas renombradas (`usuarios`, `roles`, `usuario_roles`...) | El MVP no usa passkeys; nombres en español y snake_case como el resto |
+| 2026-11-08 | Correo único en la base (índice único en `normalized_email`) | FR-001; Identity solo lo valida en la app |
+| 2026-11-08 | Los consentimientos no se borran en cascada (`RESTRICT`) | Son evidencia legal; la cuenta eliminada solo se anonimiza |
+| 2026-11-08 | Hash del código = SHA-256 de usuario, propósito y código; se aceptan espacios al pegarlo | Un código no sirve para otro usuario ni propósito; vence en 10 min y tiene 5 intentos |
+| 2026-11-08 | Quien nació un 29 de febrero cumple el 1 de marzo en años no bisiestos | Igual que `web/src/app/shared/fechas/edad.ts`; es la regla más estricta para la mayoría de edad |
+| 2026-11-08 | `dotnet ef` usa la conexión `Migraciones` (`EF.IsDesignTime`) y la API la `Default` | Las migraciones las aplica el dueño del esquema; la app no puede cambiarlo |
+| 2026-11-08 | Las migraciones se marcan como código generado en `api/.editorconfig` | Los analizadores con advertencias como errores rechazaban el código de `dotnet ef` |
 
 ## Pendientes abiertos
 
@@ -213,3 +232,4 @@ las tareas que no necesitan base de datos: T044, T047, T048, T051, T053, T054 y 
 | 2026-11-08 | Cierre del prototipo (T034–T036), revisión con `typescript-reviewer` y correcciones (T037, falta la prueba en celular) | ver `git log` |
 | 2026-11-08 | Preparación del backend (T038, T040–T043; T039 escrito sin probar): solución .NET, opciones validadas, docker-compose con PostGIS y RustFS, script de secretos y CI | ver `git log` |
 | 2026-11-08 | Fase 4 sin base de datos (T044, T047, T048, T051, T053–T055): host de la API, `ContactMasker` con TDD, correo, límites de uso, encabezados y registro sin datos personales | ver `git log` |
+| 2026-11-08 | Persistencia y Cuentas sin base de datos (T045, T056, T057, T060): convenciones, marcas de tiempo, dominio, códigos con TDD, `CuentasDbContext` y migración `Inicial` | ver `git log` |

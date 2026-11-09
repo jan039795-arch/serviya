@@ -24,6 +24,8 @@ internal static class FabricaSinBaseDeDatos
         ["WebPush:PublicKey"] = "publica-ficticia",
         ["WebPush:PrivateKey"] = "privada-ficticia",
         ["AllowedHosts"] = "localhost",
+        // Nada se conecta: estas pruebas no tocan la base de datos.
+        ["ConnectionStrings:Default"] = "Host=localhost;Database=ficticia;Username=ficticio",
     };
 
     public static WebApplicationFactory<Program> Crear(

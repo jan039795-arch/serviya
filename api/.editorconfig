@@ -1,0 +1,3 @@
+# Migraciones de EF Core: código generado por dotnet ef; los analizadores no lo revisan.
+[**/Datos/Migraciones/*.cs]
+generated_code = true
