@@ -11,6 +11,7 @@ public static class TiposProblema
     public const string CorreoSinVerificar = "/errores/correo-sin-verificar";
     public const string CredencialesIncorrectas = "/errores/credenciales-incorrectas";
     public const string CuentaSuspendida = "/errores/cuenta-suspendida";
+    public const string FueraDeZona = "/errores/fuera-de-zona";
     public const string RolPropio = "/errores/rol-propio";
     public const string UltimoAdmin = "/errores/ultimo-admin";
     public const string XsrfInvalido = "/errores/xsrf-invalido";

@@ -421,6 +421,12 @@
           "ServiYa.Cuentas": "[1.0.0, )"
         }
       },
+      "serviya.busqueda": {
+        "type": "Project",
+        "dependencies": {
+          "ServiYa.Comun": "[1.0.0, )"
+        }
+      },
       "serviya.comun": {
         "type": "Project",
         "dependencies": {

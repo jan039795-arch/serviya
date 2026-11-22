@@ -86,8 +86,35 @@ prototipo se puede revisar en el emulador de iPhone 14 del navegador.
 ```bash
 powershell -ExecutionPolicy Bypass -File scripts/configurar-desarrollo.ps1   # una sola vez
 docker compose up -d            # PostgreSQL 17 con PostGIS y RustFS (S3)
-cd api && dotnet ef database update && dotnet run --project src/ServiYa.Api
+cd api && dotnet run --project src/ServiYa.Api   # después de preparar la base (abajo)
 cd web && npm start             # con mocks en false por área
+```
+
+### Preparar la base de datos local
+
+Cada módulo tiene su `DbContext` y sus migraciones. Desde `api/`, una vez y después de cada
+migración nueva:
+
+```bash
+dotnet ef database update --project src/Modulos/ServiYa.Cuentas --startup-project src/ServiYa.Api --context CuentasDbContext
+dotnet ef database update --project src/Modulos/ServiYa.Administracion --startup-project src/ServiYa.Api --context AdministracionDbContext
+dotnet ef database update --project src/Modulos/ServiYa.Busqueda --startup-project src/ServiYa.Api --context CatalogosDbContext
+```
+
+Municipios de la zona de prueba (6 ficticios, los mismos del prototipo), desde la raíz del
+repositorio. Se puede repetir; solo actualiza:
+
+```bash
+docker compose cp api/src/Modulos/ServiYa.Busqueda/Datos/Semillas/zona-prueba.geojson postgres:/tmp/municipios.geojson
+docker compose cp api/src/Modulos/ServiYa.Busqueda/Datos/Semillas/importar-municipios.sql postgres:/tmp/importar-municipios.sql
+docker compose exec postgres psql -U serviya_owner -d serviya -f /tmp/importar-municipios.sql
+```
+
+Primer administrador: registrarse en la app, verificar el correo (el código aparece en
+http://localhost:5189/api/v1/dev/correos) y, desde `api/`:
+
+```bash
+dotnet run --project src/ServiYa.Api -- crear-admin --email <correo>
 ```
 
 Servicios locales (solo escuchan en `127.0.0.1`): PostgreSQL en el puerto 5432, la API S3 de

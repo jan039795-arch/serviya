@@ -19,6 +19,9 @@ public sealed class PermisosPorRolTests(ServiYaFactory fabrica) : IClassFixture<
     private const HttpStatusCode Prohibido = HttpStatusCode.Forbidden;
     private const HttpStatusCode NoEncontrado = HttpStatusCode.NotFound;
 
+    /// <summary>Público, pero la matriz no manda cuerpo: llega hasta la validación.</summary>
+    private const HttpStatusCode SinCuerpo = HttpStatusCode.BadRequest;
+
     /// <summary>Una cuenta que no existe: el administrador llega hasta el 404; los demás se quedan antes.</summary>
     private const string RolAdminDeNadie = "admin/usuarios/0193e0a0-0000-7000-8000-0000000000ff/roles/admin";
 
@@ -29,6 +32,9 @@ public sealed class PermisosPorRolTests(ServiYaFactory fabrica) : IClassFixture<
         ("GET", "cuentas/yo", [SinSesion, Ok, Ok, Ok]),
         ("POST", "cuentas/logout", [SinSesion, SinContenido, SinContenido, SinContenido]),
         ("POST", "cuentas/yo/roles/prestador", [SinSesion, SinContenido, SinContenido, SinContenido]),
+        ("GET", "catalogos/oficios", [Ok, Ok, Ok, Ok]),
+        ("GET", "catalogos/municipios", [Ok, Ok, Ok, Ok]),
+        ("POST", "catalogos/municipios/ubicar", [SinCuerpo, SinCuerpo, SinCuerpo, SinCuerpo]),
         ("POST", RolAdminDeNadie, [SinSesion, Prohibido, Prohibido, NoEncontrado]),
         ("DELETE", RolAdminDeNadie, [SinSesion, Prohibido, Prohibido, NoEncontrado]));
 

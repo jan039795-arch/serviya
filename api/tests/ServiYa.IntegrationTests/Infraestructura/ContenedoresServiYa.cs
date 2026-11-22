@@ -147,7 +147,7 @@ public sealed class ContenedoresServiYa : IAsyncLifetime
 
     private static string RutaInitSql() => Path.Combine(RaizDelRepositorio(), "docker", "postgres", "init.sql");
 
-    private static string RaizDelRepositorio()
+    internal static string RaizDelRepositorio()
     {
         for (var carpeta = new DirectoryInfo(AppContext.BaseDirectory); carpeta is not null; carpeta = carpeta.Parent)
         {

@@ -7,10 +7,11 @@
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
 **Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 terminada (T038–T043). Docker Desktop ya
 funciona: PostgreSQL con PostGIS y RustFS corren en local y la migración `Inicial` de Cuentas está
-aplicada. De la Fase 4 están hechas T044–T064 (Cuentas completo); faltan los catálogos (T065–T067),
-los tipos desde OpenAPI (T068) y conectar las pantallas de cuenta (T070). Las
-migraciones `Inicial` de Administración (bitácora) y `RolesSemilla` de Cuentas están creadas; en el
-equipo del usuario falta aplicarlas con `dotnet ef database update`.
+aplicada. De la Fase 4 están hechas T044–T067 (Cuentas y catálogos); faltan los tipos desde OpenAPI
+(T068) y conectar las pantallas de cuenta (T070). Las
+migraciones `Inicial` de Administración, `RolesSemilla` de Cuentas e `Inicial` de Búsqueda están
+creadas; en el equipo del usuario falta aplicarlas (ver "Preparar la base de datos local" en
+`quickstart.md`).
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -156,7 +157,14 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
   /admin/usuarios/{id}/roles/admin` con bitácora, sin cambiar el rol propio ni dejar la plataforma sin
   administradores activos (candado de PostgreSQL, probado con dos retiros simultáneos), y el comando
   `dotnet run --project src/ServiYa.Api -- crear-admin --email <correo>`.
-- 382 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
+- Catálogos (T065–T067): `CatalogosDbContext` en el esquema `catalogos` con PostGIS: 12 oficios semilla
+  (mismos ids del prototipo) y municipios con polígono `geography(MultiPolygon)`, índice GIST y un punto
+  interior (`ST_PointOnSurface`). La app solo los lee. Importador: función
+  `catalogos.importar_municipios(jsonb)` (solo el dueño) envuelta por `Datos/Semillas/importar-municipios.sql`
+  y `zona-prueba.geojson` con 6 municipios ficticios; probado con `psql` en PostGIS. Endpoints públicos
+  `GET /catalogos/oficios` y `/municipios` (caché de una hora) y `POST /catalogos/municipios/ubicar`
+  (`ST_Covers`, 404 `/errores/fuera-de-zona`, sin caché). `ICatalogosService` para Prestadores.
+- 422 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
   `AlmacenR2` 81%, `ValidadorFirmaArchivo` y `LimitesUso` 100%.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
@@ -171,10 +179,12 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
    y `dotnet ef database update --project src/Modulos/ServiYa.Administracion --startup-project src/ServiYa.Api --context AdministracionDbContext`.
 4. Para el primer administrador en local: registrarse en la app, verificar el correo y correr
    `dotnet run --project src/ServiYa.Api -- crear-admin --email <correo>` desde `api/`.
-5. Seguir con los catálogos: T065–T067 (oficios y municipios en el esquema `catalogos`, con PostGIS).
-   Luego tipos desde OpenAPI y guardas (T068) y conexión de las pantallas de cuenta (T070). Cada
-   endpoint nuevo lleva su fila en `PermisosPorRolTests`.
-6. Nada más pendiente de decidir para la Etapa 3.
+5. Seguir con T068 (tipos del frontend generados desde `/openapi/v1.json` y guardas de formato por
+   área) y T070 (conectar registro, verificación, entrar y recuperar a la API real con `mocks.cuentas`
+   en `false`). Cada endpoint nuevo lleva su fila en `PermisosPorRolTests`.
+6. Al cerrar la Etapa 3: `security-reviewer`, `csharp-reviewer` y `database-reviewer` sobre Cuentas,
+   Administración y catálogos.
+7. Nada más pendiente de decidir para la Etapa 3.
 
 ## Etapas del proyecto
 
@@ -310,6 +320,13 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
 | 2026-11-22 | El motivo de la suspensión llega de `IConsultaSuspensiones`; hasta T135 se usa `SinMotivosDeSuspension` | La entidad `Suspension` es del módulo de Reportes (data-model); Cuentas solo guarda el estado |
 | 2026-11-22 | `crear-admin` registra la bitácora sin actor y con `origen: consola`, y no repite el correo en la salida | Lo hace quien tiene acceso al servidor, no una cuenta; la consola puede quedar en registros |
 | 2026-11-22 | `NombrePublico` vive en el dominio de Cuentas, con sus pruebas de T072 | El nombre completo es de Cuentas; Prestadores lo pide con `ICuentasService.NombrePublicoDe` |
+| 2026-11-22 | Los catálogos son de solo lectura para la app (`REVOKE INSERT, UPDATE, DELETE, TRUNCATE`) | Los oficios vienen en las migraciones y los municipios del importador; el MVP no tiene pantalla para editarlos |
+| 2026-11-22 | El importador de municipios es una función SQL de la migración (`catalogos.importar_municipios`), solo para el dueño; `importar-municipios.sql` solo la llama | Las pruebas ejecutan el mismo SQL que se usa a mano, sin paquetes extra |
+| 2026-11-22 | Los oficios semilla usan los mismos ids que `web/src/mocks/oficios.json` | El prototipo y la API real coinciden; nada en el frontend cambia al quitar los mocks |
+| 2026-11-22 | `Centroide` del municipio con `ST_PointOnSurface`, no `ST_Centroid` | En municipios de forma irregular el centroide puede quedar fuera del polígono |
+| 2026-11-22 | Las listas de catálogos llevan `Cache-Control: public, max-age=3600`; `ubicar` sigue con `no-store` | Cambian muy poco; la respuesta de `ubicar` deja ver dónde está la persona |
+| 2026-11-22 | Un punto en el límite de dos municipios se asigna al de clave INEGI menor | `ST_Covers` lo encuentra en ambos; así la respuesta siempre es la misma |
+| 2026-11-22 | `quickstart.md` lista un `dotnet ef database update` por módulo | Con varios `DbContext` en proyectos distintos, el comando sin `--project` no sabe cuál aplicar |
 | 2026-11-22 | Pruebas: frasco de cookies propio sin vencimiento e IP por cliente con un encabezado que solo lee un `IStartupFilter` de las pruebas | `CookieContainer` usa la hora real y la API el reloj falso; con una IP por cliente el límite de 5 por minuto no mezcla pruebas |
 
 ## Pendientes abiertos
@@ -351,4 +368,5 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
 | 2026-11-08 | Subidos a GitHub (`main`) los commits de la Etapa 3 hasta T046, a pedido del usuario | ver `git log` |
 | 2026-11-22 | Bitácora de solo inserción en `admin.registro_bitacora` (T049), con pruebas unitarias y contra PostgreSQL; hecha en una sesión en la nube (SDK 10.0.404 y Docker en Linux) en la rama `claude/peaceful-allen-ipnjgx` | ver `git log` |
 | 2026-11-22 | Cuentas por HTTP con TDD (T058, T059, T061 y `ClientesDePrueba.cs` de T046): Identity, cookie, XSRF, roles semilla y endpoints de `/cuentas`, a pedido del usuario ("continúa") | eea441e |
-| 2026-11-22 | `ICuentasService` (T062), filtro de cuenta suspendida (T063), rol de administrador con bitácora y `crear-admin` (T064) y nombre público (T072), con TDD | ver `git log` |
+| 2026-11-22 | `ICuentasService` (T062), filtro de cuenta suspendida (T063), rol de administrador con bitácora y `crear-admin` (T064) y nombre público (T072), con TDD | f98193f |
+| 2026-11-22 | Catálogos de oficios y municipios con PostGIS, importador y zona de prueba, endpoints e `ICatalogosService` (T065–T067), con TDD | ver `git log` |
