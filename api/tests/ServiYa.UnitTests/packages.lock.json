@@ -414,6 +414,12 @@
           "xunit.v3.runner.common": "[4.0.2]"
         }
       },
+      "serviya.administracion": {
+        "type": "Project",
+        "dependencies": {
+          "ServiYa.Comun": "[1.0.0, )"
+        }
+      },
       "serviya.comun": {
         "type": "Project",
         "dependencies": {

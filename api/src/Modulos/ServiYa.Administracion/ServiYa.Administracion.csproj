@@ -5,6 +5,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="ServiYa.UnitTests" />
+    <InternalsVisibleTo Include="ServiYa.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ServiYa.Comun\ServiYa.Comun.csproj" />
   </ItemGroup>
 

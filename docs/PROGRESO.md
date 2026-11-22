@@ -7,9 +7,9 @@
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
 **Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 terminada (T038–T043). Docker Desktop ya
 funciona: PostgreSQL con PostGIS y RustFS corren en local y la migración `Inicial` de Cuentas está
-aplicada. De la Fase 4 faltan la bitácora (T049) y Cuentas desde T058 en adelante, y los catálogos. De la Fase 4 están hechas
-T044, T045, T047, T048, T051, T053–T057 y T060, y la parte sin servidor de T050 y T052; lo que
-falta necesita PostgreSQL o RustFS.
+aplicada. De la Fase 4 están hechas T044–T057 (T046 sin `ClientesDePrueba.cs`) y T060; faltan
+Cuentas desde T058 en adelante y los catálogos. La migración `Inicial` de Administración (bitácora)
+está creada; en el equipo del usuario falta aplicarla con `dotnet ef database update`.
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -127,7 +127,15 @@ falta necesita PostgreSQL o RustFS.
   con URL firmada, tipo firmado, validar y conservar con ETag, reemplazo detectado, lectura firmada,
   copia al público y borrado (T050). Contra PostgreSQL: el candado de tareas con dos y diez instancias
   (T052).
-- 252 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
+- Bitácora (T049): `IBitacora` y `EntradaBitacora` en `ServiYa.Comun/Bitacora/` (acción y entidad en
+  PascalCase con constantes en `AccionesBitacora` y `EntidadesBitacora`; detalle de hasta 10 claves en
+  camelCase que no nombran datos personales y valores de hasta 500 caracteres pasados por
+  `ContactMasker`). En Administración: `AdministracionDbContext` (esquema `admin`), tabla
+  `registro_bitacora` con `detalle` jsonb, `ip` inet e índices por entidad, actor y fecha, y la
+  migración `Inicial` con `REVOKE UPDATE, DELETE, TRUNCATE ... FROM serviya_app`. Probado contra la
+  base: la app lee e inserta, pero `UPDATE`, `DELETE` y `TRUNCATE` fallan con 42501; quitando el
+  `REVOKE`, las pruebas fallan. Cobertura de las clases nuevas: 100%.
+- 299 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
   `AlmacenR2` 81%, `ValidadorFirmaArchivo` y `LimitesUso` 100%.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
@@ -137,13 +145,16 @@ falta necesita PostgreSQL o RustFS.
    app" de `specs/001-serviya-mvp/quickstart.md` (`npm run serve:prototipo` + `chrome://inspect`)
    y anota en esta bitácora los ajustes que pida. Con su aprobación se marca T037.
 2. Al abrir una sesión: Docker Desktop debe estar abierto; `docker compose up -d` desde la raíz.
-3. Seguir con T049 (bitácora en el esquema `admin`, migración con `REVOKE UPDATE, DELETE` y prueba
-   con `ServiYaFactory` de que la app no puede modificarla), luego T058 (pruebas de cuentas y permisos,
-   TDD), T059 (Identity y cookie), T061 (endpoints; tratar `DbUpdateConcurrencyException` como
-   intento rechazado), `ClientesDePrueba.cs` de T046, T062–T064.
-4. Después de Cuentas: catálogos (T065–T067), tipos desde OpenAPI y guardas (T068) y conexión de
+3. En el equipo del usuario, aplicar la migración de Administración:
+   `dotnet ef database update --project src/Modulos/ServiYa.Administracion --startup-project src/ServiYa.Api --context AdministracionDbContext`.
+4. Seguir con T058 (pruebas de cuentas y permisos, TDD, en
+   `tests/ServiYa.IntegrationTests/Cuentas/RegistroYSesionTests.cs` y `Seguridad/PermisosPorRolTests.cs`),
+   T059 (Identity y cookie en `CuentasModulo.cs`), T061 (endpoints; tratar
+   `DbUpdateConcurrencyException` como intento rechazado), `ClientesDePrueba.cs` de T046, T062–T064
+   (T064 ya puede usar `IBitacora` con `OtorgarRolAdmin`/`RetirarRolAdmin`).
+5. Después de Cuentas: catálogos (T065–T067), tipos desde OpenAPI y guardas (T068) y conexión de
    las pantallas de cuenta (T070).
-5. Nada más pendiente de decidir para la Etapa 3.
+6. Nada más pendiente de decidir para la Etapa 3.
 
 ## Etapas del proyecto
 
@@ -151,7 +162,7 @@ falta necesita PostgreSQL o RustFS.
 |---|---|---|
 | 1 | Definición (constitución, especificación, plan, tareas) | Terminada |
 | 2 | Prototipo móvil con datos ficticios | Lista; falta la aprobación del usuario en su celular |
-| 3 | Cuentas y perfiles | En curso: preparación del backend lista; falta Docker |
+| 3 | Cuentas y perfiles | En curso: base del backend y bitácora listas; siguen los endpoints de Cuentas |
 | 4 | Documentos y panel del administrador | Pendiente |
 | 5 | Búsqueda y perfil público | Pendiente |
 | 6 | Pagos y desbloqueo de contacto | Pendiente |
@@ -258,6 +269,9 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | En las pruebas, las migraciones se aplican con el `DbContext` de la API cambiando solo la cadena a la del dueño (`SetConnectionString`) | Mismo modelo y opciones (Identity con esquema 2) que la API; los módulos se descubren con `CatalogoDbContexts` |
 | 2026-11-08 | En las pruebas el planificador no corre solo; cada prueba llama a `EjecutarRondaAsync` | Resultados deterministas con `FakeTimeProvider` |
 | 2026-11-08 | RustFS de pruebas como root sobre `tmpfs` | Sin volumen no hay que ajustar permisos y se borra al terminar |
+| 2026-11-22 | El detalle de la bitácora es un diccionario de texto: claves en camelCase sin nombres de datos personales (nombre, teléfono, correo, CURP, RFC, dirección...) y valores pasados por `ContactMasker` | data-model pide "sin datos personales"; un diccionario plano no deja anidar objetos como un usuario completo y el motivo escrito por el administrador puede traer un teléfono |
+| 2026-11-22 | `IBitacora` guarda en su propia transacción (`AdministracionDbContext`), no en la de quien llama | Un módulo no usa el `DbContext` de otro. Regla de uso: se registra antes de entregar algo sensible (URL de un documento) y después de guardar una decisión |
+| 2026-11-22 | La migración de la bitácora quita `UPDATE`, `DELETE` y `TRUNCATE`; `updated_at` se queda por la convención común | `TRUNCATE` no viene en los privilegios por defecto, pero quitarlo deja explícita la intención; `updated_at` siempre vale lo mismo que `created_at` |
 
 ## Pendientes abiertos
 
@@ -296,3 +310,4 @@ falta necesita PostgreSQL o RustFS.
 | 2026-11-08 | Docker Desktop y WSL 2 funcionando; servicios locales probados (T039) y migración `Inicial` de Cuentas aplicada | ver `git log` |
 | 2026-11-08 | Fábrica de pruebas con PostgreSQL y RustFS reales (T046) e integración de almacenamiento (T050) y candado de tareas (T052) | ver `git log` |
 | 2026-11-08 | Subidos a GitHub (`main`) los commits de la Etapa 3 hasta T046, a pedido del usuario | ver `git log` |
+| 2026-11-22 | Bitácora de solo inserción en `admin.registro_bitacora` (T049), con pruebas unitarias y contra PostgreSQL; hecha en una sesión en la nube (SDK 10.0.404 y Docker en Linux) en la rama `claude/peaceful-allen-ipnjgx` | ver `git log` |

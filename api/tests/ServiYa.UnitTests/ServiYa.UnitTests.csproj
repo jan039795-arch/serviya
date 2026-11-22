@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ServiYa.Comun\ServiYa.Comun.csproj" />
     <ProjectReference Include="..\..\src\Modulos\ServiYa.Cuentas\ServiYa.Cuentas.csproj" />
+    <ProjectReference Include="..\..\src\Modulos\ServiYa.Administracion\ServiYa.Administracion.csproj" />
   </ItemGroup>
 
 </Project>
