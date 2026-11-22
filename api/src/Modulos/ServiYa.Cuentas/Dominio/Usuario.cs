@@ -66,4 +66,26 @@ public sealed class Usuario : IdentityUser<Guid>
     }
 
     public bool EsMayorDeEdad(DateOnly hoy) => EdadEn(hoy) >= EdadMinima;
+
+    /// <summary>Suspende la cuenta (FR-041). El motivo y la aclaración viven en el módulo de Reportes.</summary>
+    internal void Suspender() => CambiarEstado(EstadoUsuario.Suspendido);
+
+    internal void Reactivar() => CambiarEstado(EstadoUsuario.Activo);
+
+    /// <summary>Borrado lógico (FR-045); el anonimizado de los datos llega con la eliminación de cuenta.</summary>
+    internal void MarcarEliminado(DateTimeOffset ahora)
+    {
+        Estado = EstadoUsuario.Eliminado;
+        EliminadoEn = ahora;
+    }
+
+    private void CambiarEstado(EstadoUsuario nuevo)
+    {
+        if (Estado == EstadoUsuario.Eliminado)
+        {
+            throw new InvalidOperationException("Una cuenta eliminada no cambia de estado.");
+        }
+
+        Estado = nuevo;
+    }
 }

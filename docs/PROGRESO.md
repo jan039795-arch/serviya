@@ -7,7 +7,8 @@
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
 **Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 terminada (T038–T043). Docker Desktop ya
 funciona: PostgreSQL con PostGIS y RustFS corren en local y la migración `Inicial` de Cuentas está
-aplicada. De la Fase 4 están hechas T044–T061; faltan T062–T064 de Cuentas y los catálogos. Las
+aplicada. De la Fase 4 están hechas T044–T064 (Cuentas completo); faltan los catálogos (T065–T067),
+los tipos desde OpenAPI (T068) y conectar las pantallas de cuenta (T070). Las
 migraciones `Inicial` de Administración (bitácora) y `RolesSemilla` de Cuentas están creadas; en el
 equipo del usuario falta aplicarlas con `dotnet ef database update`.
 
@@ -148,7 +149,14 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
   `restablecer` (cierra las demás sesiones), `yo`, `yo/roles/prestador` y `xsrf`. Los de correos y
   códigos tienen el límite de 5 por minuto por IP. `ClientesDePrueba.cs` crea usuarios por rol y
   clientes con cookie, XSRF e IP propia. Cobertura: endpoints y servicios de Cuentas entre 90% y 100%.
-- 340 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
+- Cuentas para los demás módulos (T062–T064): `ICuentasService` (mayoría de edad, teléfono, bloqueos,
+  consentimientos, nombre público, estado y rol de administrador). Filtro de cuenta suspendida en todo
+  `/api/v1` (403 `/errores/cuenta-suspendida` con el motivo en `detail`, salvo `yo` y `logout`). Política
+  `solo-admin` para `/admin` (rol vigente en la base y cuenta activa en cada petición), `POST`/`DELETE
+  /admin/usuarios/{id}/roles/admin` con bitácora, sin cambiar el rol propio ni dejar la plataforma sin
+  administradores activos (candado de PostgreSQL, probado con dos retiros simultáneos), y el comando
+  `dotnet run --project src/ServiYa.Api -- crear-admin --email <correo>`.
+- 382 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
   `AlmacenR2` 81%, `ValidadorFirmaArchivo` y `LimitesUso` 100%.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
@@ -161,13 +169,11 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
 3. En el equipo del usuario, aplicar las migraciones nuevas (desde `api/`):
    `dotnet ef database update --project src/Modulos/ServiYa.Cuentas --startup-project src/ServiYa.Api --context CuentasDbContext`
    y `dotnet ef database update --project src/Modulos/ServiYa.Administracion --startup-project src/ServiYa.Api --context AdministracionDbContext`.
-4. Seguir con T062 (`ICuentasService` en `Servicios/ICuentasService.cs`), T063 (filtro de cuenta
-   suspendida en `ServiYa.Api/Seguridad/CuentaSuspendidaFiltro.cs`, con su fila en
-   `PermisosPorRolTests`) y T064 (comando `crear-admin` y `POST`/`DELETE /admin/usuarios/{id}/roles/admin`
-   con `IBitacora` `OtorgarRolAdmin`/`RetirarRolAdmin`; al cambiar roles, llamar
-   `UpdateSecurityStampAsync` para que la cookie se actualice en 5 min).
-5. Después de Cuentas: catálogos (T065–T067), tipos desde OpenAPI y guardas (T068) y conexión de
-   las pantallas de cuenta (T070).
+4. Para el primer administrador en local: registrarse en la app, verificar el correo y correr
+   `dotnet run --project src/ServiYa.Api -- crear-admin --email <correo>` desde `api/`.
+5. Seguir con los catálogos: T065–T067 (oficios y municipios en el esquema `catalogos`, con PostGIS).
+   Luego tipos desde OpenAPI y guardas (T068) y conexión de las pantallas de cuenta (T070). Cada
+   endpoint nuevo lleva su fila en `PermisosPorRolTests`.
 6. Nada más pendiente de decidir para la Etapa 3.
 
 ## Etapas del proyecto
@@ -296,6 +302,14 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
 | 2026-11-22 | `/api/v1` pide sesión con `RequireAuthorization()` en el grupo, no con una política por defecto | La política por defecto también se aplica sin ruta y convertía los 404 en 401 |
 | 2026-11-22 | XSRF con antiforgery: cookie HttpOnly `serviya.xsrf`, cookie legible `XSRF-TOKEN` (`SameSite=Strict`) y token nuevo al entrar y salir | El token va ligado al usuario: el de la sesión anónima no sirve después del login |
 | 2026-11-22 | Pendiente para producción (T147): guardar las llaves de Data Protection fuera del contenedor | Cifran la cookie de sesión y los tokens; si se pierden al reiniciar, todos tienen que volver a entrar |
+| 2026-11-22 | `/admin` usa la política `solo-admin`: rol `Admin` en la cookie y en la base, con la cuenta activa, en cada petición | A quien le retiran el rol o lo suspenden pierde el acceso de inmediato y no a los 5 min; el tráfico de administración es poco |
+| 2026-11-22 | Cambiar un rol no cambia el sello de seguridad | El sello distinto cierra la sesión; la revisión de cada 5 min ya vuelve a leer los roles y renueva la cookie |
+| 2026-11-22 | Un administrador no cambia su propio rol (409 `/errores/rol-propio`); solo se otorga a cuentas verificadas (422) | FR-003 dice "a otra cuenta"; así nadie se quita el rol por error |
+| 2026-11-22 | No se retira el rol al último administrador activo; los cambios de rol toman `pg_advisory_xact_lock` | Sin el candado, dos administradores que se retiran el rol a la vez dejaban la plataforma sin ninguno (probado: la prueba falla sin él) |
+| 2026-11-22 | El filtro de cuenta suspendida lee el estado de la base en cada petición con sesión; también deja salir (`logout`) | La suspensión vale de inmediato. Salir no daña a nadie; el contrato solo nombraba `yo` y la aclaración |
+| 2026-11-22 | El motivo de la suspensión llega de `IConsultaSuspensiones`; hasta T135 se usa `SinMotivosDeSuspension` | La entidad `Suspension` es del módulo de Reportes (data-model); Cuentas solo guarda el estado |
+| 2026-11-22 | `crear-admin` registra la bitácora sin actor y con `origen: consola`, y no repite el correo en la salida | Lo hace quien tiene acceso al servidor, no una cuenta; la consola puede quedar en registros |
+| 2026-11-22 | `NombrePublico` vive en el dominio de Cuentas, con sus pruebas de T072 | El nombre completo es de Cuentas; Prestadores lo pide con `ICuentasService.NombrePublicoDe` |
 | 2026-11-22 | Pruebas: frasco de cookies propio sin vencimiento e IP por cliente con un encabezado que solo lee un `IStartupFilter` de las pruebas | `CookieContainer` usa la hora real y la API el reloj falso; con una IP por cliente el límite de 5 por minuto no mezcla pruebas |
 
 ## Pendientes abiertos
@@ -336,4 +350,5 @@ equipo del usuario falta aplicarlas con `dotnet ef database update`.
 | 2026-11-08 | Fábrica de pruebas con PostgreSQL y RustFS reales (T046) e integración de almacenamiento (T050) y candado de tareas (T052) | ver `git log` |
 | 2026-11-08 | Subidos a GitHub (`main`) los commits de la Etapa 3 hasta T046, a pedido del usuario | ver `git log` |
 | 2026-11-22 | Bitácora de solo inserción en `admin.registro_bitacora` (T049), con pruebas unitarias y contra PostgreSQL; hecha en una sesión en la nube (SDK 10.0.404 y Docker en Linux) en la rama `claude/peaceful-allen-ipnjgx` | ver `git log` |
-| 2026-11-22 | Cuentas por HTTP con TDD (T058, T059, T061 y `ClientesDePrueba.cs` de T046): Identity, cookie, XSRF, roles semilla y endpoints de `/cuentas`, a pedido del usuario ("continúa") | ver `git log` |
+| 2026-11-22 | Cuentas por HTTP con TDD (T058, T059, T061 y `ClientesDePrueba.cs` de T046): Identity, cookie, XSRF, roles semilla y endpoints de `/cuentas`, a pedido del usuario ("continúa") | eea441e |
+| 2026-11-22 | `ICuentasService` (T062), filtro de cuenta suspendida (T063), rol de administrador con bitácora y `crear-admin` (T064) y nombre público (T072), con TDD | ver `git log` |

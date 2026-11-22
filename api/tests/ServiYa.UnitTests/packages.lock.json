@@ -417,7 +417,8 @@
       "serviya.administracion": {
         "type": "Project",
         "dependencies": {
-          "ServiYa.Comun": "[1.0.0, )"
+          "ServiYa.Comun": "[1.0.0, )",
+          "ServiYa.Cuentas": "[1.0.0, )"
         }
       },
       "serviya.comun": {

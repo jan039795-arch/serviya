@@ -1,4 +1,5 @@
 using ServiYa.Administracion;
+using ServiYa.Api.Seguridad;
 using ServiYa.Busqueda;
 using ServiYa.Calificaciones;
 using ServiYa.Chat;
@@ -45,6 +46,7 @@ internal static class RegistroModulos
     {
         // Seguro por defecto: todo endpoint de la API pide sesión, salvo los marcados con AllowAnonymous.
         var api = rutas.MapGroup(PrefijoApi).RequireAuthorization();
+        api.AddEndpointFilter<CuentaSuspendidaFiltro>();
         foreach (var modulo in Modulos)
         {
             modulo.MapearEndpoints(api);

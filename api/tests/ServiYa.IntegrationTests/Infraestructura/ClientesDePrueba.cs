@@ -6,7 +6,9 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ServiYa.Cuentas.Datos;
 using ServiYa.Cuentas.Dominio;
 
 namespace ServiYa.IntegrationTests.Infraestructura;
@@ -58,6 +60,17 @@ public static partial class ClientesDePrueba
         }
 
         return new UsuarioDePrueba(usuario.Id, email, PasswordDePrueba);
+    }
+
+    /// <summary>Suspende la cuenta directamente en la base (los endpoints de suspensión llegan con US7).</summary>
+    public static async Task SuspenderAsync(this ServiYaFactory fabrica, Guid usuarioId)
+    {
+        ArgumentNullException.ThrowIfNull(fabrica);
+        await using var ambito = fabrica.CrearAmbito();
+        var cuentas = ambito.ServiceProvider.GetRequiredService<CuentasDbContext>();
+        var usuario = await cuentas.Users.SingleAsync(u => u.Id == usuarioId, TestContext.Current.CancellationToken);
+        usuario.Suspender();
+        await cuentas.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
 
     /// <summary>Cliente con la sesión iniciada por la API (login), listo para modificar datos.</summary>

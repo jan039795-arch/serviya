@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using ServiYa.Api.Comandos;
 using ServiYa.Api.Modulos;
 using ServiYa.Api.Seguridad;
 using ServiYa.Comun.Almacenamiento;
@@ -22,7 +24,15 @@ builder.Services.AgregarLimitesUso();
 builder.Services.AgregarXsrf(builder.Configuration, builder.Environment);
 builder.AgregarModulos();
 
+// Hasta que Reportes registre las suspensiones con motivo (T135).
+builder.Services.TryAddScoped<IConsultaSuspensiones, SinMotivosDeSuspension>();
+
 var app = builder.Build();
+
+if (ComandosConsola.EsComando(args))
+{
+    return await ComandosConsola.EjecutarAsync(app.Services, args, Console.Out, CancellationToken.None);
+}
 
 app.UseHttpLogging();
 
@@ -47,3 +57,4 @@ var api = app.MapearModulos();
 api.MapearCorreosDeDesarrollo(app.Environment);
 
 await app.RunAsync();
+return 0;

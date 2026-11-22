@@ -16,6 +16,11 @@ public sealed class PermisosPorRolTests(ServiYaFactory fabrica) : IClassFixture<
     private const HttpStatusCode Ok = HttpStatusCode.OK;
     private const HttpStatusCode SinContenido = HttpStatusCode.NoContent;
     private const HttpStatusCode SinSesion = HttpStatusCode.Unauthorized;
+    private const HttpStatusCode Prohibido = HttpStatusCode.Forbidden;
+    private const HttpStatusCode NoEncontrado = HttpStatusCode.NotFound;
+
+    /// <summary>Una cuenta que no existe: el administrador llega hasta el 404; los demás se quedan antes.</summary>
+    private const string RolAdminDeNadie = "admin/usuarios/0193e0a0-0000-7000-8000-0000000000ff/roles/admin";
 
     private static CancellationToken Cancelacion => TestContext.Current.CancellationToken;
 
@@ -23,7 +28,9 @@ public sealed class PermisosPorRolTests(ServiYaFactory fabrica) : IClassFixture<
         ("GET", "cuentas/xsrf", [SinContenido, SinContenido, SinContenido, SinContenido]),
         ("GET", "cuentas/yo", [SinSesion, Ok, Ok, Ok]),
         ("POST", "cuentas/logout", [SinSesion, SinContenido, SinContenido, SinContenido]),
-        ("POST", "cuentas/yo/roles/prestador", [SinSesion, SinContenido, SinContenido, SinContenido]));
+        ("POST", "cuentas/yo/roles/prestador", [SinSesion, SinContenido, SinContenido, SinContenido]),
+        ("POST", RolAdminDeNadie, [SinSesion, Prohibido, Prohibido, NoEncontrado]),
+        ("DELETE", RolAdminDeNadie, [SinSesion, Prohibido, Prohibido, NoEncontrado]));
 
     [Theory]
     [MemberData(nameof(Matriz))]

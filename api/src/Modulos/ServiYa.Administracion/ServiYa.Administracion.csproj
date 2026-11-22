@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ServiYa.Comun\ServiYa.Comun.csproj" />
+    <!-- Solo su interfaz pública ICuentasService; nunca sus tablas. -->
+    <ProjectReference Include="..\ServiYa.Cuentas\ServiYa.Cuentas.csproj" />
   </ItemGroup>
 
 </Project>

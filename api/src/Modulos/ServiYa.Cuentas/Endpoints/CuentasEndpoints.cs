@@ -25,8 +25,9 @@ internal static class CuentasEndpoints
 
         cuentas.MapGet("/xsrf", SesionEndpoints.EmitirXsrf).AllowAnonymous();
 
-        cuentas.MapPost("/logout", SesionEndpoints.SalirAsync);
-        cuentas.MapGet("/yo", SesionEndpoints.YoAsync);
+        // Una cuenta suspendida también puede ver su sesión (y el motivo) y salir.
+        cuentas.MapPost("/logout", SesionEndpoints.SalirAsync).WithMetadata(new PermitidoASuspendidosAttribute());
+        cuentas.MapGet("/yo", SesionEndpoints.YoAsync).WithMetadata(new PermitidoASuspendidosAttribute());
         cuentas.MapPost("/yo/roles/prestador", SesionEndpoints.HacersePrestadorAsync);
     }
 }

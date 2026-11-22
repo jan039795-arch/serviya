@@ -20,6 +20,7 @@ public sealed class CuentasModulo : IModulo
         services.AddSingleton<ServicioCodigos>();
         services.AddScoped<EnvioCodigos>();
         services.AddScoped<SesionesCuentas>();
+        services.AddScoped<ICuentasService, CuentasService>();
     }
 
     public void MapearEndpoints(IEndpointRouteBuilder api) => api.MapearCuentas();

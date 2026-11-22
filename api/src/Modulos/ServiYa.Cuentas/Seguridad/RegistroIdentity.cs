@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -98,7 +99,9 @@ internal static class RegistroIdentity
         services.AddOptions<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme)
             .Configure<TimeProvider>((opciones, reloj) => opciones.TimeProvider = reloj);
 
-        services.AddAuthorization();
+        services.AddScoped<IAuthorizationHandler, AdminVigenteHandler>();
+        services.AddAuthorizationBuilder()
+            .AddPolicy(Politicas.SoloAdmin, politica => politica.RequireRole(Roles.Admin).AddRequirements(new AdminVigente()));
         return services;
     }
 
