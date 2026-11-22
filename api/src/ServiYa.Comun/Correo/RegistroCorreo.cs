@@ -45,6 +45,7 @@ public static class RegistroCorreo
         }
 
         api.MapGet("/dev/correos", (ConsolaEmailSender correos) => Results.Ok(correos.Recientes))
+            .AllowAnonymous()
             .ExcludeFromDescription();
     }
 }

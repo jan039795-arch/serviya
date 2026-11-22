@@ -43,7 +43,8 @@ internal static class RegistroModulos
 
     public static RouteGroupBuilder MapearModulos(this IEndpointRouteBuilder rutas)
     {
-        var api = rutas.MapGroup(PrefijoApi);
+        // Seguro por defecto: todo endpoint de la API pide sesión, salvo los marcados con AllowAnonymous.
+        var api = rutas.MapGroup(PrefijoApi).RequireAuthorization();
         foreach (var modulo in Modulos)
         {
             modulo.MapearEndpoints(api);

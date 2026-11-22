@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ServiYa.Comun.Seguridad;
 using ServiYa.Cuentas.Dominio;
 
 namespace ServiYa.Cuentas.Datos;
@@ -68,4 +70,28 @@ internal sealed class BloqueoConfiguracion : IEntityTypeConfiguration<Bloqueo>
         // "¿Quién me bloqueó?" para ocultar perfiles y conversaciones.
         builder.HasIndex(b => b.BloqueadoId);
     }
+}
+
+/// <summary>Roles semilla con identificadores fijos, para que la migración sea igual en todos los entornos (FR-002).</summary>
+internal sealed class RolConfiguracion : IEntityTypeConfiguration<IdentityRole<Guid>>
+{
+    private static readonly DateTimeOffset Creacion = new(2026, 11, 22, 0, 0, 0, TimeSpan.Zero);
+
+    public static readonly IReadOnlyDictionary<string, Guid> Ids = new Dictionary<string, Guid>
+    {
+        [Roles.Cliente] = new("0193e0a0-0000-7000-8000-000000000001"),
+        [Roles.Prestador] = new("0193e0a0-0000-7000-8000-000000000002"),
+        [Roles.Admin] = new("0193e0a0-0000-7000-8000-000000000003"),
+    };
+
+    public void Configure(EntityTypeBuilder<IdentityRole<Guid>> builder) =>
+        builder.HasData(Roles.Todos.Select(rol => new
+        {
+            Id = Ids[rol],
+            Name = rol,
+            NormalizedName = rol.ToUpperInvariant(),
+            ConcurrencyStamp = Ids[rol].ToString(),
+            CreadoEn = Creacion,
+            ActualizadoEn = Creacion,
+        }));
 }

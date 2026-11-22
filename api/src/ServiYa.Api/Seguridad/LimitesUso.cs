@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
+using ServiYa.Comun.Seguridad;
 
 namespace ServiYa.Api.Seguridad;
 
@@ -14,11 +15,11 @@ namespace ServiYa.Api.Seguridad;
 /// </summary>
 internal static class LimitesUso
 {
-    /// <summary>Login, registro, verificación, reenvío y recuperación: 5 por minuto por IP.</summary>
-    public const string LoginCodigos = "login-codigos";
+    /// <inheritdoc cref="PoliticasLimite.LoginCodigos"/>
+    public const string LoginCodigos = PoliticasLimite.LoginCodigos;
 
-    /// <summary>Mensajes del chat: 30 por minuto por usuario.</summary>
-    public const string Mensajes = "mensajes";
+    /// <inheritdoc cref="PoliticasLimite.Mensajes"/>
+    public const string Mensajes = PoliticasLimite.Mensajes;
 
     /// <summary>Límite general de todo endpoint, por usuario o por red: sobra para uso normal de la app.</summary>
     public const int PeticionesGeneralesPorMinuto = 300;

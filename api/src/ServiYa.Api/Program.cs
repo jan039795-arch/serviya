@@ -4,6 +4,7 @@ using ServiYa.Comun.Almacenamiento;
 using ServiYa.Comun.Configuracion;
 using ServiYa.Comun.Correo;
 using ServiYa.Comun.Errores;
+using ServiYa.Comun.Seguridad;
 using ServiYa.Comun.Tareas;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,7 @@ builder.Services.AgregarAlmacenamiento();
 builder.Services.AgregarTareasProgramadas();
 builder.Services.AgregarSeguridadHttp(builder.Configuration);
 builder.Services.AgregarLimitesUso();
+builder.Services.AgregarXsrf(builder.Configuration, builder.Environment);
 builder.AgregarModulos();
 
 var app = builder.Build();
@@ -29,11 +31,16 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 app.UsarSeguridadHttp();
+
+// La sesión primero: los límites por usuario y el token XSRF dependen de quién es.
+app.UseAuthentication();
 app.UseRateLimiter();
+app.UseAuthorization();
+app.UsarValidacionXsrf();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
 }
 
 var api = app.MapearModulos();

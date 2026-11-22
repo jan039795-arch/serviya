@@ -84,6 +84,7 @@ public sealed class ServiYaFactory(ContenedoresServiYa contenedores) : WebApplic
         builder.ConfigureServices(services =>
         {
             services.Replace(ServiceDescriptor.Singleton<TimeProvider>(Reloj));
+            services.AddSingleton<IStartupFilter, IpDePruebaFiltro>();
 
             // Solo el planificador: los demás servicios en segundo plano (como el del host web) se quedan.
             var planificador = services.Where(d =>

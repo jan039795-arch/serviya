@@ -62,6 +62,35 @@ namespace ServiYa.Cuentas.Datos.Migraciones
                         .HasDatabaseName("role_name_index");
 
                     b.ToTable("roles", "cuentas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0193e0a0-0000-7000-8000-000000000001"),
+                            ActualizadoEn = new DateTimeOffset(new DateTime(2026, 11, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ConcurrencyStamp = "0193e0a0-0000-7000-8000-000000000001",
+                            CreadoEn = new DateTimeOffset(new DateTime(2026, 11, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Name = "Cliente",
+                            NormalizedName = "CLIENTE"
+                        },
+                        new
+                        {
+                            Id = new Guid("0193e0a0-0000-7000-8000-000000000002"),
+                            ActualizadoEn = new DateTimeOffset(new DateTime(2026, 11, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ConcurrencyStamp = "0193e0a0-0000-7000-8000-000000000002",
+                            CreadoEn = new DateTimeOffset(new DateTime(2026, 11, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Name = "Prestador",
+                            NormalizedName = "PRESTADOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("0193e0a0-0000-7000-8000-000000000003"),
+                            ActualizadoEn = new DateTimeOffset(new DateTime(2026, 11, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ConcurrencyStamp = "0193e0a0-0000-7000-8000-000000000003",
+                            CreadoEn = new DateTimeOffset(new DateTime(2026, 11, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

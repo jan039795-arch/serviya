@@ -7,9 +7,9 @@
 **Etapa 2 — Prototipo**: terminada salvo la aprobación del usuario en su celular (T037).
 **Etapa 3 — Cuentas y perfiles** (en curso): Fase 3 terminada (T038–T043). Docker Desktop ya
 funciona: PostgreSQL con PostGIS y RustFS corren en local y la migración `Inicial` de Cuentas está
-aplicada. De la Fase 4 están hechas T044–T057 (T046 sin `ClientesDePrueba.cs`) y T060; faltan
-Cuentas desde T058 en adelante y los catálogos. La migración `Inicial` de Administración (bitácora)
-está creada; en el equipo del usuario falta aplicarla con `dotnet ef database update`.
+aplicada. De la Fase 4 están hechas T044–T061; faltan T062–T064 de Cuentas y los catálogos. Las
+migraciones `Inicial` de Administración (bitácora) y `RolesSemilla` de Cuentas están creadas; en el
+equipo del usuario falta aplicarlas con `dotnet ef database update`.
 
 - Constitución v1.0.1 (Angular estable vigente, hoy 22).
 - Especificación del MVP aprobada por el usuario: `specs/001-serviya-mvp/spec.md` (8 historias,
@@ -135,7 +135,20 @@ está creada; en el equipo del usuario falta aplicarla con `dotnet ef database u
   migración `Inicial` con `REVOKE UPDATE, DELETE, TRUNCATE ... FROM serviya_app`. Probado contra la
   base: la app lee e inserta, pero `UPDATE`, `DELETE` y `TRUNCATE` fallan con 42501; quitando el
   `REVOKE`, las pruebas fallan. Cobertura de las clases nuevas: 100%.
-- 299 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
+- Cuentas por HTTP (T058, T059, T061, TDD): Identity con roles semilla `Cliente`, `Prestador` y
+  `Admin` (migración `RolesSemilla`, identificadores fijos) y la cookie `serviya.sesion` (HttpOnly,
+  `Secure`, `SameSite=Lax`, 14 días con renovación, 401/403 sin redirigir, sello de seguridad revisado
+  cada 5 min). XSRF en `ServiYa.Comun/Seguridad/Xsrf.cs`: antiforgery con la cookie interna
+  `serviya.xsrf` y la legible `XSRF-TOKEN`, token nuevo al entrar y al salir, y validación de todo
+  `POST`/`PUT`/`PATCH`/`DELETE` (400 `/errores/xsrf-invalido`) salvo `[SinValidacionXsrf]`. El grupo
+  `/api/v1` pide sesión salvo `AllowAnonymous`. Endpoints de `/cuentas`: `registro` (roles y
+  consentimientos con IP en una transacción; prestador también es cliente; 409 si el correo existe),
+  `verificar-correo` (inicia la sesión), `reenviar-codigo` y `recuperar` (siempre 204), `login` (revisa
+  la contraseña antes de decir que falta verificar; pausa de 15 min tras 10 fallos), `logout`,
+  `restablecer` (cierra las demás sesiones), `yo`, `yo/roles/prestador` y `xsrf`. Los de correos y
+  códigos tienen el límite de 5 por minuto por IP. `ClientesDePrueba.cs` crea usuarios por rol y
+  clientes con cookie, XSRF e IP propia. Cobertura: endpoints y servicios de Cuentas entre 90% y 100%.
+- 340 pruebas del backend pasan (requieren Docker abierto); cobertura de la revisión: `ContactMasker` 97%, `ServicioCodigos` 94%,
   `AlmacenR2` 81%, `ValidadorFirmaArchivo` y `LimitesUso` 100%.
 - Repositorio respaldado en GitHub (privado): `https://github.com/jan039795-arch/serviya`, rama `main`.
 
@@ -145,13 +158,14 @@ está creada; en el equipo del usuario falta aplicarla con `dotnet ef database u
    app" de `specs/001-serviya-mvp/quickstart.md` (`npm run serve:prototipo` + `chrome://inspect`)
    y anota en esta bitácora los ajustes que pida. Con su aprobación se marca T037.
 2. Al abrir una sesión: Docker Desktop debe estar abierto; `docker compose up -d` desde la raíz.
-3. En el equipo del usuario, aplicar la migración de Administración:
-   `dotnet ef database update --project src/Modulos/ServiYa.Administracion --startup-project src/ServiYa.Api --context AdministracionDbContext`.
-4. Seguir con T058 (pruebas de cuentas y permisos, TDD, en
-   `tests/ServiYa.IntegrationTests/Cuentas/RegistroYSesionTests.cs` y `Seguridad/PermisosPorRolTests.cs`),
-   T059 (Identity y cookie en `CuentasModulo.cs`), T061 (endpoints; tratar
-   `DbUpdateConcurrencyException` como intento rechazado), `ClientesDePrueba.cs` de T046, T062–T064
-   (T064 ya puede usar `IBitacora` con `OtorgarRolAdmin`/`RetirarRolAdmin`).
+3. En el equipo del usuario, aplicar las migraciones nuevas (desde `api/`):
+   `dotnet ef database update --project src/Modulos/ServiYa.Cuentas --startup-project src/ServiYa.Api --context CuentasDbContext`
+   y `dotnet ef database update --project src/Modulos/ServiYa.Administracion --startup-project src/ServiYa.Api --context AdministracionDbContext`.
+4. Seguir con T062 (`ICuentasService` en `Servicios/ICuentasService.cs`), T063 (filtro de cuenta
+   suspendida en `ServiYa.Api/Seguridad/CuentaSuspendidaFiltro.cs`, con su fila en
+   `PermisosPorRolTests`) y T064 (comando `crear-admin` y `POST`/`DELETE /admin/usuarios/{id}/roles/admin`
+   con `IBitacora` `OtorgarRolAdmin`/`RetirarRolAdmin`; al cambiar roles, llamar
+   `UpdateSecurityStampAsync` para que la cookie se actualice en 5 min).
 5. Después de Cuentas: catálogos (T065–T067), tipos desde OpenAPI y guardas (T068) y conexión de
    las pantallas de cuenta (T070).
 6. Nada más pendiente de decidir para la Etapa 3.
@@ -272,6 +286,17 @@ está creada; en el equipo del usuario falta aplicarla con `dotnet ef database u
 | 2026-11-22 | El detalle de la bitácora es un diccionario de texto: claves en camelCase sin nombres de datos personales (nombre, teléfono, correo, CURP, RFC, dirección...) y valores pasados por `ContactMasker` | data-model pide "sin datos personales"; un diccionario plano no deja anidar objetos como un usuario completo y el motivo escrito por el administrador puede traer un teléfono |
 | 2026-11-22 | `IBitacora` guarda en su propia transacción (`AdministracionDbContext`), no en la de quien llama | Un módulo no usa el `DbContext` de otro. Regla de uso: se registra antes de entregar algo sensible (URL de un documento) y después de guardar una decisión |
 | 2026-11-22 | La migración de la bitácora quita `UPDATE`, `DELETE` y `TRUNCATE`; `updated_at` se queda por la convención común | `TRUNCATE` no viene en los privilegios por defecto, pero quitarlo deja explícita la intención; `updated_at` siempre vale lo mismo que `created_at` |
+| 2026-11-22 | El login revisa la contraseña antes de la verificación del correo (`RequireConfirmedEmail` apagado y revisado a mano) y, si el correo no existe, compara contra un hash ficticio | Identity revisa la verificación primero: sin la contraseña se sabría que la cuenta existe. El hash ficticio iguala los tiempos |
+| 2026-11-22 | Pausa de 15 min tras 10 contraseñas fallidas | Con 5, un tercero bloquearía cuentas ajenas a propósito; el límite de 5 por minuto por IP ya frena los intentos |
+| 2026-11-22 | Los 3 códigos por hora cuentan también el del registro; pasado el límite, `reenviar-codigo` responde 204 sin mandar nada | Regla de `ServicioCodigos` ("3 envíos por hora"). Un 429 diría que la cuenta existe |
+| 2026-11-22 | Errores de código y de credenciales con un solo mensaje y `type` propio (`/errores/codigo-invalido`, `/errores/credenciales-incorrectas`, `/errores/correo-registrado`) | No revelan si el correo existe; con `type` propio, `ProblemasEnEspanol` no reemplaza el título |
+| 2026-11-22 | El registro con un correo ya registrado responde 409, como el prototipo | La app necesita decir "entra o recupera tu contraseña"; el límite por IP frena la enumeración |
+| 2026-11-22 | El sello de seguridad se revisa cada 5 min (no 30) | Restablecer la contraseña, cambiar roles o suspender una cuenta llega a las demás sesiones en 5 min |
+| 2026-11-22 | En desarrollo las cookies siguen el esquema de la petición; en pruebas y producción, siempre `Secure` | La app llega por el proxy de Angular a `http://localhost:5189` y antiforgery rechaza un `Secure` obligatorio sin https |
+| 2026-11-22 | `/api/v1` pide sesión con `RequireAuthorization()` en el grupo, no con una política por defecto | La política por defecto también se aplica sin ruta y convertía los 404 en 401 |
+| 2026-11-22 | XSRF con antiforgery: cookie HttpOnly `serviya.xsrf`, cookie legible `XSRF-TOKEN` (`SameSite=Strict`) y token nuevo al entrar y salir | El token va ligado al usuario: el de la sesión anónima no sirve después del login |
+| 2026-11-22 | Pendiente para producción (T147): guardar las llaves de Data Protection fuera del contenedor | Cifran la cookie de sesión y los tokens; si se pierden al reiniciar, todos tienen que volver a entrar |
+| 2026-11-22 | Pruebas: frasco de cookies propio sin vencimiento e IP por cliente con un encabezado que solo lee un `IStartupFilter` de las pruebas | `CookieContainer` usa la hora real y la API el reloj falso; con una IP por cliente el límite de 5 por minuto no mezcla pruebas |
 
 ## Pendientes abiertos
 
@@ -311,3 +336,4 @@ está creada; en el equipo del usuario falta aplicarla con `dotnet ef database u
 | 2026-11-08 | Fábrica de pruebas con PostgreSQL y RustFS reales (T046) e integración de almacenamiento (T050) y candado de tareas (T052) | ver `git log` |
 | 2026-11-08 | Subidos a GitHub (`main`) los commits de la Etapa 3 hasta T046, a pedido del usuario | ver `git log` |
 | 2026-11-22 | Bitácora de solo inserción en `admin.registro_bitacora` (T049), con pruebas unitarias y contra PostgreSQL; hecha en una sesión en la nube (SDK 10.0.404 y Docker en Linux) en la rama `claude/peaceful-allen-ipnjgx` | ver `git log` |
+| 2026-11-22 | Cuentas por HTTP con TDD (T058, T059, T061 y `ClientesDePrueba.cs` de T046): Identity, cookie, XSRF, roles semilla y endpoints de `/cuentas`, a pedido del usuario ("continúa") | ver `git log` |
